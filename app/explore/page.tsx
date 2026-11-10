@@ -118,7 +118,7 @@ export default function Explore() {
                         {s.good.length > 0 && <p className="mt-1 text-xs text-ok">Strong on {s.good.join(", ")}</p>}
                         {s.evidence && <p className="mt-1 text-xs italic text-muted">“{s.evidence.snippet}”{s.evidence.sameParty ? ` (${PARTY_META[party].label.toLowerCase()} traveller)` : ""}</p>}
                         {(s.flags ?? []).map((f) => <p key={f.aspect} className="mt-1 text-xs text-bad">⚠ {f.aspect}{f.snippet ? `: “${f.snippet}”` : ""}{f.sameParty ? ` (${PARTY_META[party].label.toLowerCase()} traveller)` : ""}</p>)}
-                        {s.blocked.length > 0 && <p className="mt-1 text-xs text-warn">Breaks your dealbreaker: {s.blocked.join(", ")}</p>}
+                        {s.blocked.length > 0 && <p className="mt-1 text-xs text-warn">Avoided because: {s.blocked.join(", ")}</p>}
                       </Card>
                     ))}
                   </div>
