@@ -8,6 +8,15 @@ interface Driver {
   exec(text: string): Promise<void>;
 }
 
+/**
+ * Callers pass JSON parameters already stringified (`$1::jsonb` with JSON.stringify(v)). postgres.js sees a
+ * json-typed parameter and JSON-encodes the string again, so Postgres receives a JSON *string*
+ * ("cannot call json_populate_recordset on a scalar"). Casting through text makes postgres.js send it as-is.
+ */
+export function castJsonParamsViaText(text: string) {
+  return text.replace(/(\$\d+)::(jsonb?)\b/g, "$1::text::$2");
+}
+
 let driverPromise: Promise<Driver> | null = null;
 let readyPromise: Promise<void> | null = null;
 
@@ -24,7 +33,7 @@ async function makeDriver(): Promise<Driver> {
     });
     return {
       async query<T>(text: string, params: unknown[] = []) {
-        return (await sql.unsafe(text, params as never[])) as unknown as T[];
+        return (await sql.unsafe(castJsonParamsViaText(text), params as never[])) as unknown as T[];
       },
       async exec(text: string) {
         await sql.unsafe(text);
