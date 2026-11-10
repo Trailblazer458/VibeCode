@@ -28,6 +28,9 @@ async function makeDriver(): Promise<Driver> {
       prepare: false, // required for Supabase's transaction pooler (port 6543)
       ssl: url.includes("localhost") ? false : "require",
       max: 3,
+      // No pipelining: parallel queries (Promise.all) would send several unnamed statements down one
+      // connection, which the transaction pooler mixes up (hangs / "bind message supplies N parameters").
+      max_pipeline: 1,
       idle_timeout: 20,
       onnotice: () => {},
     });
