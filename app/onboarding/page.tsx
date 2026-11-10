@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/client";
-import { Button, Chip, NEED_META, PARTY_META, Spinner } from "@/components/ui";
+import { Button, Chip, PARTY_META, Spinner } from "@/components/ui";
 
 interface Opt { label: string; img: string; emoji: string }
 interface Pair { id: string; question: string; dimension: string; a: Opt; b: Opt }
@@ -52,6 +52,12 @@ export default function Onboarding() {
   useEffect(() => {
     t0.current = Date.now();
   }, [step]);
+  // After the last answer: a short "got it" moment, then straight to the trips.
+  useEffect(() => {
+    if (!result) return;
+    const t = setTimeout(() => router.push("/feed"), 2200);
+    return () => clearTimeout(t);
+  }, [result, router]);
 
   if (!pairs.length) return <Spinner />;
   const total = pairs.length + 2;
@@ -133,31 +139,19 @@ export default function Onboarding() {
           <h2 className="font-display text-2xl font-semibold">Anything that ruins a trip for you?</h2>
           <p className="text-sm text-muted">These become hard filters. You can change them any time in your profile.</p>
           <div className="flex flex-wrap gap-1.5">{dbOpts.map((o) => <Chip key={o.attribute} small on={dbs.includes(o.attribute)} onClick={() => setDbs(toggle(dbs, o.attribute))}>{o.label}</Chip>)}</div>
-          <Button className="w-full" onClick={finish} disabled={busy}>{busy ? "Building your profile…" : "See my travel persona →"}</Button>
+          <Button className="w-full" onClick={finish} disabled={busy}>{busy ? "Building your profile…" : "Find my trips →"}</Button>
         </div>
       )}
 
       {step === total + 1 && result && (
-        <div className="rise space-y-5">
-          <div className="cover rounded-3xl p-6 text-white shadow-lg" style={{ ["--h" as string]: 190 }}>
-            <p className="text-xs uppercase tracking-widest opacity-80">Your travel persona</p>
-            <h2 className="mt-2 font-display text-3xl font-semibold">{result.persona}</h2>
-            <p className="mt-3 text-sm opacity-95">{result.blurb}</p>
-            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-              {Object.entries(result.dims).filter(([k]) => k !== "climate").slice(0, 8).map(([k, v]) => (
-                <div key={k}>
-                  <div className="flex justify-between opacity-90"><span className="capitalize">{k}</span><span>{Math.round(v * 100)}</span></div>
-                  <div className="h-1 rounded bg-white/25"><div className="h-1 rounded bg-white" style={{ width: `${v * 100}%` }} /></div>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-[11px] opacity-80">Share card · tripgenie</p>
+        <div className="rise flex flex-1 flex-col items-center justify-center text-center">
+          <div className="relative flex h-20 w-20 items-center justify-center">
+            <span className="absolute inset-0 animate-ping rounded-full bg-teal/20" />
+            <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-teal text-3xl text-white shadow-lg">✓</span>
           </div>
-          <div>
-            <p className="mb-2 text-sm text-muted">Your For You feed will open with:</p>
-            <div className="flex flex-wrap gap-1.5">{result.intents.map((i) => <span key={i.need} className="rounded-full bg-teal-soft px-3 py-1 text-sm">{NEED_META[i.need].emoji} {NEED_META[i.need].label} · {PARTY_META[i.party].label}</span>)}</div>
-          </div>
-          <Button className="w-full" onClick={() => router.push("/feed")}>Show my plans →</Button>
+          <h2 className="mt-6 font-display text-3xl">That&apos;s everything we need{name ? `, ${name}` : ""}.</h2>
+          <p className="mt-2 text-muted">Taking you to your next trip…</p>
+          <button className="mt-6 text-sm font-semibold text-teal" onClick={() => router.push("/feed")}>Go now →</button>
         </div>
       )}
     </div>

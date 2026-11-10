@@ -2,7 +2,8 @@
 import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDate, inr } from "@/lib/client";
-import { Button, Card, Chip, Cover, ErrorNote, FitBadge, IntentPicker, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner, StatusDot, type PlanLite } from "@/components/ui";
+import { Button, Card, Chip, Cover, ErrorNote, FitBadge, IntentPicker, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner, type PlanLite } from "@/components/ui";
+import { Testimonials, WhyCarousel } from "@/components/why";
 
 interface Alt { id: string; name: string; price: number; fit: number; tags: string[]; blocked: string[]; good: string[]; flag: { aspect: string; snippet: string | null; sameParty: boolean } | null; flags?: { aspect: string; snippet: string | null; sameParty: boolean }[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number }
 type Plan = PlanLite & {
@@ -122,27 +123,17 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div className="md:grid md:grid-cols-2 md:items-start">
       <div>
       <Section title="Why this fits you">
-        <Card className="mx-4 space-y-2 p-3">
-          {blurb && <p className="rounded-lg bg-teal-soft p-2 text-sm">{blurb} <span className="block text-[10px] text-muted">Written by Grok from the engine&apos;s reasons and real review snippets</span></p>}
-          <ul className="space-y-1.5 text-sm">{p.why.map((w) => <li key={w} className="flex gap-2"><span className="text-teal">✓</span>{w}</li>)}</ul>
-          {p.evidence.map((e) => (
-            <blockquote key={e.text} className="border-l-2 border-saffron pl-2 text-xs italic text-muted">
-              “{e.text}” <span className="not-italic">({e.party === p.party ? `a ${PARTY_META[p.party].label.toLowerCase()} traveller` : "a guest"} on {e.itemName})</span>
-            </blockquote>
-          ))}
-        </Card>
+        <div className="space-y-3 px-4">
+          {blurb && <p className="line-clamp-2 text-sm text-muted" title="Written by Grok from the engine's reasons and real review snippets">{blurb}</p>}
+          <WhyCarousel plan={p} />
+        </div>
       </Section>
 
-      <Section title="Readiness check" sub="Intent trip-killers and your dealbreakers, checked before booking">
-        <Card className="mx-4 divide-y divide-line">
-          {p.readiness.map((r, i) => (
-            <div key={i} className="flex gap-2.5 p-3">
-              <StatusDot s={r.status} />
-              <div><div className="text-sm font-medium">{r.label}</div><div className="text-xs text-muted">{r.detail}</div></div>
-            </div>
-          ))}
-        </Card>
-      </Section>
+      {p.evidence.length > 0 && (
+        <Section title="What other travellers said">
+          <div className="px-3"><Testimonials evidence={p.evidence} /></div>
+        </Section>
+      )}
 
       </div>
       <div>

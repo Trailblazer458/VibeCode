@@ -76,8 +76,10 @@ Scope: leisure and personal travel in India, origin Delhi NCR. Business travel i
    - season
    - dealbreakers respected
    - intent trip-killers, with a review snippet as evidence
+
+   The engine still runs these checks (they filter and flag plans, and plan cards show a small "N checks / to review" chip), but the plan page no longer lists them: it was too much to take in.
 7. **Diverse set:** maximal marginal relevance over plans, with a count of 3–6 driven by uncertainty (thin profile, assumed slots, group). One exploration option goes to an unvisited destination.
-8. **Explanation:** "Why this fits you" lists the top weighted contributions, with same-intent review snippets. Grok (optional) rewrites them into two sentences using only those facts.
+8. **Explanation:** "Why this fits you" is an image carousel: one slide each for the destination, the stay and the top activity, with the short reason ("Strong on nature and wellness") under the image. Same-intent review snippets show as testimonial cards with a stock avatar. Grok (optional) adds one short sentence using only those facts. Item photos go in `public/items/` and are listed in `lib/images.ts`; without one, a slide uses the item's colour cover.
 
 The criteria bar shows every applied filter, its source (you, group, assumed, trip type, dates) and **how many options it hides**. Users can switch criteria off to compare.
 
@@ -87,7 +89,7 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
    - 12 "this or that" scene pairs, each mapped to a dimension.
    - Diet is asked directly, never inferred.
    - The user picks who they usually travel with, a budget and optional dealbreakers.
-   - It ends with a **persona card**.
+   - It ends with a short "That's everything we need" screen and goes straight to For You. The persona is still computed and shown on the profile, not at the end of onboarding.
 2. **For You** (landing page):
    - A trigger banner (long weekend plus bridge-day leave).
    - **Top 3 intents**, each a row of ≥3 plans.
