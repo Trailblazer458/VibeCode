@@ -70,7 +70,7 @@ export default function FeedPage() {
             </Link>
           </Section>
           <div className="mx-4 mt-6 grid grid-cols-2 gap-2 text-sm">
-            <Link href="/explore?tab=reel" className="rounded-2xl border border-line bg-paper p-3">📲 <b>Saw a trip in a video?</b><br /><span className="text-xs text-muted">Turn a saved travel video into a plan</span></Link>
+            <Link href="/explore?tab=reel" className="rounded-2xl border border-line bg-paper p-3">📲 <b>Saw it on Instagram?</b><br /><span className="text-xs text-muted">Turn a Reel into a plan</span></Link>
             <Link href="/explore?tab=budget" className="rounded-2xl border border-line bg-paper p-3">💸 <b>₹15k, 3 days?</b><br /><span className="text-xs text-muted">Budget-first ideas</span></Link>
           </div>
         </>

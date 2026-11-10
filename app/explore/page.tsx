@@ -77,7 +77,7 @@ export default function Explore() {
   return (
     <Shell title="Explore">
       <div className="no-scrollbar flex gap-1.5 overflow-x-auto px-4 pt-3">
-        {([["where", "📍 I know where"], ["intent", "✦ By intent"], ["budget", "💸 Budget-first"], ["reel", "📲 From a video"]] as const).map(([k, l]) => (
+        {([["where", "📍 I know where"], ["intent", "✦ By intent"], ["budget", "💸 Budget-first"], ["reel", "📲 From a Reel"]] as const).map(([k, l]) => (
           <Chip key={k} on={tab === k} onClick={() => { setTab(k); setRes(null); setDisabled([]); }}>{l}</Chip>
         ))}
       </div>
@@ -152,14 +152,14 @@ export default function Explore() {
       )}
 
       {tab === "reel" && (
-        <Section title="Turn a travel video into a plan" sub="Paste a link to a video you saved. We read the place and the vibe, then plan it around you.">
+        <Section title="Turn a Reel into a plan" sub="Paste a link you saved. We read the place and the vibe, then plan it around you.">
           <div className="space-y-2 px-4 md:max-w-2xl">
-            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://… (link to a travel video)" className="w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-sm outline-teal" />
+            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://www.instagram.com/reel/…" className="w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-sm outline-teal" />
             <div className="flex gap-2">
               <Button onClick={() => runReel(url)} disabled={busy || !url}>Import</Button>
-              <Button kind="ghost" onClick={() => { const u = "https://videos.example.com/rishikesh-rafting"; setUrl(u); runReel(u); }}>Try a sample video</Button>
+              <Button kind="ghost" onClick={() => { const u = "https://www.instagram.com/reel/C9rishikeshRaft/"; setUrl(u); runReel(u); }}>Try a sample Reel</Button>
             </div>
-            <p className="text-[11px] text-muted">Prototype: link analysis is mocked; any video link maps to the sample.</p>
+            <p className="text-[11px] text-muted">Prototype: link analysis is mocked; any Reel link maps to the sample.</p>
             {reel && (
               <Card className="rise p-3">
                 <p className="text-xs text-muted">Caption</p>

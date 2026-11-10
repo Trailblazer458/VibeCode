@@ -123,7 +123,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div>
       <Section title="Why this fits you">
         <Card className="mx-4 space-y-2 p-3">
-          {blurb && <p className="rounded-lg bg-teal-soft p-2 text-sm">{blurb} <span className="block text-[10px] text-muted">Written by AI from the engine&apos;s reasons and real review snippets</span></p>}
+          {blurb && <p className="rounded-lg bg-teal-soft p-2 text-sm">{blurb} <span className="block text-[10px] text-muted">Written by Grok from the engine&apos;s reasons and real review snippets</span></p>}
           <ul className="space-y-1.5 text-sm">{p.why.map((w) => <li key={w} className="flex gap-2"><span className="text-teal">✓</span>{w}</li>)}</ul>
           {p.evidence.map((e) => (
             <blockquote key={e.text} className="border-l-2 border-saffron pl-2 text-xs italic text-muted">

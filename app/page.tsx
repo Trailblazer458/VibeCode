@@ -5,7 +5,7 @@ import { api } from "@/lib/client";
 
 export default function Welcome() {
   const router = useRouter();
-  const [me, setMe] = useState<{ user: { name: string; onboarded: boolean } | null; llm: boolean; db: string } | null>(null);
+  const [me, setMe] = useState<{ user: { name: string; onboarded: boolean } | null; llm: string | null; db: string } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function Welcome() {
         </button>
         {err && <p className="rounded-xl bg-bad/10 px-3 py-2 text-sm text-bad">{err}</p>}
         <p className="pt-2 text-center text-[11px] text-muted">
-          Prototype · trips from Delhi NCR · synthetic catalog & reviews · {me ? (me.db === "embedded" ? "demo database" : "live database") : "…"} · {me ? (me.llm ? "AI on" : "rule-based fallback") : "…"}
+          Prototype · trips from Delhi NCR · synthetic catalog & reviews · data: {me?.db ?? "…"} · AI: {me ? (me.llm ? `Grok (${me.llm})` : "rules fallback") : "…"}
         </p>
       </div>
     </div>

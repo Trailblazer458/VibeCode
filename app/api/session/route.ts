@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { cloneDemo, createFresh, getProfile, handle, rid, session } from "@/lib/server";
-import { llmEnabled } from "@/lib/llm";
+import { llmEnabled, MODEL } from "@/lib/llm";
 
 export async function GET() {
   return handle(async () => {
     const { uid } = await session();
     const user = uid ? await getProfile(uid) : null;
-    return { user, llm: llmEnabled(), db: process.env.DATABASE_URL ? "live" : "embedded" };
+    return { user, llm: llmEnabled() ? MODEL : null, db: process.env.DATABASE_URL ? "supabase" : "embedded" };
   });
 }
 

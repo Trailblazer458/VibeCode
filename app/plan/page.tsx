@@ -66,7 +66,7 @@ export default function PlanWithMe() {
     { k: "Avoid", v: slots.dealbreakers?.length ? slots.dealbreakers.map((d) => d.label).join(", ") : null },
   ];
   return (
-    <Shell title="Plan with me" right={engine && <span className="text-[10px] text-muted">{engine === "grok" ? "AI" : "rules"}</span>}>
+    <Shell title="Plan with me" right={engine && <span className="text-[10px] text-muted">{engine === "grok" ? "Grok" : "rules"}</span>}>
       <div className="sticky top-[53px] z-10 border-b border-line bg-sand/95 px-4 py-2 backdrop-blur">
         <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
           {S.map((s) => (
