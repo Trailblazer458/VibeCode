@@ -191,7 +191,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
                 </div>
                 {a.good.length > 0 && <p className="mt-1 text-xs text-ok">Strong on {a.good.join(", ")}</p>}
                 {(a.flags ?? []).map((f) => <p key={f.aspect} className="mt-1 text-xs text-bad">⚠ {f.aspect}{f.snippet ? `: “${f.snippet}”` : ""}{f.sameParty ? " (same kind of traveller)" : ""}</p>)}
-                {a.blocked.length > 0 && <p className="mt-1 text-xs text-warn">Breaks your dealbreaker: {a.blocked.join(", ")}</p>}
+                {a.blocked.length > 0 && <p className="mt-1 text-xs text-warn">Avoided because: {a.blocked.join(", ")}</p>}
                 {!current && <button disabled={busy} onClick={() => doSwap(a.id)} className="mt-2 text-xs font-semibold text-teal">Use this instead →</button>}
                 {current && <p className="mt-1 text-xs font-semibold text-teal">In your plan</p>}
               </div>
