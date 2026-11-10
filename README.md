@@ -26,7 +26,7 @@ Add `XAI_API_KEY` to `.env.local` to turn on Grok for chat slot-filling and the 
 
 1. **Explore as Arjun** opens on **For You**: a trigger banner (long weekend, take 1 day off), then three intent rows, then *Something different*.
 2. Open a plan. Check the readiness check, true trip cost and *why this fits you* with review evidence. Change the party chip to **With parents** and everything re-scores. **Swap** the camp for a heritage stay to get a discovery edit and a new inferred dealbreaker.
-3. **Explore → I know where → North Goa.** Switch **Friends ↔ Family + kids**. Baga Party Lane drops from #1 to the bottom, flagged with a family review.
+3. **Explore → I know where → North Goa.** Switch **Friends ↔ Family + kids**. Baga Party Lane drops from #1 (fit ~82) to ~29, below Assagao Garden Retreat, flagged with a family review ("Not set up for kids").
 4. **Plan with me:** tap *Parents want a temple trip, nothing tiring*, then *Next long weekend*, then **Create trip plan**. The criteria bar shows assumptions and how many options each filter hides.
 5. **Trips → College gang reunion:** date poll, anonymous criteria, *Preview hidden* on the ₹12k budget, approve the anonymous relax request on your own "no long road" rule, like/veto, confirm.
 6. **You:** confirm the inferred red-eye dealbreaker, do the Rishikesh check-in (skip bungee), **Retake**, then the nudge cadence and metrics.
