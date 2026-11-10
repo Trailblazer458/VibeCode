@@ -23,13 +23,15 @@ export default function Welcome() {
     }
   };
   return (
-    <div className="cover relative flex min-h-dvh flex-col overflow-hidden text-white md:flex-row md:items-center" style={{ ["--h" as string]: 175 }}>
+    <div className="cover relative flex min-h-dvh items-center overflow-hidden text-white" style={{ ["--h" as string]: 175 }}>
       {/* Warm and cool light fields for the glass panels to catch */}
       <div className="pointer-events-none absolute -top-32 right-[-10%] h-[36rem] w-[36rem] rounded-full bg-saffron/35 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-20%] left-[-10%] h-[32rem] w-[32rem] rounded-full bg-[#7fe0c8]/25 blur-3xl" />
       <span className="pointer-events-none absolute right-4 bottom-4 text-8xl opacity-20 md:right-10 md:bottom-10 md:text-[10rem]">🧭</span>
 
-      <div className="relative flex-1 px-6 pt-16 pb-8 md:px-16 md:py-16 lg:px-24">
+      {/* Hero and panel share one centred column so they stay together on wide screens */}
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col md:flex-row md:items-center md:gap-10 md:px-8 lg:gap-14">
+      <div className="flex-1 px-6 pt-16 pb-8 md:px-0 md:py-16">
         <span className="glass-dark inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]">
           A personalization layer for travel booking <span className="text-saffron">✦</span>
         </span>
@@ -45,7 +47,7 @@ export default function Welcome() {
         </ul>
       </div>
 
-      <div className="relative px-4 pb-8 md:w-[460px] md:shrink-0 md:py-16 md:pr-12 lg:w-[520px]">
+      <div className="px-4 pb-8 md:w-[420px] md:shrink-0 md:px-0 md:py-16 lg:w-[460px]">
         <div className="glass-dark space-y-3 rounded-3xl p-5 md:p-6">
           <h2 className="font-display text-2xl font-semibold">Try the prototype</h2>
           {me?.user && (
@@ -66,6 +68,7 @@ export default function Welcome() {
             Prototype · trips from Delhi NCR · synthetic catalog & reviews · data: {me?.db ?? "…"} · AI: {me ? (me.llm ? `Grok (${me.llm})` : "rules fallback") : "…"}
           </p>
         </div>
+      </div>
       </div>
     </div>
   );

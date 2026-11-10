@@ -16,10 +16,10 @@
   --color-bad: #b4442a;
 }
 
-/* Fonts come from next/font (app/layout.tsx): Inter for text, Inter Tight for headings. */
+/* Inter for all text, loaded by next/font in app/layout.tsx. Headings are the same face, bold and tight. */
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-display: var(--font-inter-tight), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 :root {
@@ -50,7 +50,8 @@ body::before {
 
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.025em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 @layer components {
