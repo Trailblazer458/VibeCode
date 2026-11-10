@@ -1,33 +1,83 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sand: #f5efe5;
-  --color-paper: #fffcf7;
+  /* Same palette as before. Surfaces are translucent so cards read as frosted glass over the page glow. */
+  --color-sand: rgb(250 246 239 / 0.72);
+  --color-paper: rgb(255 255 255 / 0.5);
   --color-ink: #1d2a2c;
-  --color-muted: #66706c;
-  --color-line: #e7dccb;
+  --color-muted: #5f6a66;
+  --color-line: rgb(120 100 70 / 0.16);
   --color-teal: #0e5a57;
-  --color-teal-soft: #dcebe7;
+  --color-teal-soft: rgb(14 90 87 / 0.12);
   --color-saffron: #e3862a;
-  --color-saffron-soft: #fbe9d4;
+  --color-saffron-soft: rgb(227 134 42 / 0.16);
   --color-ok: #2d7a4c;
   --color-warn: #b7791f;
   --color-bad: #b4442a;
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Fonts come from next/font (app/layout.tsx): Inter for text, Inter Tight for headings. */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: var(--font-inter-tight), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   color-scheme: light;
 }
 
-html, body {
-  background: var(--color-sand);
+html {
+  background: #f5efe5;
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
 
-.font-display { font-family: var(--font-display); }
+/* Soft colour fields from the palette, fixed behind everything, so the glass has something to blur. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42rem 32rem at 6% -4%, rgb(14 90 87 / 0.42), transparent 70%),
+    radial-gradient(38rem 30rem at 102% 12%, rgb(227 134 42 / 0.42), transparent 70%),
+    radial-gradient(34rem 26rem at 48% 46%, rgb(127 224 200 / 0.3), transparent 70%),
+    radial-gradient(44rem 34rem at 62% 104%, rgb(45 122 76 / 0.32), transparent 70%),
+    radial-gradient(30rem 26rem at -4% 78%, rgb(227 134 42 / 0.26), transparent 70%),
+    #f5efe5;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+}
+
+@layer components {
+  /* Frosted glass: every bg-paper surface (cards, chips, nav, inputs) blurs and brightens what is behind it,
+     with a light top edge. In the components layer so utilities like shadow-md still win. */
+  .bg-paper,
+  .bg-paper\/95,
+  .glass {
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    backdrop-filter: blur(22px) saturate(180%);
+    border-color: rgb(255 255 255 / 0.7);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.85),
+      0 12px 32px -14px rgb(14 90 87 / 0.28);
+  }
+  /* Glass on top of a coloured cover or photo: tinted white, white text. */
+  .glass-dark {
+    background: rgb(255 255 255 / 0.14);
+    border: 1px solid rgb(255 255 255 / 0.28);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 20px 50px -20px rgb(0 0 0 / 0.35);
+  }
+}
+
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 .cover {

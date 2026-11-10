@@ -39,7 +39,7 @@ export default function Profile() {
   const toggle = (a: string[], v: string) => (a.includes(v) ? a.filter((x) => x !== v) : [...a, v]);
   return (
     <Shell title="You" right={<button className="text-xs text-muted" onClick={async () => { await api("/api/session", { mode: "logout" }); router.push("/"); }}>Log out</button>}>
-      {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-lg">{toast}</p>}
+      {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-2xl border border-white/15 bg-ink/75 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-xl">{toast}</p>}
       <div className="cover mx-4 mt-4 rounded-3xl p-5 text-white" style={{ ["--h" as string]: 190 }}>
         <p className="text-xs uppercase tracking-widest opacity-80">{p.name} · {p.home_city}</p>
         <h1 className="font-display text-2xl font-semibold">{p.persona}</h1>

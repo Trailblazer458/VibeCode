@@ -176,7 +176,7 @@ export function PlanCard({ p, wide, extra }: { p: PlanLite; wide?: boolean; extr
       <Cover hue={p.hue} emoji={p.emoji} className="h-28 p-3">
         <div className="flex items-start justify-between">
           <FitBadge fit={p.fit} />
-          {p.exploration && <span className="rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-teal">Something new for you</span>}
+          {p.exploration && <span className="glass-dark rounded-full px-2 py-0.5 text-[11px] font-semibold text-white">Something new for you</span>}
         </div>
         <div className="absolute bottom-2 left-3 text-white drop-shadow">
           <div className="font-display text-xl font-semibold leading-tight">{p.destName}</div>
@@ -259,8 +259,8 @@ export function IntentPicker({ need, party, onChange, needs }: { need: string; p
 export function Sheet({ open, onClose, children, title }: { open: boolean; onClose: () => void; children: ReactNode; title?: string }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 md:items-center md:p-6" onClick={onClose}>
-      <div className="rise max-h-[85dvh] w-full max-w-[480px] overflow-y-auto rounded-t-3xl bg-paper p-4 pb-8 md:max-w-xl md:rounded-3xl md:p-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 backdrop-blur-sm md:items-center md:p-6" onClick={onClose}>
+      <div className="rise glass max-h-[85dvh] w-full max-w-[480px] overflow-y-auto rounded-t-3xl border border-white/70 bg-white/80 p-4 pb-8 md:max-w-xl md:rounded-3xl md:p-6" onClick={(e) => e.stopPropagation()}>
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line md:hidden" />
         {title && <h3 className="mb-3 font-display text-lg font-semibold">{title}</h3>}
         {children}

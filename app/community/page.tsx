@@ -32,7 +32,7 @@ export default function Community() {
         {list.map((t) => (
           <div key={t.id} className="rise overflow-hidden rounded-2xl border border-line bg-paper">
             <Cover hue={t.hue} emoji={t.emoji} className="h-24 p-3 text-white">
-              <span className="rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-teal">{t.relation === "Curated" ? "Curated" : `${t.author_name} · ${t.relation}`}</span>
+              <span className="glass-dark rounded-full px-2 py-0.5 text-[11px] font-semibold text-white">{t.relation === "Curated" ? "Curated" : `${t.author_name} · ${t.relation}`}</span>
               <div className="absolute bottom-2 left-3"><div className="font-display text-lg font-semibold leading-tight">{t.title}</div><div className="text-xs opacity-90">{t.destName} · {t.intent} · {t.days} days</div></div>
             </Cover>
             <div className="space-y-2 p-3">

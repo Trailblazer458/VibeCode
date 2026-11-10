@@ -44,7 +44,7 @@ export default function FeedPage() {
       {d && (
         <>
           {d.trigger && (
-            <Link href="/nudges" className="mx-4 mt-4 block rounded-2xl bg-saffron px-4 py-3 text-white shadow-sm">
+            <Link href="/nudges" className="mx-4 mt-4 block rounded-2xl border border-white/40 bg-saffron/85 px-4 py-3 text-white shadow-lg shadow-saffron/20 backdrop-blur-xl">
               <div className="text-xs font-semibold uppercase tracking-wide opacity-90">Why now</div>
               <div className="font-semibold">{d.trigger.title}</div>
               <div className="text-sm opacity-95">{d.trigger.body} Plans below are built for {d.window.label}.</div>

@@ -55,7 +55,7 @@ export default function GroupRoom({ params }: { params: Promise<{ id: string }> 
   const invite = typeof window !== "undefined" ? `${location.origin}/?invite=${id}` : "";
   return (
     <Shell back="/trips" title={d.trip.name}>
-      {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-lg">{toast}</p>}
+      {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-2xl border border-white/15 bg-ink/75 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-xl">{toast}</p>}
       <div className="px-4 pt-4">
         <div className="flex flex-wrap gap-1.5">
           {d.members.map((m) => <span key={m.id} className="rounded-full bg-paper px-3 py-1 text-sm ring-1 ring-line">{m.name}{m.role === "organizer" ? " · organizer" : ""}</span>)}

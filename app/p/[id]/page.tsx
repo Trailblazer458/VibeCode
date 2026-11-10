@@ -109,10 +109,10 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
         <p className="text-xs opacity-90">{p.window.label ?? fmtDate(p.window.start)} · {p.window.days} days · {p.pax.adults + p.pax.kids + p.pax.seniors} travellers</p>
         <h1 className="font-display text-3xl font-semibold">{p.destName}</h1>
         <p className="text-sm opacity-95">{NEED_META[p.need].emoji} {NEED_META[p.need].label} · {PARTY_META[p.party].emoji} {PARTY_META[p.party].label}</p>
-        <p className="mt-3 text-2xl font-semibold">{inr(p.cost.perHead)} <span className="text-sm font-normal opacity-90">per person, all-in</span></p>
+        <p className="glass-dark mt-4 inline-block rounded-2xl px-4 py-2 text-2xl font-semibold">{inr(p.cost.perHead)} <span className="text-sm font-normal opacity-90">per person, all-in</span></p>
       </Cover>
       {p.templateId && <p className="mx-4 mt-3 rounded-xl bg-saffron-soft px-3 py-2 text-xs text-warn">Remixed from {p.templateAuthor}&apos;s template. Every swap you make is recorded as a preference signal.</p>}
-      {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-lg">{toast}</p>}
+      {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-2xl border border-white/15 bg-ink/75 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-xl">{toast}</p>}
 
       <Section title="Change the intent" sub="Same destination; every element is re-scored with new weights">
         <IntentPicker need={p.need} party={p.party} onChange={switchIntent} />
