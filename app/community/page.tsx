@@ -28,7 +28,7 @@ export default function Community() {
       <p className="px-4 pt-2 text-xs text-muted">Remix = take the plan, change what you like. The difference between the template and your version is the strongest preference signal we get.</p>
       <ErrorNote error={err} />
       {!d && <Spinner />}
-      <div className="space-y-3 px-4 pt-3">
+      <div className="grid gap-3 px-4 pt-3 md:grid-cols-2 xl:grid-cols-3">
         {list.map((t) => (
           <div key={t.id} className="rise overflow-hidden rounded-2xl border border-line bg-paper">
             <Cover hue={t.hue} emoji={t.emoji} className="h-24 p-3 text-white">

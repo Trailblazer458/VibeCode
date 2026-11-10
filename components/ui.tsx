@@ -15,49 +15,73 @@ export const PARTY_META: Record<string, { label: string; emoji: string }> = {
 };
 const MODE_EMOJI: Record<string, string> = { flight: "✈️", train: "🚆", bus: "🚌", self_drive: "🚗" };
 
+/** Centred content column. From the md breakpoint up, pages also sit right of the 15rem (w-60) sidebar. */
+export const CONTENT = "mx-auto w-full max-w-6xl";
+/** Plan cards: stacked on phones, a grid on wider screens. */
+export const PLAN_GRID = "grid gap-3 px-4 md:grid-cols-2 xl:grid-cols-3";
+
 export function Shell({ children, title, back, right }: { children: ReactNode; title?: ReactNode; back?: string; right?: ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col md:pl-60">
       {(title || back) && (
-        <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-sand/95 px-4 py-3 backdrop-blur">
-          {back && (
-            <Link href={back} className="-ml-1 rounded-full px-2 py-1 text-lg text-teal" aria-label="Back">←</Link>
-          )}
-          <div className="min-w-0 flex-1 truncate font-display text-lg font-semibold">{title}</div>
-          {right}
+        <header className="sticky top-0 z-20 border-b border-line bg-sand/95 backdrop-blur">
+          <div className={`${CONTENT} flex items-center gap-2 px-4 py-3 md:px-8`}>
+            {back && (
+              <Link href={back} className="-ml-1 rounded-full px-2 py-1 text-lg text-teal" aria-label="Back">←</Link>
+            )}
+            <div className="min-w-0 flex-1 truncate font-display text-lg font-semibold md:text-xl">{title}</div>
+            {right}
+          </div>
         </header>
       )}
-      <main className="flex-1 pb-24">{children}</main>
+      <main className={`${CONTENT} flex-1 pb-24 md:px-4 md:pb-12`}>{children}</main>
       <Nav />
     </div>
   );
 }
 
+const NAV_ITEMS = [
+  { href: "/feed", label: "For You", icon: "✦" },
+  { href: "/explore", label: "Explore", icon: "⌕" },
+  { href: "/plan", label: "Plan with me", icon: "✎" },
+  { href: "/trips", label: "Trips", icon: "◎" },
+  { href: "/profile", label: "You", icon: "◉" },
+];
+
 function Nav() {
   const path = usePathname();
-  const items = [
-    { href: "/feed", label: "For You", icon: "✦" },
-    { href: "/explore", label: "Explore", icon: "⌕" },
-    { href: "/plan", label: "Plan with me", icon: "✎" },
-    { href: "/trips", label: "Trips", icon: "◎" },
-    { href: "/profile", label: "You", icon: "◉" },
-  ];
+  const isOn = (href: string) => path === href || (href !== "/feed" && path.startsWith(href));
   return (
-    <nav className="fixed bottom-0 left-1/2 z-30 w-full max-w-[480px] -translate-x-1/2 border-t border-line bg-paper/95 backdrop-blur">
-      <ul className="grid grid-cols-5">
-        {items.map((i) => {
-          const on = path === i.href || (i.href !== "/feed" && path.startsWith(i.href));
-          return (
+    <>
+      {/* Phone: bottom tab bar */}
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper/95 backdrop-blur md:hidden">
+        <ul className="grid grid-cols-5">
+          {NAV_ITEMS.map((i) => (
             <li key={i.href}>
-              <Link href={i.href} className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] ${on ? "text-teal font-semibold" : "text-muted"}`}>
+              <Link href={i.href} className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] ${isOn(i.href) ? "text-teal font-semibold" : "text-muted"}`}>
                 <span className="text-base leading-none">{i.icon}</span>
                 {i.label}
               </Link>
             </li>
-          );
-        })}
-      </ul>
-    </nav>
+          ))}
+        </ul>
+      </nav>
+      {/* Tablet and desktop: left sidebar */}
+      <nav className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-line bg-paper px-4 py-6 md:flex">
+        <Link href="/" className="px-3 font-display text-2xl font-semibold text-teal">TripGenie</Link>
+        <ul className="mt-8 space-y-1">
+          {NAV_ITEMS.map((i) => (
+            <li key={i.href}>
+              <Link href={i.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${isOn(i.href) ? "bg-teal-soft font-semibold text-teal" : "text-ink hover:bg-sand"}`}>
+                <span className="w-5 text-center text-base leading-none">{i.icon}</span>
+                {i.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-auto px-3 text-[11px] leading-snug text-muted">Prototype · trips from Delhi NCR · synthetic catalog and reviews</p>
+      </nav>
+    </>
   );
 }
 
@@ -148,7 +172,7 @@ export function PlanCard({ p, wide, extra }: { p: PlanLite; wide?: boolean; extr
   const warn = p.readiness.filter((r) => r.status !== "ok");
   const fail = p.readiness.some((r) => r.status === "fail");
   return (
-    <Link href={`/p/${p.id}`} className={`rise block shrink-0 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm transition hover:shadow-md ${wide ? "w-full" : "w-[78%]"}`}>
+    <Link href={`/p/${p.id}`} className={`rise block shrink-0 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm transition hover:shadow-md ${wide ? "w-full" : "w-[78%] sm:w-80 md:w-full"}`}>
       <Cover hue={p.hue} emoji={p.emoji} className="h-28 p-3">
         <div className="flex items-start justify-between">
           <FitBadge fit={p.fit} />
@@ -235,9 +259,9 @@ export function IntentPicker({ need, party, onChange, needs }: { need: string; p
 export function Sheet({ open, onClose, children, title }: { open: boolean; onClose: () => void; children: ReactNode; title?: string }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={onClose}>
-      <div className="rise max-h-[85dvh] w-full max-w-[480px] overflow-y-auto rounded-t-3xl bg-paper p-4 pb-8" onClick={(e) => e.stopPropagation()}>
-        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 md:items-center md:p-6" onClick={onClose}>
+      <div className="rise max-h-[85dvh] w-full max-w-[480px] overflow-y-auto rounded-t-3xl bg-paper p-4 pb-8 md:max-w-xl md:rounded-3xl md:p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line md:hidden" />
         {title && <h3 className="mb-3 font-display text-lg font-semibold">{title}</h3>}
         {children}
       </div>

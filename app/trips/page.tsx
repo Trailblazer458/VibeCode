@@ -15,7 +15,7 @@ export default function Trips() {
       {d && (
         <>
           <Section title="Group trip rooms" sub="Everyone's profile counts; nobody's dealbreaker is broken">
-            <div className="space-y-2 px-4">
+            <div className="grid gap-2 px-4 md:grid-cols-2">
               {d.groups.map((g) => (
                 <Link key={g.id} href={`/trips/${g.id}`}>
                   <Card className="flex items-center gap-3 p-3">
@@ -32,7 +32,7 @@ export default function Trips() {
             </div>
           </Section>
           <Section title="Plans you chose" sub="Choosing teaches the engine what you prefer over the alternatives">
-            <div className="space-y-2 px-4">
+            <div className="grid gap-2 px-4 md:grid-cols-2">
               {d.chosen.map((c) => (
                 <Link key={c.id} href={`/p/${c.id}`} className="block overflow-hidden rounded-2xl border border-line bg-paper">
                   <Cover hue={c.plan.hue} emoji={c.plan.emoji} className="h-14 px-3 py-2"><span className="font-display font-semibold text-white">{c.plan.title}</span></Cover>

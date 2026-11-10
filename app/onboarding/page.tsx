@@ -71,7 +71,7 @@ export default function Onboarding() {
   const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   return (
-    <div className="flex min-h-dvh flex-col px-5 py-6">
+    <div className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col px-5 py-6 md:py-12">
       <div className="mb-5 h-1.5 w-full overflow-hidden rounded-full bg-line">
         <div className="h-full bg-teal transition-all" style={{ width: `${Math.min(100, (step / (total + 1)) * 100)}%` }} />
       </div>

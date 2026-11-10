@@ -1,7 +1,7 @@
 "use client";
 import { use, useEffect, useState } from "react";
 import { api, fmtDate } from "@/lib/client";
-import { Button, Card, Chip, ErrorNote, PlanCard, Section, Shell, Spinner, type PlanLite } from "@/components/ui";
+import { Button, Card, Chip, ErrorNote, PLAN_GRID, PlanCard, Section, Shell, Spinner, type PlanLite } from "@/components/ui";
 
 interface Room {
   trip: { id: string; name: string; need: string; status: string; planId: string | null; destName: string | null };
@@ -41,6 +41,17 @@ export default function GroupRoom({ params }: { params: Promise<{ id: string }> 
     }
     setBusy(false);
   };
+  const flash = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 4500); };
+  // Uses the device share sheet where available, otherwise copies the link.
+  const shareInvite = async () => {
+    const link = `${location.origin}/?invite=${id}`;
+    const text = `Join our trip room on TripGenie: ${link}`;
+    try {
+      if (navigator.share) { await navigator.share({ title: "TripGenie trip room", text, url: link }); return; }
+      await navigator.clipboard.writeText(text);
+      flash("Invite link copied. Paste it in your group chat.");
+    } catch { /* share sheet dismissed */ }
+  };
   const keyFor = (cid: string) => d?.previewKeys.find((k) => k.constraintId === cid)?.key ?? (d?.constraints.find((c) => c.id === cid)?.label.startsWith("Budget") ? "budget" : d?.constraints.find((c) => c.id === cid)?.label.startsWith("Vegetarian") ? "diet" : null);
   const togglePreview = (cid: string) => {
     const k = keyFor(cid);
@@ -52,14 +63,13 @@ export default function GroupRoom({ params }: { params: Promise<{ id: string }> 
 
   if (err) return <Shell back="/trips" title="Trip room"><ErrorNote error={err} /></Shell>;
   if (!d) return <Shell back="/trips" title="Trip room"><Spinner label="Combining everyone's profiles…" /></Shell>;
-  const invite = typeof window !== "undefined" ? `${location.origin}/?invite=${id}` : "";
   return (
     <Shell back="/trips" title={d.trip.name}>
       {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-lg">{toast}</p>}
       <div className="px-4 pt-4">
         <div className="flex flex-wrap gap-1.5">
           {d.members.map((m) => <span key={m.id} className="rounded-full bg-paper px-3 py-1 text-sm ring-1 ring-line">{m.name}{m.role === "organizer" ? " · organizer" : ""}</span>)}
-          <a href={`https://wa.me/?text=${encodeURIComponent(`Join our trip room on TripGenie: ${invite}`)}`} target="_blank" rel="noreferrer" className="rounded-full bg-[#25D366] px-3 py-1 text-sm text-white">+ Invite via WhatsApp</a>
+          <button type="button" onClick={shareInvite} className="rounded-full bg-teal px-3 py-1 text-sm text-white">+ Invite friends</button>
         </div>
         {d.fairness.lastPicker && <p className="mt-2 text-xs text-muted">⚖ Fairness: {d.fairness.lastPicker} picked last time, so {d.fairness.priority.join(" & ")} get a little more weight in this round.</p>}
         {d.trip.status === "booked" && <p className="mt-3 rounded-xl bg-ok/10 px-3 py-2 text-sm text-ok">✓ Confirmed: {d.trip.destName}. <button className="underline" onClick={() => act({ action: "reopen" })}>Reopen</button></p>}
@@ -124,7 +134,7 @@ export default function GroupRoom({ params }: { params: Promise<{ id: string }> 
       )}
 
       <Section title="Plans for the group" sub="Weights blend every member's profile; like or veto">
-        <div className="space-y-3 px-4">
+        <div className={PLAN_GRID}>
           {d.plans.map((p) => (
             <div key={p.id}>
               <PlanCard p={p} wide />

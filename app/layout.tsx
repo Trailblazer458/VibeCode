@@ -10,9 +10,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-dvh antialiased">
-        <div className="mx-auto min-h-dvh max-w-[480px] bg-sand shadow-[0_0_60px_rgba(0,0,0,0.08)]">{children}</div>
-      </body>
+      <body className="min-h-dvh bg-sand antialiased">{children}</body>
     </html>
   );
 }

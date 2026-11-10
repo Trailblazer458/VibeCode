@@ -57,7 +57,7 @@ export default function Profile() {
       </Section>
 
       <Section title="Your dealbreakers" sub="Hard ones filter; soft ones down-rank. Inferred ones wait for your OK." action={<button className="text-xs font-semibold text-teal" onClick={() => setAddOpen(true)}>+ Add</button>}>
-        <div className="space-y-2 px-4">
+        <div className="grid gap-2 px-4 md:grid-cols-2">
           {d.dealbreakers.map((b) => (
             <Card key={b.id} className={`p-3 ${b.status === "inferred" ? "border-dashed border-saffron" : ""}`}>
               <div className="flex items-start gap-2">
@@ -80,7 +80,7 @@ export default function Profile() {
       </Section>
 
       <Section title="Past trips" sub="Retake one, or tell us what to repeat and skip">
-        <div className="space-y-2 px-4">
+        <div className="grid gap-2 px-4 md:grid-cols-2">
           {d.trips.map((t) => (
             <div key={t.id} className="overflow-hidden rounded-2xl border border-line bg-paper">
               <Cover hue={t.hue} emoji={t.emoji} className="h-16 px-3 py-2 text-white"><div className="font-display font-semibold">{t.name}</div><div className="text-xs opacity-90">{fmtDate(t.start_date)} · {t.days} days · {NEED_META[t.need].label} · {PARTY_META[t.party].label}</div></Cover>

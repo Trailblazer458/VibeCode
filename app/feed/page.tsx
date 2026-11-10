@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/client";
-import { Card, ErrorNote, PlanCard, Section, Shell, Spinner, type PlanLite } from "@/components/ui";
+import { Card, ErrorNote, PLAN_GRID, PlanCard, Section, Shell, Spinner, type PlanLite } from "@/components/ui";
 
 interface Feed {
   needsOnboarding?: boolean;
@@ -53,7 +53,7 @@ export default function FeedPage() {
           {d.boosted.length > 0 && <p className="mx-4 mt-3 rounded-xl bg-teal-soft px-3 py-2 text-xs text-teal">↻ Re-ranked this session: you spent time on {d.boosted.join(", ")}.</p>}
           {d.rows.map((r) => (
             <Section key={r.label} title={r.label} sub={r.sub} action={<Link href={`/explore?need=${r.need}&party=${r.party}`} className="text-xs font-semibold text-teal">More →</Link>}>
-              <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-1">
+              <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-2 md:overflow-visible xl:grid-cols-3">
                 {r.plans.map((p) => <PlanCard key={p.id} p={p} />)}
                 {r.plans.length === 0 && <Card className="w-full p-4 text-sm text-muted">No plan fits every filter for these dates. Try Explore with a different budget.</Card>}
               </div>
@@ -61,7 +61,7 @@ export default function FeedPage() {
           ))}
           {d.different.plan && (
             <Section title="✶ Something different" sub={`Outside your usual top three: ${d.different.label}. This is how your profile grows.`}>
-              <div className="px-4"><PlanCard p={d.different.plan} wide /></div>
+              <div className={PLAN_GRID}><PlanCard p={d.different.plan} wide /></div>
             </Section>
           )}
           <Section title="From friends & curated" sub="Remix a real trip; your edits teach the engine what you like">
@@ -70,7 +70,7 @@ export default function FeedPage() {
             </Link>
           </Section>
           <div className="mx-4 mt-6 grid grid-cols-2 gap-2 text-sm">
-            <Link href="/explore?tab=reel" className="rounded-2xl border border-line bg-paper p-3">📲 <b>Saw it on Instagram?</b><br /><span className="text-xs text-muted">Turn a Reel into a plan</span></Link>
+            <Link href="/explore?tab=reel" className="rounded-2xl border border-line bg-paper p-3">📲 <b>Saw a trip in a video?</b><br /><span className="text-xs text-muted">Turn a saved travel video into a plan</span></Link>
             <Link href="/explore?tab=budget" className="rounded-2xl border border-line bg-paper p-3">💸 <b>₹15k, 3 days?</b><br /><span className="text-xs text-muted">Budget-first ideas</span></Link>
           </div>
         </>

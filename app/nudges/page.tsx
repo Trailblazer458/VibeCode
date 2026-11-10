@@ -19,7 +19,7 @@ export default function Nudges() {
             <b>Budget this month: {d.cap} nudges.</b> {d.season}. Rate halves if you ignore three in a row; only strong triggers are sent.
           </Card>
           <Section title="Ranked triggers" sub="Trigger decides when we speak; intent decides what we say">
-            <div className="space-y-2 px-4">
+            <div className="grid gap-2 px-4 md:grid-cols-2">
               {d.triggers.map((t) => (
                 <Card key={t.key} className={`p-3 ${t.status === "send" ? "border-ok/40" : "opacity-75"}`}>
                   <div className="flex items-center justify-between text-[11px] text-muted"><span>{TYPE[t.type] ?? t.type}</span><span>strength {Math.round(t.strength * 100)}</span></div>

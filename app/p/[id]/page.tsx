@@ -105,7 +105,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <Shell back="/feed" title={p.title} right={<FitBadge fit={p.fit} />}>
-      <Cover hue={p.hue} emoji={p.emoji} className="px-4 pt-5 pb-6 text-white">
+      <Cover hue={p.hue} emoji={p.emoji} className="px-4 pt-5 pb-6 text-white md:mx-4 md:mt-4 md:rounded-3xl md:px-8 md:py-10">
         <p className="text-xs opacity-90">{p.window.label ?? fmtDate(p.window.start)} · {p.window.days} days · {p.pax.adults + p.pax.kids + p.pax.seniors} travellers</p>
         <h1 className="font-display text-3xl font-semibold">{p.destName}</h1>
         <p className="text-sm opacity-95">{NEED_META[p.need].emoji} {NEED_META[p.need].label} · {PARTY_META[p.party].emoji} {PARTY_META[p.party].label}</p>
@@ -119,9 +119,11 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
         {busy && <Spinner label="Re-scoring…" />}
       </Section>
 
+      <div className="md:grid md:grid-cols-2 md:items-start">
+      <div>
       <Section title="Why this fits you">
         <Card className="mx-4 space-y-2 p-3">
-          {blurb && <p className="rounded-lg bg-teal-soft p-2 text-sm">{blurb} <span className="block text-[10px] text-muted">Written by Grok from the engine&apos;s reasons and real review snippets</span></p>}
+          {blurb && <p className="rounded-lg bg-teal-soft p-2 text-sm">{blurb} <span className="block text-[10px] text-muted">Written by AI from the engine&apos;s reasons and real review snippets</span></p>}
           <ul className="space-y-1.5 text-sm">{p.why.map((w) => <li key={w} className="flex gap-2"><span className="text-teal">✓</span>{w}</li>)}</ul>
           {p.evidence.map((e) => (
             <blockquote key={e.text} className="border-l-2 border-saffron pl-2 text-xs italic text-muted">
@@ -142,6 +144,8 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
         </Card>
       </Section>
 
+      </div>
+      <div>
       <Section title="The trip">
         <div className="mx-4 space-y-3">
           <Card>{row("transport", p.transport, `${p.transport.hours}h door-to-door · departs ${Math.floor(p.transport.depart)}:${String(Math.round((p.transport.depart % 1) * 60)).padStart(2, "0")} · ${inr(p.transport.price)} pp one way`)}</Card>
@@ -169,7 +173,9 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div className="mx-4 mt-6 grid grid-cols-2 gap-2">
         <Button onClick={choose} disabled={busy || d.chosen}>{d.chosen ? "✓ Chosen" : "Choose this plan"}</Button>
         <Button kind="ghost" onClick={() => setShare(true)}>Share as template</Button>
-        <Button kind="accent" className="col-span-2" onClick={() => flash("Prototype: this hands off to MakeMyTrip checkout with all items pre-filled.")}>Book on MakeMyTrip →</Button>
+        <Button kind="accent" className="col-span-2" onClick={() => flash("Prototype: this hands off to checkout with all items pre-filled.")}>Book this trip →</Button>
+      </div>
+      </div>
       </div>
 
       <Sheet open={!!swap} onClose={() => setSwap(null)} title={swap ? `Swap ${ELEM_LABEL[swap.elem].toLowerCase()}` : ""}>

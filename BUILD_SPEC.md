@@ -1,6 +1,6 @@
 # TripGenie: build spec and product decisions
 
-Working name: **TripGenie** (placeholder; Trip.com already uses it, rename before submission. Change `APP_NAME` in `lib/server.ts` and the strings in `app/page.tsx` / `app/layout.tsx`).
+Working name: **TripGenie** (placeholder; another travel company already uses a similar name, so rename before submission. Change `APP_NAME` in `lib/server.ts` and the strings in `app/page.tsx` / `app/layout.tsx`).
 
 Media.net APM case, topic 4: AI-powered personalized recommendations for a travel booking app.
 
@@ -16,7 +16,7 @@ Travel apps are **destination-first** ("from, to, date"). People are **intent-fi
 | **What else** | Context and completeness | Readiness check: trip-killers + dealbreakers |
 | **When** | When to step in (reactive vs proactive) | Trigger engine, long-weekend nudge |
 
-Scope: leisure and personal travel in India, origin Delhi NCR. Business travel is excluded because it is low-discretion and policy-controlled. Positioning: a **layer inside an existing OTA** (MakeMyTrip), so first-party reviews, bookings and inventory are available.
+Scope: leisure and personal travel in India, origin Delhi NCR. Business travel is excluded because it is low-discretion and policy-controlled. Positioning: a **layer inside an existing online travel agency (OTA)**, so first-party reviews, bookings and inventory are available.
 
 ## Core model
 
@@ -101,7 +101,7 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
    1. **I know where:** a fixed destination, every element ranked for the chosen intent. Switching the party chip shows the flip.
    2. **By intent.**
    3. **Budget-first:** "₹15k and 3 days?"
-   4. **From a Reel:** paste a link; the vision step is mocked in the prototype.
+   4. **From a saved video:** paste a link to a short travel video; the vision step is mocked in the prototype.
 5. **Plan page:**
    - The intent switch re-scores everything.
    - Swap any element. Each edit is classified:
@@ -117,7 +117,7 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
    - like / veto per plan; the organizer confirms
    - fairness weights (whoever picked last time gets less weight)
    - task list
-   - WhatsApp invite for non-users
+   - invite link for non-users (device share sheet, or copy)
 7. **Templates feed:**
    - curated public templates, plus friends and friends-of-friends
    - like / save / **remix**; remix edits are stored as diffs, which are preference signals
@@ -153,11 +153,13 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
   - multimodal comparison
   - guest-photo priority
   - creator monetization (adtech angle)
-- **Out of scope:** payment splitting, packing lists, cross-OTA price comparison, document entry (Myra already does OCR).
+- **Out of scope:** payment splitting, packing lists, cross-OTA price comparison, document entry (the host OTA already handles document OCR).
 
 ## Tech
 
 - **Framework:** Next.js 16 (App Router), React 19, Tailwind 4, TypeScript.
+- **Layout:** responsive and full screen. Under 768px it is a phone app (bottom tabs, swipeable plan rows); from 768px a left sidebar replaces the tabs and plans sit in 2–3 column grids. Shared pieces live in `components/ui.tsx` (`Shell`, `PLAN_GRID`).
+- **No third-party brand names** in the UI or product docs (no OTA, social app, airline or train-service names). Tech-stack names stay only in setup instructions.
 - **Database:** Postgres.
   - **Supabase** when `DATABASE_URL` is set (transaction pooler, `prepare:false`).
   - Otherwise an embedded Postgres (**PGlite**) at `./.pglite`, so the app runs with zero setup.

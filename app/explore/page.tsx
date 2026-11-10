@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api, inr } from "@/lib/client";
-import { Button, Card, Chip, Cover, CriteriaBar, ErrorNote, FitBadge, IntentPicker, PARTY_META, PlanCard, Section, Shell, Spinner, type Criterion, type PlanLite } from "@/components/ui";
+import { Button, Card, Chip, Cover, CriteriaBar, ErrorNote, FitBadge, IntentPicker, PARTY_META, PLAN_GRID, PlanCard, Section, Shell, Spinner, type Criterion, type PlanLite } from "@/components/ui";
 
 const DESTS = [
   ["rishikesh", "Rishikesh", "🛶", 175], ["jaipur", "Jaipur", "🏰", 25], ["udaipur", "Udaipur", "🌅", 40], ["mussoorie", "Mussoorie", "🌲", 140],
@@ -77,7 +77,7 @@ export default function Explore() {
   return (
     <Shell title="Explore">
       <div className="no-scrollbar flex gap-1.5 overflow-x-auto px-4 pt-3">
-        {([["where", "📍 I know where"], ["intent", "✦ By intent"], ["budget", "💸 Budget-first"], ["reel", "📲 From a Reel"]] as const).map(([k, l]) => (
+        {([["where", "📍 I know where"], ["intent", "✦ By intent"], ["budget", "💸 Budget-first"], ["reel", "📲 From a video"]] as const).map(([k, l]) => (
           <Chip key={k} on={tab === k} onClick={() => { setTab(k); setRes(null); setDisabled([]); }}>{l}</Chip>
         ))}
       </div>
@@ -87,10 +87,10 @@ export default function Explore() {
         <>
           {!dest && (
             <Section title="Where are you going?" sub="The destination is fixed; we still plan the stay, transport, pace and checks around your intent">
-              <div className="grid grid-cols-3 gap-2 px-4">
+              <div className="grid grid-cols-3 gap-2 px-4 md:grid-cols-4 lg:grid-cols-6">
                 {DESTS.map(([id, name, emoji, hue]) => (
                   <button key={id} onClick={() => setDest(id)} className="overflow-hidden rounded-xl text-left">
-                    <Cover hue={hue} emoji={emoji} className="h-20 p-2"><span className="absolute bottom-1.5 left-2 text-sm font-semibold text-white drop-shadow">{name}</span></Cover>
+                    <Cover hue={hue} emoji={emoji} className="h-20 p-2 md:h-28"><span className="absolute bottom-1.5 left-2 text-sm font-semibold text-white drop-shadow">{name}</span></Cover>
                   </button>
                 ))}
               </div>
@@ -107,7 +107,7 @@ export default function Explore() {
               {!rank && <Spinner />}
               {rank && (
                 <Section title="Stays, ranked for this intent" sub={`Reviews from ${PARTY_META[party].label.toLowerCase()} travellers count double`}>
-                  <div className="space-y-2 px-4">
+                  <div className="grid gap-2 px-4 lg:grid-cols-3">
                     {rank.stay.map((s, i) => (
                       <Card key={s.id} className="rise p-3">
                         <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function Explore() {
                   </div>
                 </Section>
               )}
-              <div className="px-4 pt-5"><Button className="w-full" onClick={() => plans({ destId: dest, need, party, context: "know_where" })} disabled={busy}>Plan the whole trip here →</Button></div>
+              <div className="px-4 pt-5"><Button className="w-full md:w-auto" onClick={() => plans({ destId: dest, need, party, context: "know_where" })} disabled={busy}>Plan the whole trip here →</Button></div>
             </>
           )}
         </>
@@ -146,20 +146,20 @@ export default function Explore() {
             <div className="flex flex-wrap gap-1.5">{[8000, 12000, 15000, 20000, 30000].map((b) => <Chip key={b} on={budget === b} onClick={() => setBudget(b)}>{inr(b)}</Chip>)}</div>
             <div className="flex flex-wrap gap-1.5">{[2, 3, 4].map((d) => <Chip key={d} tone="saffron" on={days === d} onClick={() => setDays(d)}>{d} days</Chip>)}</div>
             <IntentPicker need={need} party={party} onChange={(n, p) => { setNeed(n); setParty(p); }} />
-            <Button className="w-full" onClick={() => plans({ need, party, budgetPP: budget, days, context: "budget_first", maxPlans: 6 })} disabled={busy}>Show what fits {inr(budget)} for {days} days</Button>
+            <Button className="w-full md:w-auto" onClick={() => plans({ need, party, budgetPP: budget, days, context: "budget_first", maxPlans: 6 })} disabled={busy}>Show what fits {inr(budget)} for {days} days</Button>
           </div>
         </Section>
       )}
 
       {tab === "reel" && (
-        <Section title="Turn a Reel into a plan" sub="Paste a link you saved. We read the place and the vibe, then plan it around you.">
-          <div className="space-y-2 px-4">
-            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://www.instagram.com/reel/…" className="w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-sm outline-teal" />
+        <Section title="Turn a travel video into a plan" sub="Paste a link to a video you saved. We read the place and the vibe, then plan it around you.">
+          <div className="space-y-2 px-4 md:max-w-2xl">
+            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://… (link to a travel video)" className="w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-sm outline-teal" />
             <div className="flex gap-2">
               <Button onClick={() => runReel(url)} disabled={busy || !url}>Import</Button>
-              <Button kind="ghost" onClick={() => { const u = "https://www.instagram.com/reel/C9rishikeshRaft/"; setUrl(u); runReel(u); }}>Try a sample Reel</Button>
+              <Button kind="ghost" onClick={() => { const u = "https://videos.example.com/rishikesh-rafting"; setUrl(u); runReel(u); }}>Try a sample video</Button>
             </div>
-            <p className="text-[11px] text-muted">Prototype: link analysis is mocked; any Reel link maps to the sample.</p>
+            <p className="text-[11px] text-muted">Prototype: link analysis is mocked; any video link maps to the sample.</p>
             {reel && (
               <Card className="rise p-3">
                 <p className="text-xs text-muted">Caption</p>
@@ -169,7 +169,7 @@ export default function Explore() {
               </Card>
             )}
           </div>
-          {reel && <div className="mt-3 space-y-3 px-4">{reel.plans.map((p) => <PlanCard key={p.id} p={p} wide />)}</div>}
+          {reel && <div className={`mt-3 ${PLAN_GRID}`}>{reel.plans.map((p) => <PlanCard key={p.id} p={p} wide />)}</div>}
         </Section>
       )}
 
@@ -178,7 +178,7 @@ export default function Explore() {
         <div className="mt-4 space-y-3">
           <CriteriaBar criteria={res.criteria} onToggle={(k) => toggle(k, tab === "where" ? { destId: dest, need, party, context: "know_where" } : { need, party, budgetPP: budget, days, context: tab === "budget" ? "budget_first" : "intent", maxPlans: tab === "budget" ? 6 : undefined })} />
           <p className="px-4 text-xs text-muted">{res.plans.length} plans · engine chose {res.nPlans} (uncertainty {Math.round(res.uncertainty * 100)}%)</p>
-          <div className="space-y-3 px-4">{res.plans.map((p) => <PlanCard key={p.id} p={p} wide />)}</div>
+          <div className={PLAN_GRID}>{res.plans.map((p) => <PlanCard key={p.id} p={p} wide />)}</div>
           {res.plans.length === 0 && <p className="px-4 text-sm text-muted">Nothing passes every filter. Switch a criterion off to see what it hides.</p>}
         </div>
       )}
