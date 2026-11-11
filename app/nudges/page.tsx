@@ -26,8 +26,7 @@ export default function Nudges() {
                   <div className="flex items-center justify-between text-[11px] text-muted"><span>{TYPE[t.type] ?? t.type}</span><span>strength {Math.round(t.strength * 100)}</span></div>
                   <div className="text-sm font-semibold">{t.title}</div>
                   <div className="text-xs text-muted">{t.body}</div>
-                  <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-                    <span className={`text-[11px] font-semibold ${t.status === "send" ? "text-ok" : "text-warn"}`}>{t.status === "send" ? "✓ Will be sent" : t.status}</span>
+                  <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
                     {t.key.startsWith("inv-")
                       ? <Link href="/trips" className="text-xs font-semibold text-teal">Open trip room →</Link>
                       : <Link href={`/plan?trigger=${encodeURIComponent(t.key)}`} className="rounded-full bg-teal px-3 py-1 text-xs font-semibold text-white">Plan a trip →</Link>}

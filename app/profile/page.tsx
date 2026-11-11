@@ -102,7 +102,6 @@ export default function Profile() {
           {d.nudges.triggers.slice(0, 4).map((t) => (
             <div key={t.key} className="flex flex-wrap items-center gap-2 p-3 text-sm">
               <span className="min-w-0 flex-1">{t.title}</span>
-              <span className={`rounded-full px-2 py-0.5 text-[11px] ${t.status === "send" ? "bg-ok/10 text-ok" : "bg-ink/5 text-muted"}`}>{t.status === "send" ? "will send" : t.status}</span>
               {t.key.startsWith("inv-")
                 ? <Link href="/trips" className="rounded-full border border-teal/30 px-3 py-1 text-xs font-semibold text-teal hover:bg-teal-soft">Open trip room</Link>
                 : <Link href={`/plan?trigger=${encodeURIComponent(t.key)}`} className="rounded-full bg-teal px-3 py-1 text-xs font-semibold text-white hover:bg-teal/90">Plan a trip →</Link>}
