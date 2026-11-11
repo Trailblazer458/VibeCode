@@ -3,10 +3,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDate } from "@/lib/client";
+import { destCover } from "@/lib/images";
 import { Button, Card, Chip, Cover, ErrorNote, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner } from "@/components/ui";
 
 interface DB { id: string; attribute: string; label: string; kind: string; context_party: string | null; confidence: number; source: string; status: string }
-interface Trip { id: string; name: string; need: string; party: string; destName: string; emoji: string; hue: number; start_date: string; days: number; visibility: string; checked: boolean; itemNames: { id: string; name: string }[] }
+interface Trip { id: string; dest_id: string; name: string; need: string; party: string; destName: string; emoji: string; hue: number; start_date: string; days: number; visibility: string; checked: boolean; itemNames: { id: string; name: string }[] }
 interface D {
   profile: { name: string; persona: string; home_city: string; diet: string; budget_pp: number; dims: Record<string, number>; need_affinity: Record<string, number>; intents: { need: string; party: string }[]; calendar_opt_in: boolean; personal_dates: { label: string; date: string }[]; companions: { name: string; relation: string; diet: string }[]; is_demo: boolean };
   blurb: string; dealbreakers: DB[]; trips: Trip[]; friends: { id: string; name: string }[]; stats: { stated: number; revealed: number; passive: number }; tagOptions: Record<string, string>;
@@ -83,7 +84,7 @@ export default function Profile() {
         <div className="grid gap-2 px-4 md:grid-cols-2">
           {d.trips.map((t) => (
             <div key={t.id} className="overflow-hidden rounded-2xl border border-line bg-paper">
-              <Cover hue={t.hue} emoji={t.emoji} className="h-16 px-3 py-2 text-white"><div className="font-display font-semibold">{t.name}</div><div className="text-xs opacity-90">{fmtDate(t.start_date)} · {t.days} days · {NEED_META[t.need].label} · {PARTY_META[t.party].label}</div></Cover>
+              <Cover hue={t.hue} emoji={t.emoji} photo={destCover(t.dest_id, t.need)} className="h-16 px-3 py-2 text-white"><div className="font-display font-semibold">{t.name}</div><div className="text-xs opacity-90">{fmtDate(t.start_date)} · {t.days} days · {NEED_META[t.need].label} · {PARTY_META[t.party].label}</div></Cover>
               <div className="flex flex-wrap items-center gap-2 p-3">
                 <Button className="!px-3 !py-1.5 text-xs" onClick={async () => { const r = await post({ action: "retake", tripId: t.id }); router.push(`/p/${r.planId}`); }}>Retake</Button>
                 {!t.checked ? <Button kind="accent" className="!px-3 !py-1.5 text-xs" onClick={() => { setCheckin(t); setRep([]); setSkip([]); setSurprise(""); }}>3-question check-in</Button> : <span className="text-xs text-ok">✓ Checked in</span>}

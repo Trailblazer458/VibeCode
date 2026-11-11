@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api, inr } from "@/lib/client";
+import { itemImage } from "@/lib/images";
 import { Button, Card, Chip, Cover, CriteriaBar, ErrorNote, FitBadge, IntentPicker, PARTY_META, PLAN_GRID, PlanCard, Section, Shell, Spinner, type Criterion, type PlanLite } from "@/components/ui";
 
 const DESTS = [
@@ -90,7 +91,7 @@ export default function Explore() {
               <div className="grid grid-cols-3 gap-2 px-4 md:grid-cols-4 lg:grid-cols-6">
                 {DESTS.map(([id, name, emoji, hue]) => (
                   <button key={id} onClick={() => setDest(id)} className="overflow-hidden rounded-xl text-left">
-                    <Cover hue={hue} emoji={emoji} className="h-20 p-2 md:h-28"><span className="absolute bottom-1.5 left-2 text-sm font-semibold text-white drop-shadow">{name}</span></Cover>
+                    <Cover hue={hue} emoji={emoji} photo={itemImage(id)} className="h-20 p-2 md:h-28"><span className="absolute bottom-1.5 left-2 text-sm font-semibold text-white drop-shadow">{name}</span></Cover>
                   </button>
                 ))}
               </div>

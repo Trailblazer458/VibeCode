@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api, inr } from "@/lib/client";
+import { destCover } from "@/lib/images";
 import { Card, Cover, ErrorNote, NEED_META, Section, Shell, Spinner } from "@/components/ui";
 
 export default function Trips() {
-  const [d, setD] = useState<{ groups: { id: string; name: string; status: string; need: string; members: number; destName: string | null }[]; chosen: { id: string; plan: { title: string; emoji: string; hue: number; window: { days: number }; cost: { perHead: number } } }[] } | null>(null);
+  const [d, setD] = useState<{ groups: { id: string; name: string; status: string; need: string; members: number; destName: string | null }[]; chosen: { id: string; plan: { title: string; destId: string; need: string; emoji: string; hue: number; window: { days: number }; cost: { perHead: number } } }[] } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   useEffect(() => { api("/api/trips").then(setD).catch((e) => setErr(e.message)); }, []);
   return (
@@ -35,7 +36,7 @@ export default function Trips() {
             <div className="grid gap-2 px-4 md:grid-cols-2">
               {d.chosen.map((c) => (
                 <Link key={c.id} href={`/p/${c.id}`} className="block overflow-hidden rounded-2xl border border-line bg-paper">
-                  <Cover hue={c.plan.hue} emoji={c.plan.emoji} className="h-14 px-3 py-2"><span className="font-display font-semibold text-white">{c.plan.title}</span></Cover>
+                  <Cover hue={c.plan.hue} emoji={c.plan.emoji} photo={destCover(c.plan.destId, c.plan.need)} className="h-14 px-3 py-2"><span className="font-display font-semibold text-white">{c.plan.title}</span></Cover>
                   <div className="px-3 py-2 text-xs text-muted">{c.plan.window.days} days · {inr(c.plan.cost.perHead)} pp</div>
                 </Link>
               ))}

@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDate } from "@/lib/client";
+import { destCover } from "@/lib/images";
 import { Button, Chip, Cover, ErrorNote, Shell, Spinner } from "@/components/ui";
 
-interface T { id: string; title: string; blurb: string; author_name: string; relation: string; destName: string; emoji: string; hue: number; intent: string; days: number; itemNames: string[]; likes: number; saves: number; remixes: number; liked: boolean; saved: boolean; trip_start: string | null; datesHidden: boolean; visibility: string }
+interface T { id: string; dest_id: string; need: string; title: string; blurb: string; author_name: string; relation: string; destName: string; emoji: string; hue: number; intent: string; days: number; itemNames: string[]; likes: number; saves: number; remixes: number; liked: boolean; saved: boolean; trip_start: string | null; datesHidden: boolean; visibility: string }
 
 export default function Community() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function Community() {
       <div className="grid gap-3 px-4 pt-3 md:grid-cols-2 xl:grid-cols-3">
         {list.map((t) => (
           <div key={t.id} className="rise overflow-hidden rounded-2xl border border-line bg-paper">
-            <Cover hue={t.hue} emoji={t.emoji} className="h-24 p-3 text-white">
+            <Cover hue={t.hue} emoji={t.emoji} photo={destCover(t.dest_id, t.need)} className="h-24 p-3 text-white">
               <span className="glass-dark rounded-full px-2 py-0.5 text-[11px] font-semibold text-white">{t.relation === "Curated" ? "Curated" : `${t.author_name} · ${t.relation}`}</span>
               <div className="absolute bottom-2 left-3"><div className="font-display text-lg font-semibold leading-tight">{t.title}</div><div className="text-xs opacity-90">{t.destName} · {t.intent} · {t.days} days</div></div>
             </Cover>
