@@ -61,7 +61,7 @@ export default function Welcome() {
           </button>
           <button disabled={!!busy} onClick={() => start("fresh")} className="w-full rounded-2xl border border-white/25 bg-white/10 px-4 py-4 text-left transition hover:bg-white/20 disabled:opacity-60">
             <div className="font-semibold">{busy === "fresh" ? "Creating your profile…" : "Start fresh →"}</div>
-            <div className="text-xs text-white/75">Swipe through 12 “this or that” scenes. Your persona and first plans in about a minute.</div>
+            <div className="text-xs text-white/75">Answer 8 quick yes-or-no questions. Your persona and first plans in about a minute.</div>
           </button>
           {err && <p className="rounded-xl bg-bad/80 px-3 py-2 text-sm text-white">{err}</p>}
           <p className="pt-2 text-center text-[11px] text-white/65">
