@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, inr } from "@/lib/client";
 import { itemImage } from "@/lib/images";
+import { itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
 import { Button, Card, Chip, Cover, CriteriaBar, ErrorNote, FitBadge, IntentPicker, PARTY_META, PLAN_GRID, PlanCard, Section, Shell, Spinner, type Criterion, type PlanLite } from "@/components/ui";
 
 const DESTS = [
@@ -10,7 +11,7 @@ const DESTS = [
   ["kasol", "Kasol", "🏕️", 115], ["agra", "Agra", "🕌", 15], ["nainital", "Nainital", "🚣", 195], ["goa", "North Goa", "🏖️", 190],
 ] as const;
 type Tab = "where" | "intent" | "budget" | "reel";
-interface Alt { id: string; name: string; price: number; fit: number; good: string[]; flag: { aspect: string; snippet: string | null; sameParty: boolean } | null; flags?: { aspect: string; snippet: string | null; sameParty: boolean }[]; evidence: { snippet: string; sameParty: boolean } | null; blocked: string[] }
+interface Alt { id: string; name: string; price: number; fit: number; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; blocked: string[] }
 interface Res { plans: PlanLite[]; criteria: Criterion[]; nPlans: number; uncertainty: number }
 
 export default function Explore() {
@@ -108,18 +109,23 @@ export default function Explore() {
               {!rank && <Spinner />}
               {rank && (
                 <Section title="Stays, ranked for this intent" sub={`Reviews from ${PARTY_META[party].label.toLowerCase()} travellers count double`}>
-                  <div className="grid gap-2 px-4 lg:grid-cols-3">
+                  <div className="grid gap-3 px-4 md:grid-cols-2 lg:grid-cols-3">
                     {rank.stay.map((s, i) => (
-                      <Card key={s.id} className="rise p-3">
-                        <div className="flex items-center gap-2">
-                          <span className="font-display text-lg text-muted">#{i + 1}</span>
-                          <div className="min-w-0 flex-1"><div className="truncate text-sm font-semibold">{s.name}</div><div className="text-xs text-muted">{inr(s.price)}/night</div></div>
-                          <FitBadge fit={s.fit} />
+                      <Card key={s.id} className="rise flex flex-col overflow-hidden">
+                        <Cover hue={(DESTS.find((d) => d[0] === dest)?.[3] ?? 175) + i * 40} emoji="🏨" photo={itemImage(s.id)} className="h-32 p-3">
+                          <div className="flex items-start justify-between">
+                            <span className="glass-dark rounded-full px-2.5 py-0.5 text-xs font-bold text-white">#{i + 1}</span>
+                            <FitBadge fit={s.fit} />
+                          </div>
+                        </Cover>
+                        <div className="flex flex-1 flex-col gap-2.5 p-3">
+                          <div>
+                            <div className="font-display text-base leading-tight">{s.name}</div>
+                            <div className="text-xs text-muted">{inr(s.price)} per night</div>
+                          </div>
+                          <ProsCons good={s.good} goodKeys={s.goodKeys} flags={s.flags} blocked={s.blocked} />
+                          <div className="mt-auto"><MiniTestimonials quotes={itemQuotes(s, party)} /></div>
                         </div>
-                        {s.good.length > 0 && <p className="mt-1 text-xs text-ok">Strong on {s.good.join(", ")}</p>}
-                        {s.evidence && <p className="mt-1 text-xs italic text-muted">“{s.evidence.snippet}”{s.evidence.sameParty ? ` (${PARTY_META[party].label.toLowerCase()} traveller)` : ""}</p>}
-                        {(s.flags ?? []).map((f) => <p key={f.aspect} className="mt-1 text-xs text-bad">⚠ {f.aspect}{f.snippet ? `: “${f.snippet}”` : ""}{f.sameParty ? ` (${PARTY_META[party].label.toLowerCase()} traveller)` : ""}</p>)}
-                        {s.blocked.length > 0 && <p className="mt-1 text-xs text-warn">Avoided because: {s.blocked.join(", ")}</p>}
                       </Card>
                     ))}
                   </div>

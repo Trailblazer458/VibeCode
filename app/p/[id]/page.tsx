@@ -5,8 +5,9 @@ import { api, fmtDate, inr } from "@/lib/client";
 import { Button, Card, Chip, Cover, ErrorNote, FitBadge, IntentPicker, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner, type PlanLite } from "@/components/ui";
 import { Testimonials, WhyCarousel } from "@/components/why";
 import { destCover } from "@/lib/images";
+import { itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
 
-interface Alt { id: string; name: string; price: number; fit: number; tags: string[]; blocked: string[]; good: string[]; flag: { aspect: string; snippet: string | null; sameParty: boolean } | null; flags?: { aspect: string; snippet: string | null; sameParty: boolean }[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number }
+interface Alt { id: string; name: string; price: number; fit: number; tags: string[]; blocked: string[]; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number }
 type Plan = PlanLite & {
   destId: string; pax: { adults: number; kids: number; seniors: number; pets: number }; rooms: string;
   stay: { id: string; name: string; type: string; area: string; fit: number; price: number };
@@ -182,16 +183,15 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
           {altsFor.map((a) => {
             const current = swap?.removeId === a.id;
             return (
-              <div key={a.id} className={`rounded-xl border p-3 ${current ? "border-teal bg-teal-soft" : "border-line"}`}>
+              <div key={a.id} className={`space-y-2.5 rounded-2xl border p-3 ${current ? "border-teal bg-teal-soft" : "border-line bg-white/60"}`}>
                 <div className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1"><div className="truncate text-sm font-medium">{a.name}</div><div className="text-xs text-muted">{inr(a.price)} · {a.reviews} reviews mined</div></div>
+                  <div className="min-w-0 flex-1"><div className="truncate font-display text-base leading-tight">{a.name}</div><div className="text-xs text-muted">{inr(a.price)} · {a.reviews} reviews</div></div>
                   <FitBadge fit={a.fit} />
                 </div>
-                {a.good.length > 0 && <p className="mt-1 text-xs text-ok">Strong on {a.good.join(", ")}</p>}
-                {(a.flags ?? []).map((f) => <p key={f.aspect} className="mt-1 text-xs text-bad">⚠ {f.aspect}{f.snippet ? `: “${f.snippet}”` : ""}{f.sameParty ? " (same kind of traveller)" : ""}</p>)}
-                {a.blocked.length > 0 && <p className="mt-1 text-xs text-warn">Avoided because: {a.blocked.join(", ")}</p>}
-                {!current && <button disabled={busy} onClick={() => doSwap(a.id)} className="mt-2 text-xs font-semibold text-teal">Use this instead →</button>}
-                {current && <p className="mt-1 text-xs font-semibold text-teal">In your plan</p>}
+                <ProsCons good={a.good} goodKeys={a.goodKeys} flags={a.flags} blocked={a.blocked} />
+                <MiniTestimonials quotes={itemQuotes(a, p.party)} />
+                {!current && <button disabled={busy} onClick={() => doSwap(a.id)} className="text-xs font-semibold text-teal">Use this instead →</button>}
+                {current && <p className="text-xs font-semibold text-teal">In your plan</p>}
               </div>
             );
           })}

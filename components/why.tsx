@@ -1,6 +1,6 @@
 "use client";
-import { useRef, useState, type ReactNode } from "react";
 import { avatarUrl, itemImage, type ItemPhoto } from "@/lib/images";
+import { Carousel, travelledLabel } from "./reviews";
 import { Cover } from "./ui";
 
 interface PlanForWhy {
@@ -34,43 +34,6 @@ function slidesFor(p: PlanForWhy): Slide[] {
     }
   }
   return out;
-}
-
-/** Horizontal snap carousel with arrows and dots; works with swipe, trackpad and buttons. */
-function Carousel<T>({ items, render, label, className = "" }: { items: T[]; render: (item: T, i: number) => ReactNode; label: string; className?: string }) {
-  const track = useRef<HTMLDivElement>(null);
-  const [idx, setIdx] = useState(0);
-  const go = (i: number) => {
-    const el = track.current;
-    if (!el) return;
-    const n = Math.max(0, Math.min(items.length - 1, i));
-    el.scrollTo({ left: n * el.clientWidth, behavior: "smooth" });
-  };
-  const arrow = "absolute top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/70 bg-white/70 text-ink shadow-md backdrop-blur-md transition hover:bg-white disabled:opacity-0";
-  return (
-    <div className={`relative ${className}`} role="region" aria-roledescription="carousel" aria-label={label}>
-      <div
-        ref={track}
-        onScroll={(e) => setIdx(Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth)))}
-        className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
-      >
-        {items.map((it, i) => (
-          <div key={i} className="w-full shrink-0 snap-center px-1" aria-label={`${i + 1} of ${items.length}`}>{render(it, i)}</div>
-        ))}
-      </div>
-      {items.length > 1 && (
-        <>
-          <button type="button" aria-label="Previous" disabled={idx === 0} onClick={() => go(idx - 1)} className={`${arrow} left-2`}>←</button>
-          <button type="button" aria-label="Next" disabled={idx >= items.length - 1} onClick={() => go(idx + 1)} className={`${arrow} right-2`}>→</button>
-          <div className="mt-3 flex justify-center gap-1.5">
-            {items.map((_, i) => (
-              <button key={i} type="button" aria-label={`Go to ${i + 1}`} onClick={() => go(i)} className={`h-1.5 rounded-full transition-all ${i === idx ? "w-5 bg-teal" : "w-1.5 bg-ink/20"}`} />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
 }
 
 export function WhyCarousel({ plan }: { plan: PlanForWhy }) {
@@ -114,14 +77,6 @@ export function WhyCarousel({ plan }: { plan: PlanForWhy }) {
 
 export interface Evidence { text: string; party: string; itemName: string }
 
-const TRAVELLED: Record<string, string> = {
-  solo: "Travelled solo", couple: "Travelled as a couple", friends: "Travelled with friends",
-  family_kids: "Travelled with kids", family_elders: "Travelled with parents",
-};
-function reviewer(e: Evidence) {
-  return TRAVELLED[e.party] ?? "Verified guest";
-}
-
 export function Testimonials({ evidence }: { evidence: Evidence[] }) {
   if (!evidence.length) return null;
   return (
@@ -138,7 +93,7 @@ export function Testimonials({ evidence }: { evidence: Evidence[] }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={avatarUrl(e.text)} alt="" className="mx-auto h-16 w-16 rounded-full bg-teal-soft object-cover ring-4 ring-white" />
             <figcaption className="mt-3">
-              <div className="font-semibold">{reviewer(e)}</div>
+              <div className="font-semibold">{travelledLabel(e.party)}</div>
               <div className="text-xs text-muted">on {e.itemName}</div>
             </figcaption>
             <blockquote className="relative mt-4 px-4">

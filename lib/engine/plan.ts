@@ -649,7 +649,8 @@ export function rankElement(kind: "stay" | "transport" | "food" | "activity", de
       const worst = [...s.contrib].filter((c) => c.v < -0.15).sort((a, b) => a.v - b.v).slice(0, 2);
       const flags = worst.map((w) => {
         const sn = ctx.store.snippets(s.item.id, w.aspect, party, W[w.aspect] < 0, 1, -1)[0];
-        return { aspect: ASPECT_LABEL[w.aspect], snippet: sn?.snippet ?? null, sameParty: sn?.party === party };
+        // low: the trip wants this and the item lacks it ("not much nightlife"); otherwise it has too much ("lively nightlife").
+        return { aspect: ASPECT_LABEL[w.aspect], key: w.aspect, low: W[w.aspect] > 0, snippet: sn?.snippet ?? null, sameParty: sn?.party === party };
       });
       const goodSn = top[0] ? ctx.store.snippets(s.item.id, top[0].aspect, party, W[top[0].aspect] > 0, 1, 1)[0] : undefined;
       return {
@@ -660,6 +661,7 @@ export function rankElement(kind: "stay" | "transport" | "food" | "activity", de
         tags: s.tags,
         blocked: s.tags.filter((t) => hard.includes(t)).map((t) => TAG_LABEL[t]),
         good: top.map((c) => ASPECT_LABEL[c.aspect]),
+        goodKeys: top.map((c) => c.aspect),
         flag: flags[0] ?? null,
         flags,
         evidence: goodSn ? { snippet: goodSn.snippet, sameParty: goodSn.party === party } : null,
