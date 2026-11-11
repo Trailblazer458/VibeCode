@@ -96,7 +96,8 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
    - A **"Something different"** card from outside the top 3, so the profile grows.
    - Session dwell re-ranks plans.
 3. **Plan with me** (persistent entry):
-   - Slot-filling chat. Required slots: when, who, budget. Optional: need state, diet override, trip dealbreakers.
+   - Slot-filling chat. Required slots: when, who. Optional: budget, need state, diet override, trip dealbreakers.
+   - **Budget is never assumed here.** Unless the user names an amount, there is no budget filter and plans are ranked on fit alone; the profile budget is not used. "Budget is flexible" clears an amount given earlier. Swaps and intent switches on those plans keep the same (no) budget.
    - At most two question turns.
    - **Create trip plan** is always available; any missing slot is filled from the profile and shown as an assumption.
 4. **Explore** (four doors):

@@ -57,7 +57,11 @@ export interface Slots {
   dealbreakers?: { attribute: string; label: string; kind: "hard" | "soft" }[];
 }
 
-export const REQUIRED: (keyof Slots)[] = ["days", "party", "budgetPP"];
+// Budget is optional: without one, plans are ranked on fit alone. It's only applied when the user names an amount.
+export const REQUIRED: (keyof Slots)[] = ["days", "party"];
+
+/** "Budget is flexible", "no budget", "money's not an issue": clear any budget, show the best options. */
+export const FLEXIBLE_BUDGET = /(budget|money|price|cost|spend)\b.{0,25}\b(flexible|open|no (bar|limit|issue|constraint|problem)|(is|'s) not an? (issue|concern|problem)|doesn'?t matter|whatever)|\b(flexible|open|no|any|unlimited)\s+budget\b|\bno (budget|price) (limit|cap|constraint)/i;
 
 const DB_PHRASES: [RegExp, string, string][] = [
   [/(no|avoid|hate|not).{0,20}(long (drive|road)|road trip|long journey|bus)/i, "long_road", "No long road journeys"],
@@ -113,7 +117,8 @@ export function extractRules(text: string, prev: Slots, today = new Date()): Slo
   let budget: number | null = null;
   if (k) budget = parseFloat(k[1].replace(",", ".")) * (/(l|lakh)/.test(k[2]) ? 100000 : 1000);
   else if (plain) budget = Number(plain[1] ?? plain[2]);
-  if (budget) {
+  if (FLEXIBLE_BUDGET.test(t)) s.budgetPP = null;
+  else if (budget) {
     const total = /(total|overall|for (all|everyone|us|the family))/.test(t);
     const ppl = Math.max(1, (s.adults ?? 0) + (s.kids ?? 0) + (s.seniors ?? 0) || defaultHeads(s.party ?? null));
     s.budgetPP = total ? Math.round(budget / ppl) : budget;
@@ -155,12 +160,12 @@ const SYSTEM = `You are the slot-filling layer of a travel planner for Indian le
 Read the conversation and return ONLY a JSON object:
 {"slots": {"need": one of [${NEEDS.join(", ")}] or null, "secondaryNeed": same or null,
  "party": one of [${PARTIES.join(", ")}] or null, "adults": int|null, "kids": int|null, "seniors": int|null, "pets": int|null,
- "budgetPP": INR per person int|null (convert totals to per person; "30k" = 30000), "days": int|null,
+ "budgetPP": INR per person int|null — ONLY when the user states an amount (convert totals to per person; "30k" = 30000); null if they say it's flexible or don't mention money, "days": int|null,
  "whenText": short phrase like "next long weekend"|null, "diet": one of [none, nonveg, eggetarian, veg, jain]|null,
  "destId": one of [${DESTINATIONS.map((d) => d.id).join(", ")}]|null,
  "mood": short word|null,
  "dealbreakers": [{"attribute": one of [long_road, hostel, early_start, crowded, strenuous, red_eye, party_scene, camp, rustic, fixed_schedule], "label": short text, "kind": "hard"|"soft"}]},
- "reply": a short, warm question (max 20 words) asking ONLY for missing required slots (days/when, who, budget) — combine them in one question; if nothing required is missing, say you're ready to build plans,
+ "reply": a short, warm question (max 20 words) asking ONLY for missing required slots (days/when, who) — combine them in one question; never ask about budget; if nothing required is missing, say you're ready to build plans,
  "chips": up to 4 short tappable answers for that question}
 Map feelings to need states (burnt out → rest; bored → explore or thrill). "With parents" → family_elders. Never invent destinations or hotels.`;
 
@@ -178,6 +183,7 @@ export async function extractSlots(history: { role: "user" | "assistant"; conten
       merged.dealbreakers = arr;
     } else (merged as Record<string, unknown>)[k] = v;
   }
+  if (FLEXIBLE_BUDGET.test(lastUser)) merged.budgetPP = null;
   if (merged.need && !NEEDS.includes(merged.need)) merged.need = rules.need ?? null;
   if (merged.party && !PARTIES.includes(merged.party)) merged.party = rules.party ?? null;
   return { slots: merged, reply: typeof out.reply === "string" ? out.reply : null, chips: Array.isArray(out.chips) ? out.chips.slice(0, 4) : null, engine: "grok" as const };
@@ -187,7 +193,6 @@ export function missingRequired(s: Slots) {
   const m: string[] = [];
   if (!s.days && !s.whenText && !s.start) m.push("when");
   if (!s.party) m.push("who");
-  if (!s.budgetPP) m.push("budget");
   return m;
 }
 
@@ -195,10 +200,8 @@ export function templateQuestion(missing: string[]) {
   const parts: string[] = [];
   if (missing.includes("who")) parts.push("who's coming");
   if (missing.includes("when")) parts.push("when (or how many days)");
-  if (missing.includes("budget")) parts.push("a rough budget per person");
   const chips: string[] = [];
   if (missing.includes("who")) chips.push("Just me", "With my partner", "Friends, 4 of us", "With my parents");
-  else if (missing.includes("when")) chips.push("Next long weekend", "This weekend", "4 days in December");
-  else chips.push("Under ₹10k", "₹15–20k", "₹30k+");
+  else chips.push("Next long weekend", "This weekend", "4 days in December");
   return { reply: `Got it. Tell me ${parts.join(", ").replace(/, ([^,]*)$/, " and $1")}?`, chips: chips.slice(0, 4) };
 }

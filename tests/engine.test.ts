@@ -30,6 +30,16 @@ describe("intent-conditioned ranking", () => {
     expect(new Set(r.plans.map((p) => p.destId)).size).toBe(r.plans.length);
   });
 
+  it("applies no budget filter when the budget is flexible (null)", () => {
+    const capped = buildPlans({ need: "indulge", party: "couple", window, budgetPP: 15000 }, ctx());
+    const open = buildPlans({ need: "indulge", party: "couple", window, budgetPP: null }, ctx());
+    expect(capped.criteria.some((c) => c.key === "budget")).toBe(true);
+    expect(open.criteria.some((c) => c.key === "budget")).toBe(false);
+    expect(open.plans.length).toBeGreaterThanOrEqual(3);
+    // Without a cap the engine is free to pick plans above the old ₹15k limit.
+    expect(Math.max(...open.plans.map((p) => p.cost.perHead))).toBeGreaterThan(15000);
+  });
+
   it("respects hard dealbreakers and veg diet", () => {
     const r = buildPlans({ need: "rest", party: "couple", window, budgetPP: 30000 }, ctx({
       diet: "veg",

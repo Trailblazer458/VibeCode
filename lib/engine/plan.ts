@@ -158,14 +158,17 @@ export function buildPlans(req: TripRequest, ctx: EngineContext): PlanResult {
       test: { type: "tag", tag: d.attribute },
     });
   }
-  const budgetLabel = `Budget ≤ ₹${req.budgetPP.toLocaleString("en-IN")} per person`;
-  const budgetFromGroup = ctx.dealbreakers.find((d) => d.attribute === "budget");
-  crit.unshift({
-    key: "budget", label: budgetFromGroup?.label ?? budgetLabel, kind: "hard",
-    source: budgetFromGroup ? "group" : req.assumed?.includes("budget") ? "assumed" : "you", hidden: 0,
-    enabled: !disabled.has("budget"), constraintId: budgetFromGroup?.constraintId, ownerIsYou: budgetFromGroup?.ownerIsYou,
-    test: { type: "budget" },
-  });
+  // No budget given (or "flexible"): no budget criterion at all, so plans are ranked purely on fit.
+  if (req.budgetPP) {
+    const budgetLabel = `Budget ≤ ₹${req.budgetPP.toLocaleString("en-IN")} per person`;
+    const budgetFromGroup = ctx.dealbreakers.find((d) => d.attribute === "budget");
+    crit.unshift({
+      key: "budget", label: budgetFromGroup?.label ?? budgetLabel, kind: "hard",
+      source: budgetFromGroup ? "group" : req.assumed?.includes("budget") ? "assumed" : "you", hidden: 0,
+      enabled: !disabled.has("budget"), constraintId: budgetFromGroup?.constraintId, ownerIsYou: budgetFromGroup?.ownerIsYou,
+      test: { type: "budget" },
+    });
+  }
   if (DIET_RANK[diet] >= 2) {
     const dietFromGroup = ctx.dealbreakers.find((d) => d.attribute === "diet_veg");
     crit.push({
@@ -362,7 +365,8 @@ function planForDest(
 
   const days = req.window.days;
   const paceLevels = variants ? [PACE[req.need], Math.max(0.7, PACE[req.need] - 0.6), PACE[req.need] + 0.6] : [PACE[req.need]];
-  const budgetT = has("budget");
+  const budgetT = has("budget") && !!req.budgetPP;
+  const cap = req.budgetPP ?? Infinity;
   const out: (Built | Fail)[] = [];
   const combos: [Scored<Stay>, Scored<Transport>][] = [];
   for (const s of stays.slice(0, 3)) for (const t of transports.slice(0, 3)) combos.push([s, t]);
@@ -381,21 +385,21 @@ function planForDest(
     const ordered = variants ? [...combos.filter(([s]) => !usedStay.has(s.item.id)), ...combos.filter(([s]) => usedStay.has(s.item.id))] : combos;
     for (const [s, t] of ordered) {
       let p = assemble(dest, destScored, s, t, pickedFood, pickedActs, req, pax, diet, W, ctx, softTags, hardTags);
-      if (budgetT && p.plan.cost.perHead > req.budgetPP) {
+      if (budgetT && p.plan.cost.perHead > cap) {
         // trim the priciest activities (keep at least one) and use the cheapest food picks before giving up on this combo
         let acts2 = [...pickedActs];
         let food2 = [...pickedFood];
-        while (p.plan.cost.perHead > req.budgetPP && acts2.length > 1) {
+        while (p.plan.cost.perHead > cap && acts2.length > 1) {
           const priciest = acts2.reduce((m, a) => (a.item.price > m.item.price ? a : m), acts2[0]);
           if (priciest.item.price === 0) break;
           acts2 = acts2.filter((a) => a !== priciest);
           p = assemble(dest, destScored, s, t, food2, acts2, req, pax, diet, W, ctx, softTags, hardTags);
         }
-        if (p.plan.cost.perHead > req.budgetPP && foods.length > 1) {
+        if (p.plan.cost.perHead > cap && foods.length > 1) {
           food2 = [...foods].sort((a, b) => a.item.price - b.item.price).slice(0, pickedFood.length);
           p = assemble(dest, destScored, s, t, food2, acts2, req, pax, diet, W, ctx, softTags, hardTags);
         }
-        if (p.plan.cost.perHead > req.budgetPP) continue;
+        if (p.plan.cost.perHead > cap) continue;
       }
       out.push(p);
       usedStay.add(s.item.id);

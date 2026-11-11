@@ -7,7 +7,7 @@ interface Slots { need?: string | null; secondaryNeed?: string | null; party?: s
 interface Msg { role: "user" | "assistant"; content: string }
 
 export default function PlanWithMe() {
-  const [msgs, setMsgs] = useState<Msg[]>([{ role: "assistant", content: "Tell me what you're in the mood for. Who's coming, how long, a rough budget: say it however you like." }]);
+  const [msgs, setMsgs] = useState<Msg[]>([{ role: "assistant", content: "Tell me what you're in the mood for, who's coming and for how long. Mention a budget only if you want to cap it." }]);
   const [chips, setChips] = useState<string[]>(["Burnt out, need 3 quiet days alone", "Anniversary trip with my wife, 30k each", "Parents want a temple trip, nothing tiring", "4 of us, adventure, long weekend, under 12k"]);
   const [slots, setSlots] = useState<Slots>({});
   const [text, setText] = useState("");
@@ -60,7 +60,7 @@ export default function PlanWithMe() {
   const S = [
     { k: "When", v: slots.whenText ?? (slots.days ? `${slots.days} days` : null), req: true },
     { k: "Who", v: slots.party ? `${PARTY_META[slots.party]?.label}${ppl ? ` (${ppl})` : ""}` : null, req: true },
-    { k: "Budget", v: slots.budgetPP ? `${inr(slots.budgetPP)} pp` : null, req: true },
+    { k: "Budget", v: slots.budgetPP ? `${inr(slots.budgetPP)} pp` : "flexible" },
     { k: "Need state", v: slots.need ? `${NEED_META[slots.need]?.emoji} ${NEED_META[slots.need]?.label}${slots.secondaryNeed ? ` + ${NEED_META[slots.secondaryNeed]?.label}` : ""}` : null },
     { k: "Diet", v: slots.diet && slots.diet !== "none" ? slots.diet : null },
     { k: "Avoid", v: slots.dealbreakers?.length ? slots.dealbreakers.map((d) => d.label).join(", ") : null },

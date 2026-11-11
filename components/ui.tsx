@@ -225,7 +225,7 @@ export function CriteriaBar({ criteria, onToggle, assumed, title = "Criteria con
     <div className="mx-4 rounded-2xl border border-line bg-paper p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wide text-muted">{title}</span>
-        <span className="text-[11px] text-muted">tap to switch off and compare</span>
+        <span className="text-[11px] text-muted">Tap to add or remove filters</span>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {criteria.map((c) => (

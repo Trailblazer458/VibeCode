@@ -43,6 +43,11 @@ export async function POST(req: Request, ctxArg: { params: Promise<{ id: string 
     const body = await req.json();
     const row = await load(id, uid);
     const p = row.plan;
+    // Re-ranking keeps the budget the plans were made with: none for a "flexible" Plan with me request.
+    const originalBudget = async () => {
+      const set = row.set_id ? await one<{ request: Partial<TripRequest> | null }>("select request from plan_sets where id = $1", [row.set_id]) : null;
+      return set?.request && "budgetPP" in set.request ? (set.request.budgetPP ?? null) : profile.budget_pp;
+    };
 
     if (body.action === "choose") {
       const set = await one<{ plan_ids: string[] }>("select plan_ids from plan_sets where id = $1", [row.set_id]);
@@ -120,7 +125,7 @@ export async function POST(req: Request, ctxArg: { params: Promise<{ id: string 
         activities: element === "activity" ? p.activities.map((a) => (a.id === removeId ? addId : a.id)) : p.activities.map((a) => a.id),
       };
       const ctx = await engineContext(uid, profile, p.party, p.need, sid);
-      const tr: TripRequest = { need: p.need, party: p.party, pax: p.pax, window: p.window, budgetPP: profile.budget_pp };
+      const tr: TripRequest = { need: p.need, party: p.party, pax: p.pax, window: p.window, budgetPP: await originalBudget() };
       const np = { ...planFromItems(tr, ids, ctx), id, signature: p.signature, templateId: p.templateId, templateAuthor: p.templateAuthor, assumed: p.assumed };
       await q("update plans set plan = $2::jsonb where id = $1", [id, JSON.stringify(np)]);
       await q("insert into plan_edits (user_id, plan_id, template_id, element, removed_id, added_id, edit_type, dealbreaker_attr) values ($1,$2,$3,$4,$5,$6,$7,$8)", [uid, id, p.templateId ?? null, element, removeId, addId, editType, attr]);
@@ -133,7 +138,7 @@ export async function POST(req: Request, ctxArg: { params: Promise<{ id: string 
 
     if (body.action === "switch") {
       const r = await runPlans(uid, sid, profile, {
-        need: body.need ?? p.need, party: body.party ?? p.party, window: p.window, budgetPP: profile.budget_pp, destId: p.destId, maxPlans: 4,
+        need: body.need ?? p.need, party: body.party ?? p.party, window: p.window, budgetPP: await originalBudget(), destId: p.destId, maxPlans: 4,
       }, "intent_switch");
       await logSignal(uid, sid, "intent_switch", "stated", { from: { need: p.need, party: p.party }, to: { need: body.need, party: body.party }, destId: p.destId });
       return { ok: true, planId: r.plans[0]?.id ?? null, criteria: r.criteria };

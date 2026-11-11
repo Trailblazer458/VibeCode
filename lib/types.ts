@@ -166,7 +166,8 @@ export interface TripRequest {
   party: Party;
   pax?: PartyComp;
   window: TripWindow;
-  budgetPP: number;
+  /** Per-person cap. null = no budget filter (the user said it's flexible or never gave one in Plan with me). */
+  budgetPP: number | null;
   diet?: Diet | null;
   destId?: string | null;
   assumed?: string[];

@@ -34,7 +34,8 @@ export async function POST(req: Request) {
       if (party === "family_elders" && !prev.seniors) pax.seniors = 2;
       const days = prev.days ?? (assumed.push("when"), w.days);
       const start = prev.start ?? w.start;
-      const budgetPP = prev.budgetPP ?? (assumed.push("budget"), profile.budget_pp);
+      // No budget unless the user named one in this chat: show the best options, not ones capped by the profile budget.
+      const budgetPP = prev.budgetPP ?? null;
       const need = prev.need ?? (assumed.push("need"), profile.intents?.[0]?.need ?? "explore");
       const tr: TripRequest = {
         need, secondaryNeed: prev.secondaryNeed ?? null, party, pax,
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
       };
       const r = await runPlans(uid, sid, profile, tr, "chat", { disabled: body.disabled ?? [] });
       await logSignal(uid, sid, "chat_create", "stated", { slots: prev, assumed });
-      return { ...r, assumedText: assumed.map((a) => ({ who: `${pax.adults + pax.kids + pax.seniors} travellers (${party.replace("_", " ")})`, when: `${days} days, ${w.label}`, budget: `₹${budgetPP.toLocaleString("en-IN")} per person`, need: need })[a as "who"]) };
+      return { ...r, assumedText: assumed.map((a) => ({ who: `${pax.adults + pax.kids + pax.seniors} travellers (${party.replace("_", " ")})`, when: `${days} days, ${w.label}`, budget: budgetPP ? `₹${budgetPP.toLocaleString("en-IN")} per person` : "no budget limit", need: need })[a as "who"]) };
     }
 
     const messages = (body.messages ?? []).slice(-12) as { role: "user" | "assistant"; content: string }[];
