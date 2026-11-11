@@ -3,12 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/client";
 import { Button, Chip, PARTY_META, Spinner } from "@/components/ui";
+import onboardingPhotos from "@/lib/onboarding-photos.json";
 
+const PHOTO_CREDITS = onboardingPhotos as Record<string, { artist: string; license: string; title: string }>;
 interface Opt { label: string; img: string; emoji: string }
 interface Pair { id: string; question: string; dimension: string; a: Opt; b: Opt }
 
 function Scene({ o, onPick, side }: { o: Opt; onPick: () => void; side: "a" | "b" }) {
   const [broken, setBroken] = useState(false);
+  const credit = PHOTO_CREDITS[o.img.match(/(p\d{2}[ab])\.jpg$/)?.[1] ?? ""];
   return (
     <button onClick={onPick} className="group relative flex-1 overflow-hidden rounded-2xl border border-line bg-paper text-left shadow-sm transition active:scale-[0.98]">
       <div className="relative aspect-[4/5] w-full">
@@ -21,7 +24,14 @@ function Scene({ o, onPick, side }: { o: Opt; onPick: () => void; side: "a" | "b
           </div>
         )}
       </div>
-      <div className="p-2.5 text-sm font-medium leading-tight">{o.label}</div>
+      <div className="p-2.5 text-sm font-medium leading-tight">
+        {o.label}
+        {credit && !broken && (
+          <span className="mt-0.5 block truncate text-[10px] font-normal text-muted" title={`${credit.title} by ${credit.artist}, ${credit.license}, via Wikimedia Commons`}>
+            Photo: {credit.artist} · {credit.license}
+          </span>
+        )}
+      </div>
     </button>
   );
 }

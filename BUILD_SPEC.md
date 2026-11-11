@@ -194,4 +194,4 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
 
 ## Images
 
-Swipe scenes load from `/public/onboarding/p01a.png` … `p12b.png` (4:5). Until those exist, gradient + emoji fallbacks render. Prompts for generating them are in the conversation history.
+Swipe scenes load from `/public/onboarding/p01a.jpg` … `p12b.jpg`: Wikimedia Commons photos matched to each caption, cropped to 4:5, credited on the card and in `public/onboarding/CREDITS.md` (data in `lib/onboarding-photos.json`). A missing file falls back to the gradient + emoji.
