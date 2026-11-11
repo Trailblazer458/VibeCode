@@ -51,6 +51,30 @@ export default function PlanWithMe() {
     }
     setBusy(false);
   };
+  // Opened from "Plan a trip" on an upcoming trip window: let the AI read the event, show what it understood as a short
+  // chat exchange, and build the plans straight away. The user can still type to change anything.
+  const fromTrigger = useRef(false);
+  useEffect(() => {
+    const key = new URLSearchParams(window.location.search).get("trigger");
+    if (!key || fromTrigger.current) return;
+    fromTrigger.current = true;
+    (async () => {
+      setBusy(true);
+      setErr(null);
+      try {
+        const t = await api("/api/chat", { action: "trigger", key });
+        setMsgs((m) => [...m, ...t.messages]);
+        setSlots(t.slots);
+        setEngine(t.engine);
+        setChips([]);
+        setTurns(1);
+        setRes(await api("/api/chat", { action: "create", slots: t.slots, disabled: [] }));
+      } catch (e) {
+        setErr((e as Error).message);
+      }
+      setBusy(false);
+    })();
+  }, []);
   const toggle = (k: string) => {
     const d = disabled.includes(k) ? disabled.filter((x) => x !== k) : [...disabled, k];
     setDisabled(d);

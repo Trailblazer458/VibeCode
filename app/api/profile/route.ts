@@ -5,7 +5,7 @@ import { personaBlurb } from "@/lib/engine/profile";
 import { getStore } from "@/lib/engine/store";
 import { itemTags, TAG_LABEL } from "@/lib/engine/tags";
 import { buildTriggers, nextWindow } from "@/lib/engine/triggers";
-import { engineContext, friendsOf, handle, HttpError, logSignal, requireUser, rid, savePlans, updateProfile, type DealbreakerRow } from "@/lib/server";
+import { engineContext, friendsOf, handle, HttpError, logSignal, requireUser, rid, savePlans, updateProfile, userTriggers, type DealbreakerRow } from "@/lib/server";
 import type { Need, Party } from "@/lib/types";
 
 interface TripRow { id: string; name: string; need: Need; party: Party; dest_id: string; start_date: string; days: number; items: { stay: string; transport: string; food: string[]; activities: string[] }; visibility: string; status: string }
@@ -17,12 +17,7 @@ export async function GET() {
     const trips = await q<TripRow & { checked: boolean }>(
       `select t.*, t.start_date::text as start_date, (c.trip_id is not null) as checked from trips t left join post_trip_checkins c on c.trip_id = t.id and c.user_id = $1
        where t.owner_id = $1 and t.kind = 'past' order by t.start_date desc`, [uid]);
-    const groups = await q<{ name: string }>("select t.name from trips t join trip_members m on m.trip_id=t.id where m.user_id=$1 and t.kind='group' and t.status='planning'", [uid]);
-    const nudges = buildTriggers({
-      personalDates: profile.personal_dates, calendarOptIn: profile.calendar_opt_in, segment: profile.segment, ignored: profile.ignored_nudges,
-      groupInvites: groups.map((g) => ({ tripName: g.name, from: "Rohan" })), searchedNotBooked: profile.is_demo ? ["udaipur"] : [],
-      pastTrips: trips.map((t) => ({ name: t.name, start: String(t.start_date).slice(0, 10) })),
-    });
+    const nudges = await userTriggers(uid, profile);
     const stats = await one<{ stated: number; revealed: number; passive: number }>(
       "select count(*) filter (where tier='stated')::int as stated, count(*) filter (where tier='revealed')::int as revealed, count(*) filter (where tier='passive')::int as passive from signals where user_id=$1", [uid]);
     return {

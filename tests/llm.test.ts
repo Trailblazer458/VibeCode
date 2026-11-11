@@ -18,3 +18,10 @@ describe("Plan with me budget slot (rules fallback)", () => {
     }
   });
 });
+
+describe("day counts in chat rules", () => {
+  it("does not read '31 days' as 1 day", () => {
+    expect(extractRules("Anniversary with Meera in 31 days", {}).days ?? null).toBeNull();
+    expect(extractRules("3 days in the hills", {}).days).toBe(3);
+  });
+});

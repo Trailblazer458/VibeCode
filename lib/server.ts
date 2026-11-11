@@ -4,7 +4,7 @@ import { driver, ensureReady, one, q } from "./db";
 import { DEMO_ID } from "./data/people";
 import { buildPlans, DEFAULT_PAX, strictestDiet, type EffectiveDealbreaker, type EngineContext } from "./engine/plan";
 import { getStore } from "./engine/store";
-import { nextWindow } from "./engine/triggers";
+import { buildTriggers, nextWindow } from "./engine/triggers";
 import type { Diet, Need, Party, Plan, TripRequest } from "./types";
 
 export const APP_NAME = "TripGenie";
@@ -111,6 +111,17 @@ export function partyDiet(p: Profile, party: Party, override?: Diet | null): Die
     party === "couple" ? c.relation === "partner" : party === "family_kids" || party === "family_elders" ? c.relation !== "friend" : false,
   );
   return strictestDiet([p.diet, override, ...relevant.map((c) => c.diet as Diet)]);
+}
+
+/** Upcoming trip windows and nudges for this user (shared by the You page and "Plan a trip"). */
+export async function userTriggers(uid: string, profile: Profile) {
+  const trips = await q<{ name: string; start_date: string }>("select name, start_date::text as start_date from trips where owner_id = $1 and kind = 'past'", [uid]);
+  const groups = await q<{ name: string }>("select t.name from trips t join trip_members m on m.trip_id=t.id where m.user_id=$1 and t.kind='group' and t.status='planning'", [uid]);
+  return buildTriggers({
+    personalDates: profile.personal_dates, calendarOptIn: profile.calendar_opt_in, segment: profile.segment, ignored: profile.ignored_nudges,
+    groupInvites: groups.map((g) => ({ tripName: g.name, from: "Rohan" })), searchedNotBooked: profile.is_demo ? ["udaipur"] : [],
+    pastTrips: trips.map((t) => ({ name: t.name, start: String(t.start_date).slice(0, 10) })),
+  });
 }
 
 /** Destinations the user liked or saved (plan cards, community templates) or gave a 👍 in a group trip room. */

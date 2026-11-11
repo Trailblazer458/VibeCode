@@ -64,6 +64,9 @@ export interface Trigger {
   when: string;
   inDays: number;
   cta?: string;
+  /** For planning straight from the trigger: trip length and a fixed destination, when the trigger implies them. */
+  days?: number;
+  destId?: string;
 }
 
 /** Monthly nudge budget: seasonal baseline × personal adjustment (segment, responsiveness). */
@@ -94,7 +97,7 @@ export function buildTriggers(opts: {
     list.push({
       key: `lw-${w.date}`, type: "calendar", title: `${w.holiday} long weekend in ${w.inDays} days`,
       body: w.leaveDays.length ? `Take ${w.leaveDays.length} day off (${w.leaveDays.map((d) => `${wd(d)} ${fmt(d)}`).join(", ")}) and get ${w.days} days.` : `${w.days} days off without using leave.`,
-      strength: lead, when: w.start, inDays: w.inDays, cta: "See plans",
+      strength: lead, when: w.start, inDays: w.inDays, cta: "See plans", days: w.days,
     });
   }
   if (opts.calendarOptIn) {
@@ -110,10 +113,10 @@ export function buildTriggers(opts: {
   for (const e of DEST_EVENTS) {
     const inDays = Math.round((parse(e.start).getTime() - t0) / DAY);
     if (inDays < 3 || inDays > 75) continue;
-    list.push({ key: `ev-${e.dest}-${e.start}`, type: "event", title: `${e.name}`, body: `${DEST_BY_ID.get(e.dest)?.name}, from ${fmt(e.start)}.`, strength: 0.65, when: e.start, inDays, cta: "See plans" });
+    list.push({ key: `ev-${e.dest}-${e.start}`, type: "event", title: `${e.name}`, body: `${DEST_BY_ID.get(e.dest)?.name}, from ${fmt(e.start)}.`, strength: 0.65, when: e.start, inDays, cta: "See plans", destId: e.dest });
   }
-  for (const s of opts.searchedNotBooked ?? []) list.push({ key: `bh-${s}`, type: "behavioural", title: `Still thinking about ${DEST_BY_ID.get(s)?.name}?`, body: "Fresh plans that fit your profile, with prices for the next long weekend.", strength: 0.5, when: iso(today), inDays: 1, cta: "Resume" });
-  list.push({ key: "price-goa", type: "price", title: "Delhi → Goa fares down 18%", body: "On dates around the Christmas weekend, a route you browsed.", strength: 0.55, when: iso(new Date(t0 + 2 * DAY)), inDays: 2, cta: "See Goa plans" });
+  for (const s of opts.searchedNotBooked ?? []) list.push({ key: `bh-${s}`, type: "behavioural", title: `Still thinking about ${DEST_BY_ID.get(s)?.name}?`, body: "Fresh plans that fit your profile, with prices for the next long weekend.", strength: 0.5, when: iso(today), inDays: 1, cta: "Resume", destId: s });
+  list.push({ key: "price-goa", type: "price", title: "Delhi → Goa fares down 18%", body: "On dates around the Christmas weekend, a route you browsed.", strength: 0.55, when: iso(new Date(t0 + 2 * DAY)), inDays: 2, cta: "See Goa plans", destId: "goa" });
   for (const p of opts.pastTrips ?? []) {
     const d = parse(p.start);
     let next = Date.UTC(today.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());

@@ -125,7 +125,7 @@ export function extractRules(text: string, prev: Slots, today = new Date()): Slo
   }
 
   // when / days
-  const d = t.match(/(\d|one|two|three|four|five|six)\s*(days?|nights?)/);
+  const d = t.match(/\b(\d|one|two|three|four|five|six)\s*(days?|nights?)\b/);
   if (d) s.days = num(d[1]) + (/night/.test(d[2]) ? 1 : 0);
   if (/long weekend/.test(t)) { s.whenText = "next long weekend"; s.days ??= 3; }
   else if (/this weekend|weekend/.test(t)) { s.whenText ??= "this weekend"; s.days ??= 2; }

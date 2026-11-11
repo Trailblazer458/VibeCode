@@ -9,7 +9,7 @@ interface Feed {
   needsOnboarding?: boolean;
   profile: { name: string; persona: string };
   window: { label: string; days: number; leaveDays: string[]; inDays: number };
-  trigger: { title: string; body: string } | null;
+  trigger: { key: string; title: string; body: string } | null;
   rows: { need: string; party: string; label: string; sub: string; plans: PlanLite[] }[];
   different: { label: string; plan: PlanLite | null; need: string; party: string };
   boosted: string[];
@@ -46,11 +46,17 @@ export default function FeedPage() {
       {d && (
         <>
           {d.trigger && (
-            <Link href="/nudges" className="mx-4 mt-4 block rounded-2xl border border-teal/15 bg-teal-soft px-4 py-3 text-teal transition hover:border-teal/30">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-teal/75">Upcoming trip window</div>
-              <div className="font-semibold">{d.trigger.title}</div>
-              <div className="text-sm text-teal/80">{d.trigger.body} Plans below are built for {d.window.label}.</div>
-            </Link>
+            <div className="mx-4 mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-line border-l-4 border-l-teal bg-white/85 px-4 py-3 shadow-sm backdrop-blur-xl">
+              <div className="min-w-0 flex-1">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-teal">Upcoming trip window</div>
+                <div className="mt-0.5 text-base font-semibold leading-snug text-ink">{d.trigger.title}</div>
+                <div className="mt-0.5 text-sm leading-snug text-ink/75">{d.trigger.body} Plans below are built for {d.window.label}.</div>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <Link href="/nudges" className="text-xs font-semibold text-teal hover:underline">All windows</Link>
+                <Link href={`/plan?trigger=${encodeURIComponent(d.trigger.key)}`} className="rounded-full bg-teal px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal/90">Plan a trip →</Link>
+              </div>
+            </div>
           )}
           {d.boosted.length > 0 && <p className="mx-4 mt-3 rounded-xl bg-teal-soft px-3 py-2 text-xs text-teal">↻ Re-ranked this session: you spent time on {d.boosted.join(", ")}.</p>}
           {d.rows.map((r) => (
