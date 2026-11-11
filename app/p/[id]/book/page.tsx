@@ -109,10 +109,11 @@ export default function Checkout({ params }: { params: Promise<{ id: string }> }
             <div className="mt-2 flex items-center justify-between"><span className="text-muted">Stay</span><span className="truncate pl-4">{p.stay.name}</span></div>
             <div className="mt-2 flex items-center justify-between"><span className="text-muted">Travel</span><span className="truncate pl-4">{p.transport.name}</span></div>
           </Card>
-          <p className="mt-4 text-xs text-muted">Prototype: no payment was taken. In the live product, tickets and vouchers for every item arrive here and by email.</p>
-          <div className="mt-6 grid gap-2 sm:grid-cols-2">
+          <p className="mt-4 text-xs text-muted">It&apos;s now under Upcoming trips in your Trips tab. Prototype: no payment was taken; in the live product, tickets and vouchers for every item arrive there and by email.</p>
+          <div className="mt-6 grid gap-2 sm:grid-cols-3">
+            <Link href="/trips" className="rounded-xl bg-teal px-4 py-2.5 text-sm font-semibold text-white">See it in Trips</Link>
             <Link href={`/p/${id}`} className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-semibold text-teal">View trip plan</Link>
-            <Link href="/feed" className="rounded-xl bg-teal px-4 py-2.5 text-sm font-semibold text-white">Back to For You</Link>
+            <Link href="/feed" className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-semibold text-teal">Back to For You</Link>
           </div>
         </div>
       ) : (
