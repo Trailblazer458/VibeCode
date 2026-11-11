@@ -146,7 +146,7 @@ export default function Onboarding() {
 
       {step === pairs.length + 1 && (
         <div className="rise space-y-4">
-          <h2 className="font-display text-2xl font-semibold">Anything that ruins a trip for you?</h2>
+          <h2 className="font-display text-2xl font-semibold">Anything you don&apos;t want in your trip?</h2>
           <p className="text-sm text-muted">These become hard filters. You can change them any time in your profile.</p>
           <div className="flex flex-wrap gap-1.5">{dbOpts.map((o) => <Chip key={o.attribute} small on={dbs.includes(o.attribute)} onClick={() => setDbs(toggle(dbs, o.attribute))}>{o.label}</Chip>)}</div>
           <Button className="w-full" onClick={finish} disabled={busy}>{busy ? "Building your profile…" : "Find my trips →"}</Button>
