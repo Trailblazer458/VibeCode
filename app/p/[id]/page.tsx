@@ -8,7 +8,7 @@ import { LikeSave } from "@/components/likes";
 import { destCover } from "@/lib/images";
 import { itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
 
-interface Alt { id: string; name: string; price: number; fit: number; tags: string[]; blocked: string[]; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number }
+interface Alt { id: string; name: string; price: number; mode?: string; fit: number; tags: string[]; blocked: string[]; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number }
 type Plan = PlanLite & {
   destId: string; pax: { adults: number; kids: number; seniors: number; pets: number }; rooms: string;
   stay: { id: string; name: string; type: string; area: string; fit: number; price: number };
@@ -19,12 +19,12 @@ type Plan = PlanLite & {
 };
 const ELEM_LABEL = { stay: "Stay", transport: "Getting there", food: "Food", activity: "Activities" } as const;
 type Elem = keyof typeof ELEM_LABEL;
-interface Upgrade { elem: "stay" | "transport"; id: string; name: string; fit: number; currentFit: number; extraPP: number; overBudget: boolean }
+const PRICE_UNIT: Record<Elem, string> = { stay: "/night", transport: " pp one way", food: " pp per meal", activity: " pp" };
 
 export default function PlanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const [d, setD] = useState<{ plan: Plan; alts: Record<Elem, Alt[]>; upgrades?: Upgrade[]; chosen: boolean; siblings: number } | null>(null);
+  const [d, setD] = useState<{ plan: Plan; alts: Record<Elem, Alt[]>; swapCost?: Record<string, { pp: number; total: number; perHead: number }>; budgetPP?: number | null; chosen: boolean; siblings: number } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [swap, setSwap] = useState<{ elem: Elem; removeId: string } | null>(null);
@@ -72,18 +72,18 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
   const doSwap = async (addId: string) => {
     if (swap) await swapTo(swap.elem, swap.removeId, addId);
   };
-  // "Better fit for ₹X more": shown under the stay or transport it would replace.
-  const upgradeChip = (elem: "stay" | "transport") => {
-    const u = d.upgrades?.find((x) => x.elem === elem);
-    if (!u) return null;
-    const cost = u.extraPP > 0 ? `for ${inr(u.extraPP)} more per person` : u.extraPP < 0 ? `and ${inr(-u.extraPP)} cheaper per person` : "at the same price";
-    return (
-      <div className="flex flex-wrap items-center gap-2 border-t border-line bg-saffron-soft/60 px-3 py-2">
-        <span className="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold text-warn">Better fit</span>
-        <span className="min-w-0 flex-1 text-xs text-ink"><b>{u.name}</b> ({u.fit}% vs {u.currentFit}%) {cost}{u.overBudget ? " · goes over your budget" : ""}</span>
-        <button disabled={busy} onClick={() => swapTo(elem, p[elem].id, u.id)} className="text-xs font-semibold text-teal">Switch →</button>
-      </div>
-    );
+  const travellers = p.pax.adults + p.pax.kids + p.pax.seniors;
+  const inPlan = new Set([p.stay.id, p.transport.id, ...p.food.map((f) => f.id), ...p.activities.map((a) => a.id)]);
+  const curFit = swap ? (d.alts[swap.elem].find((x) => x.id === swap.removeId)?.fit ?? 0) : 0;
+  // What a swap does to the cost: per person and for the whole group (transport is priced as a return trip), and
+  // where that leaves the plan against the budget. Exact: the server rebuilds the plan with the swap applied.
+  const costLine = (a: Alt) => {
+    const c = swap && d.swapCost?.[`${swap.elem}:${swap.removeId}>${a.id}`];
+    if (!c) return null;
+    const ret = swap?.elem === "transport" ? " (return)" : "";
+    const change = c.pp === 0 ? "Same price" : c.pp > 0 ? `+${inr(c.pp)} per person${ret} · +${inr(c.total)} total` : `${inr(-c.pp)} less per person${ret} · ${inr(-c.total)} less total`;
+    const budget = d.budgetPP ? (c.perHead <= d.budgetPP ? ` · ${inr(d.budgetPP - c.perHead)} under budget` : ` · ${inr(c.perHead - d.budgetPP)} over budget`) : "";
+    return <p className={`text-xs font-medium ${d.budgetPP && c.perHead > d.budgetPP ? "text-warn" : c.pp > 0 ? "text-ink" : "text-ok"}`}>{change}{budget}</p>;
   };
   const choose = async () => {
     setBusy(true);
@@ -165,8 +165,11 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div>
       <Section title="The trip">
         <div className="mx-4 space-y-3">
-          <Card>{row("transport", p.transport, `${p.transport.hours}h door-to-door · departs ${Math.floor(p.transport.depart)}:${String(Math.round((p.transport.depart % 1) * 60)).padStart(2, "0")} · ${inr(p.transport.price)} pp one way`)}{upgradeChip("transport")}</Card>
-          <Card>{row("stay", p.stay, `${p.stay.type} · ${p.stay.area} · ${inr(p.stay.price)}/night · ${p.rooms}`)}{upgradeChip("stay")}</Card>
+          <Card>{row("transport", p.transport, `${p.transport.hours}h door-to-door · departs ${Math.floor(p.transport.depart)}:${String(Math.round((p.transport.depart % 1) * 60)).padStart(2, "0")} · ${inr(p.transport.price)} ${p.transport.mode === "self_drive" ? "per car" : "pp"} one way`)}</Card>
+          <Card>
+            <div className="px-3 pt-2.5 text-xs font-semibold uppercase tracking-wide text-muted">Stay at</div>
+            {row("stay", p.stay, `${p.stay.type} · ${p.stay.area} · ${inr(p.stay.price)}/night · ${p.rooms}`)}
+          </Card>
           <Card>
             <div className="px-3 pt-2.5 text-xs font-semibold uppercase tracking-wide text-muted">Activities</div>
             {p.activities.map((a) => row("activity", a, `Day ${a.day} · ${a.price ? inr(a.price) + " pp" : "free"}`))}
@@ -183,7 +186,16 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
           {([["Transport (return)", p.cost.transport], ["Stay", p.cost.stay], ["Food", p.cost.food], ["Activities", p.cost.activities], ["Local travel", p.cost.local]] as const).map(([k, v]) => (
             <div key={k} className="flex justify-between py-0.5"><span className="text-muted">{k}</span><span>{inr(v)}</span></div>
           ))}
-          <div className="mt-1 flex justify-between border-t border-line pt-1.5 font-semibold"><span>Total · per person</span><span>{inr(p.cost.total)} · {inr(p.cost.perHead)}</span></div>
+          <div className="mt-1 flex justify-between border-t border-line pt-1.5 font-semibold"><span>Total ({travellers} {travellers === 1 ? "traveller" : "travellers"})</span><span>{inr(p.cost.total)}</span></div>
+          <div className="flex justify-between py-0.5 font-semibold"><span>Per person</span><span>{inr(p.cost.perHead)}</span></div>
+          {d.budgetPP ? (
+            <div className={`mt-1.5 flex justify-between rounded-lg px-2 py-1 text-xs font-semibold ${p.cost.perHead <= d.budgetPP ? "bg-ok/10 text-ok" : "bg-saffron-soft text-warn"}`}>
+              <span>Budget {inr(d.budgetPP)} per person</span>
+              <span>{p.cost.perHead <= d.budgetPP ? `${inr(d.budgetPP - p.cost.perHead)} under` : `${inr(p.cost.perHead - d.budgetPP)} over`}</span>
+            </div>
+          ) : (
+            <div className="mt-1.5 rounded-lg bg-teal-soft px-2 py-1 text-xs text-teal">No budget cap on this plan</div>
+          )}
         </Card>
       </Section>
 
@@ -200,16 +212,20 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
         <div className="space-y-2">
           {altsFor.map((a) => {
             const current = swap?.removeId === a.id;
+            const elsewhere = !current && inPlan.has(a.id);
             return (
               <div key={a.id} className={`space-y-2.5 rounded-2xl border p-3 ${current ? "border-teal bg-teal-soft" : "border-line bg-white/60"}`}>
                 <div className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1"><div className="truncate font-display text-base leading-tight">{a.name}</div><div className="text-xs text-muted">{inr(a.price)} · {a.reviews} reviews</div></div>
+                  <div className="min-w-0 flex-1"><div className="truncate font-display text-base leading-tight">{a.name}</div><div className="text-xs text-muted">{inr(a.price)}{swap ? (a.mode === "self_drive" ? " per car one way" : PRICE_UNIT[swap.elem]) : ""} · {a.reviews} reviews</div></div>
+                  {!current && !elsewhere && !a.blocked.length && a.fit >= curFit + 5 && <span className="rounded-full bg-ok/10 px-2 py-0.5 text-[11px] font-semibold text-ok">Better fit</span>}
                   <FitBadge fit={a.fit} />
                 </div>
                 <ProsCons good={a.good} goodKeys={a.goodKeys} flags={a.flags} blocked={a.blocked} />
                 <MiniTestimonials quotes={itemQuotes(a, p.party)} />
-                {!current && <button disabled={busy} onClick={() => doSwap(a.id)} className="text-xs font-semibold text-teal">Use this instead →</button>}
+                {!current && !elsewhere && costLine(a)}
+                {!current && !elsewhere && <button disabled={busy} onClick={() => doSwap(a.id)} className="text-xs font-semibold text-teal">Use this instead →</button>}
                 {current && <p className="text-xs font-semibold text-teal">In your plan</p>}
+                {elsewhere && <p className="text-xs text-muted">Already elsewhere in your plan</p>}
               </div>
             );
           })}

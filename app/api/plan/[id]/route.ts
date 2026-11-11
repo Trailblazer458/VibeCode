@@ -33,20 +33,22 @@ export async function GET(_req: Request, ctxArg: { params: Promise<{ id: string 
     const set = row.set_id ? await one<{ plan_ids: string[]; request: Partial<TripRequest> | null }>("select plan_ids, request from plan_sets where id = $1", [row.set_id]) : null;
     const chosen = await one("select 1 as x from plan_choices where chosen_plan_id = $1", [id]);
 
-    // Upgrades: for stay and transport, the best clearly-better option (5+ points, no dealbreaker). The plan is rebuilt
-    // with it swapped in so the extra cost per person is exact, not estimated.
-    const tr: TripRequest = { need: p.need, party: p.party, pax: p.pax, window: p.window, budgetPP: set?.request && "budgetPP" in set.request ? (set.request.budgetPP ?? null) : profile.budget_pp };
+    // Exact price of every possible swap: rebuild the plan with the swap applied and compare. Keyed
+    // "element:removeId>addId"; pp is per person for the whole trip (transport is return), total is for the group.
+    const budgetPP = set?.request && "budgetPP" in set.request ? (set.request.budgetPP ?? null) : profile.budget_pp;
+    const tr: TripRequest = { need: p.need, party: p.party, pax: p.pax, window: p.window, budgetPP };
     const ids = { stay: p.stay.id, transport: p.transport.id, food: p.food.map((f) => f.id), activities: p.activities.map((a) => a.id) };
-    const upgrades: { elem: "stay" | "transport"; id: string; name: string; fit: number; currentFit: number; extraPP: number; overBudget: boolean }[] = [];
-    for (const elem of ["stay", "transport"] as const) {
-      const cur = alts[elem].find((x) => x.id === ids[elem]);
-      const better = alts[elem].find((x) => x.id !== ids[elem] && !x.blocked.length && x.fit >= (cur?.fit ?? p[elem].fit) + 5);
-      if (!better) continue;
-      const np = planFromItems(tr, { ...ids, [elem]: better.id }, ctx);
-      const extraPP = np.cost.perHead - p.cost.perHead;
-      upgrades.push({ elem, id: better.id, name: better.name, fit: better.fit, currentFit: cur?.fit ?? p[elem].fit, extraPP, overBudget: !!tr.budgetPP && np.cost.perHead > tr.budgetPP });
-    }
-    return { plan: p, alts, upgrades, siblings: (set?.plan_ids ?? []).length, chosen: !!chosen };
+    const swapCost: Record<string, { pp: number; total: number; perHead: number }> = {};
+    const price = (next: typeof ids) => {
+      const np = planFromItems(tr, next, ctx);
+      return { pp: np.cost.perHead - p.cost.perHead, total: np.cost.total - p.cost.total, perHead: np.cost.perHead };
+    };
+    for (const elem of ["stay", "transport"] as const)
+      for (const alt of alts[elem]) if (alt.id !== ids[elem]) swapCost[`${elem}:${ids[elem]}>${alt.id}`] = price({ ...ids, [elem]: alt.id });
+    for (const [elem, key] of [["food", "food"], ["activity", "activities"]] as const)
+      for (const cur of ids[key])
+        for (const alt of alts[elem]) if (!ids[key].includes(alt.id)) swapCost[`${elem}:${cur}>${alt.id}`] = price({ ...ids, [key]: ids[key].map((x) => (x === cur ? alt.id : x)) });
+    return { plan: p, alts, swapCost, budgetPP, siblings: (set?.plan_ids ?? []).length, chosen: !!chosen };
   });
 }
 

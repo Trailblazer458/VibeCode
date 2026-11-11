@@ -691,6 +691,7 @@ export function rankElement(kind: "stay" | "transport" | "food" | "activity", de
         id: s.item.id,
         name: s.item.name,
         price: (s.item as { price: number }).price,
+        mode: kind === "transport" ? (s.item as unknown as Transport).mode : undefined,
         fit: sigmoidPct(s.x),
         tags: s.tags,
         blocked: s.tags.filter((t) => hard.includes(t)).map((t) => TAG_LABEL[t]),
