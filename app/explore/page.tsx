@@ -76,6 +76,15 @@ export default function Explore() {
     setBusy(false);
   };
 
+  const results = res && (
+    <div className="mt-4 space-y-3">
+      <CriteriaBar criteria={res.criteria} onToggle={(k) => toggle(k, tab === "where" ? { destId: dest, need, party, context: "know_where" } : { need, party, budgetPP: budget, days, context: tab === "budget" ? "budget_first" : "intent", maxPlans: tab === "budget" ? 6 : undefined })} />
+      <p className="px-4 text-xs text-muted">{res.plans.length} plans · engine chose {res.nPlans} (uncertainty {Math.round(res.uncertainty * 100)}%)</p>
+      <div className={PLAN_GRID}>{res.plans.map((p) => <PlanCard key={p.id} p={p} wide />)}</div>
+      {res.plans.length === 0 && <p className="px-4 text-sm text-muted">Nothing passes every filter. Switch a criterion off to see what it hides.</p>}
+    </div>
+  );
+
   return (
     <Shell title="Explore">
       <div className="no-scrollbar flex gap-1.5 overflow-x-auto px-4 pt-3">
@@ -107,6 +116,8 @@ export default function Explore() {
               <p className="px-4 pb-2 text-xs text-muted">Switch who&apos;s going and watch the same stays re-rank. Polarity flips: nightlife adds points for friends and subtracts for families.</p>
               <IntentPicker need={need} party={party} onChange={(n, p) => { setNeed(n); setParty(p); setRes(null); }} />
               <div className="px-4 pt-4"><Button className="w-full md:w-auto" onClick={() => plans({ destId: dest, need, party, context: "know_where" })} disabled={busy}>Plan the whole trip here →</Button></div>
+              {busy && <Spinner label="Planning the whole trip…" />}
+              {results}
               {!rank && <Spinner />}
               {rank && (
                 <Section title="Stays, ranked for this intent" sub={`Reviews from ${PARTY_META[party].label.toLowerCase()} travellers count double`}>
@@ -186,15 +197,8 @@ export default function Explore() {
         </Section>
       )}
 
-      {busy && <Spinner label="Scoring every element…" />}
-      {res && tab !== "reel" && (
-        <div className="mt-4 space-y-3">
-          <CriteriaBar criteria={res.criteria} onToggle={(k) => toggle(k, tab === "where" ? { destId: dest, need, party, context: "know_where" } : { need, party, budgetPP: budget, days, context: tab === "budget" ? "budget_first" : "intent", maxPlans: tab === "budget" ? 6 : undefined })} />
-          <p className="px-4 text-xs text-muted">{res.plans.length} plans · engine chose {res.nPlans} (uncertainty {Math.round(res.uncertainty * 100)}%)</p>
-          <div className={PLAN_GRID}>{res.plans.map((p) => <PlanCard key={p.id} p={p} wide />)}</div>
-          {res.plans.length === 0 && <p className="px-4 text-sm text-muted">Nothing passes every filter. Switch a criterion off to see what it hides.</p>}
-        </div>
-      )}
+      {tab !== "where" && busy && <Spinner label="Scoring every element…" />}
+      {tab !== "where" && tab !== "reel" && results}
     </Shell>
   );
 }
