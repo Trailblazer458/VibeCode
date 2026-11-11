@@ -1,0 +1,770 @@
+{
+ "rishikesh": {
+  "src": "/items/rishikesh.jpg",
+  "artist": "Snehrashmi",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Lakshman_Jhula_Bridge_-_Hrishikesh_-_Uttarakhand_001.jpg",
+  "title": "Lakshman Jhula Bridge - Hrishikesh - Uttarakhand 001.jpg"
+ },
+ "jaipur": {
+  "src": "/items/jaipur.jpg",
+  "artist": "Chainwit.",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:East_facade_Hawa_Mahal_Jaipur_from_ground_level_(July_2022)_-_img_01.jpg",
+  "title": "East facade Hawa Mahal Jaipur from ground level (July 2022) - img 01.jpg"
+ },
+ "udaipur": {
+  "src": "/items/udaipur.jpg",
+  "artist": "Jakub Hałun",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:20191207_City_Palace,_Mohan_Temple_and_Lake_Pichola,_Udaipur,_1523_7262.jpg",
+  "title": "20191207 City Palace, Mohan Temple and Lake Pichola, Udaipur, 1523 7262.jpg"
+ },
+ "mussoorie": {
+  "src": "/items/mussoorie.jpg",
+  "artist": "Pinakpani",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Mussoorie_town,_a_hill_station_in_Dehradun_district_09.jpg",
+  "title": "Mussoorie town, a hill station in Dehradun district 09.jpg"
+ },
+ "varanasi": {
+  "src": "/items/varanasi.jpg",
+  "artist": "Marcin Białek",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Varanasi_Munshi_Ghat3.jpg",
+  "title": "Varanasi Munshi Ghat3.jpg"
+ },
+ "manali": {
+  "src": "/items/manali.jpg",
+  "artist": "Badmash52",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Manali_view.jpg",
+  "title": "Manali view.jpg"
+ },
+ "corbett": {
+  "src": "/items/corbett.jpg",
+  "artist": "Giles Laurent",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:001_Golden_jackal_and_azureum_flowers_in_Jim_Corbett_National_Park_Photo_by_Giles_Laurent.jpg",
+  "title": "001 Golden jackal and azureum flowers in Jim Corbett National Park Photo by Giles Laurent.jpg"
+ },
+ "amritsar": {
+  "src": "/items/amritsar.jpg",
+  "artist": "Oleg Yunakov",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Hamandir_Sahib_(Golden_Temple).jpg",
+  "title": "Hamandir Sahib (Golden Temple).jpg"
+ },
+ "kasol": {
+  "src": "/items/kasol.jpg",
+  "artist": "Pinakpani",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Parvati_valley_near_Kasol,_Kullu_district_in_Himachal_04.jpg",
+  "title": "Parvati valley near Kasol, Kullu district in Himachal 04.jpg"
+ },
+ "agra": {
+  "src": "/items/agra.jpg",
+  "artist": "Dhirad, picture edited by J. A. Knudsen",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_in_March_2004.jpg",
+  "title": "Taj Mahal in March 2004.jpg"
+ },
+ "nainital": {
+  "src": "/items/nainital.jpg",
+  "artist": "Slyronit",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Nainital_Lake_07.jpg",
+  "title": "Nainital Lake 07.jpg"
+ },
+ "goa": {
+  "src": "/items/goa.jpg",
+  "artist": "Vyacheslav Argenberg",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Anjuna_Beach,_Goa,_India,_Legendary_Curlies_beach_shack.jpg",
+  "title": "Anjuna Beach, Goa, India, Legendary Curlies beach shack.jpg"
+ },
+ "rk-zostel": {
+  "src": "/items/rk-zostel.jpg",
+  "artist": "Roliwrites",
+  "license": "CC0",
+  "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Tapovan_ghat,_covering_Tryambakeshwar_Temple.jpg",
+  "title": "Tapovan ghat, covering Tryambakeshwar Temple.jpg"
+ },
+ "rk-ganga-kinare": {
+  "src": "/items/rk-ganga-kinare.jpg",
+  "artist": "Aleksandr Zykov from Russia",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ganges,_Rishikesh_(8746970737).jpg",
+  "title": "Ganges, Rishikesh (8746970737).jpg"
+ },
+ "rk-camp": {
+  "src": "/items/rk-camp.jpg",
+  "artist": "Vis M",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Rishikesh_camp_tent_2017.jpg",
+  "title": "Rishikesh camp tent 2017.jpg"
+ },
+ "jp-samode": {
+  "src": "/items/jp-samode.jpg",
+  "artist": "Richard Moross from London",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Courtyard_of_Samode_Haveli,_Jaipur.jpg",
+  "title": "Courtyard of Samode Haveli, Jaipur.jpg"
+ },
+ "jp-mojo": {
+  "src": "/items/jp-mojo.jpg",
+  "artist": "Jorge Láscar from Australia",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Lascar_Jaipur,_the_Pink_City_(4499845296).jpg",
+  "title": "Lascar Jaipur, the Pink City (4499845296).jpg"
+ },
+ "jp-family": {
+  "src": "/items/jp-family.jpg",
+  "artist": "Jakub Hałun",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Jaigarh_Fort,_Amer,_Jaipur,_20191218_1613_9402.jpg",
+  "title": "Jaigarh Fort, Amer, Jaipur, 20191218 1613 9402.jpg"
+ },
+ "ud-lakeview": {
+  "src": "/items/ud-lakeview.jpg",
+  "artist": "Sharvarism",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Interiors_of_Bagore_Ki_Haveli.jpg",
+  "title": "Interiors of Bagore Ki Haveli.jpg"
+ },
+ "ud-hostel": {
+  "src": "/items/ud-hostel.jpg",
+  "artist": "Avgr8",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Gangaur_Ghat,Udaipur.jpg",
+  "title": "Gangaur Ghat,Udaipur.jpg"
+ },
+ "ud-resort": {
+  "src": "/items/ud-resort.jpg",
+  "artist": "Vaishnavijha2001",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:WPC-Badi-Lake-2.jpg",
+  "title": "WPC-Badi-Lake-2.jpg"
+ },
+ "ms-landour": {
+  "src": "/items/ms-landour.jpg",
+  "artist": "Paul Hamilton",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Rosebank_Cottage_(5275904594).jpg",
+  "title": "Rosebank Cottage (5275904594).jpg"
+ },
+ "ms-mallroad": {
+  "src": "/items/ms-mallroad.jpg",
+  "artist": "Harshanh",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Mall_Road,_Mussoorie_03.JPG",
+  "title": "Mall Road, Mussoorie 03.JPG"
+ },
+ "ms-forest": {
+  "src": "/items/ms-forest.jpg",
+  "artist": "Lahirjairams",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Chilling_landscape.jpg",
+  "title": "Chilling landscape.jpg"
+ },
+ "vn-ghat": {
+  "src": "/items/vn-ghat.jpg",
+  "artist": "Radosław Botev",
+  "license": "CC BY 3.0 pl",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0/pl/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Assi_Ghat_Varanasi_(2).jpg",
+  "title": "Assi Ghat Varanasi (2).jpg"
+ },
+ "vn-palace": {
+  "src": "/items/vn-palace.jpg",
+  "artist": "Marcin Białek",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Varanasi_Munshi_Ghat3.jpg",
+  "title": "Varanasi Munshi Ghat3.jpg"
+ },
+ "vn-cantt": {
+  "src": "/items/vn-cantt.jpg",
+  "artist": "Sahil Dhiman",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Hotel_room_in_Gurgaon,_India.jpg",
+  "title": "Hotel room in Gurgaon, India.jpg"
+ },
+ "mn-oldmanali": {
+  "src": "/items/mn-oldmanali.jpg",
+  "artist": "Birte Fritsch",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Birte_Fritsch,_Manu_Temple_in_Old_Manali_(45).jpg",
+  "title": "Birte Fritsch, Manu Temple in Old Manali (45).jpg"
+ },
+ "mn-span": {
+  "src": "/items/mn-span.jpg",
+  "artist": "In Transit",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Beas_River_at_Nehru_Kund,_Manali_(1).jpg",
+  "title": "Beas River at Nehru Kund, Manali (1).jpg"
+ },
+ "mn-solang": {
+  "src": "/items/mn-solang.jpg",
+  "artist": "Bleezebub",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Solang_valley_under_snow,_2015.jpg",
+  "title": "Solang valley under snow, 2015.jpg"
+ },
+ "cb-jungle": {
+  "src": "/items/cb-jungle.jpg",
+  "artist": "A. J. T. Johnsingh, WWF-India and NCF",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Elephants_getting_into_Ramganga_River,_Corbett_TR,_June_2017,_AJT_Johnsingh._P1120839.JPG",
+  "title": "Elephants getting into Ramganga River, Corbett TR, June 2017, AJT Johnsingh. P1120839.JPG"
+ },
+ "cb-machan": {
+  "src": "/items/cb-machan.jpg",
+  "artist": "A. J. T. Johnsingh, WWF-India and NCF",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Jhirna_forest_rest_house,_built_in_1908,_Corbett_TR,_AJTJ.jpg",
+  "title": "Jhirna forest rest house, built in 1908, Corbett TR, AJTJ.jpg"
+ },
+ "cb-budget": {
+  "src": "/items/cb-budget.jpg",
+  "artist": "Anamdas",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Kosi_River,_Jim_Corbett_National_Park,_Ramnagar,_Uttarakhand.jpeg",
+  "title": "Kosi River, Jim Corbett National Park, Ramnagar, Uttarakhand.jpeg"
+ },
+ "am-heritage": {
+  "src": "/items/am-heritage.jpg",
+  "artist": "MaplesyrupSushi",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Photograph_of_Heritage_Street_at-night,_Amritsar,_Amritsar_district,_Punjab,_India,_April_2023.jpg",
+  "title": "Photograph of Heritage Street at-night, Amritsar, Amritsar district, Punjab, India, April 2023.jpg"
+ },
+ "am-hostel": {
+  "src": "/items/am-hostel.jpg",
+  "artist": "shankar s.",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Overall_view_of_the_Town_Hall-_Partition_Museum_(38938332321).jpg",
+  "title": "Overall view of the Town Hall- Partition Museum (38938332321).jpg"
+ },
+ "am-ranjit": {
+  "src": "/items/am-ranjit.jpg",
+  "artist": "Ashish Gupta from Noida, India",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Hotel_in_India_IMG_20160618_060543354_(32873186812).jpg",
+  "title": "Hotel in India IMG 20160618 060543354 (32873186812).jpg"
+ },
+ "ks-riverside": {
+  "src": "/items/ks-riverside.jpg",
+  "artist": "Alok Kumar",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Parvati_Valley_river_kasol.jpg",
+  "title": "Parvati Valley river kasol.jpg"
+ },
+ "ks-cottage": {
+  "src": "/items/ks-cottage.jpg",
+  "artist": "Pinakpani",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Kasol_Bridge_at_Kasol_01.jpg",
+  "title": "Kasol Bridge at Kasol 01.jpg"
+ },
+ "ks-camp": {
+  "src": "/items/ks-camp.jpg",
+  "artist": "Oindrilabhol",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Tent_camps_in_Sarchu.jpg",
+  "title": "Tent camps in Sarchu.jpg"
+ },
+ "ag-tajview": {
+  "src": "/items/ag-tajview.jpg",
+  "artist": "Ryan from Toronto, Canada",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Taj_Ganj_(5579805898).jpg",
+  "title": "Taj Ganj (5579805898).jpg"
+ },
+ "ag-budget": {
+  "src": "/items/ag-budget.jpg",
+  "artist": "Ryan from Toronto, Canada",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Taj_Ganj_(5579805898).jpg",
+  "title": "Taj Ganj (5579805898).jpg"
+ },
+ "ag-farm": {
+  "src": "/items/ag-farm.jpg",
+  "artist": "VasuVR",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_and_Yamuna_river_view_from_Agra_Fort.jpg",
+  "title": "Taj Mahal and Yamuna river view from Agra Fort.jpg"
+ },
+ "nt-lakeside": {
+  "src": "/items/nt-lakeside.jpg",
+  "artist": "Sanjoy",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Nainital,_Mall_Road.jpg",
+  "title": "Nainital, Mall Road.jpg"
+ },
+ "nt-pangot": {
+  "src": "/items/nt-pangot.jpg",
+  "artist": "Godbolemandar",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Grey-winged_Blackbird,_female,_Pangot,_Uttarakhand,_India.jpg",
+  "title": "Grey-winged Blackbird, female, Pangot, Uttarakhand, India.jpg"
+ },
+ "nt-resort": {
+  "src": "/items/nt-resort.jpg",
+  "artist": "Subhrajyoti07",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:View_of_the_hill_across_the_Bhimtal_lake.jpg",
+  "title": "View of the hill across the Bhimtal lake.jpg"
+ },
+ "ga-partylane": {
+  "src": "/items/ga-partylane.jpg",
+  "artist": "McKay Savage",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:India_-_Goa_-_010_-_Touristy_Baga_Beach.jpg",
+  "title": "India - Goa - 010 - Touristy Baga Beach.jpg"
+ },
+ "ga-garden": {
+  "src": "/items/ga-garden.jpg",
+  "artist": "Alexander Annenkov from Moscow, Russia",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Goa_7_(3300770726).jpg",
+  "title": "Goa 7 (3300770726).jpg"
+ },
+ "ga-hostel": {
+  "src": "/items/ga-hostel.jpg",
+  "artist": "Vyacheslav Argenberg",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Anjuna_Beach,_Goa,_India,_Legendary_Curlies_beach_shack.jpg",
+  "title": "Anjuna Beach, Goa, India, Legendary Curlies beach shack.jpg"
+ },
+ "rk-a1": {
+  "src": "/items/rk-a1.jpg",
+  "artist": "EzhilanG",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Rafting_in_rishikesh.jpg",
+  "title": "Rafting in rishikesh.jpg"
+ },
+ "rk-a2": {
+  "src": "/items/rk-a2.jpg",
+  "artist": "ArmouredCyborg",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Aarti_at_Triveni_Ghat_Rishikesh.jpg",
+  "title": "Aarti at Triveni Ghat Rishikesh.jpg"
+ },
+ "rk-a3": {
+  "src": "/items/rk-a3.jpg",
+  "artist": "Yogasadhanaguru",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Kundalini_Yoga_Teacher_Training_in_Rishikesh.jpg",
+  "title": "Kundalini Yoga Teacher Training in Rishikesh.jpg"
+ },
+ "rk-a4": {
+  "src": "/items/rk-a4.jpg",
+  "artist": "Ellanor",
+  "license": "Public domain",
+  "licenseUrl": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Bungee_jumping_outside_Macau_Tower.jpg",
+  "title": "Bungee jumping outside Macau Tower.jpg"
+ },
+ "jp-a1": {
+  "src": "/items/jp-a1.jpg",
+  "artist": "Chainwit.",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Amer_Jaipur_-_Panna_Meena_ka_Kund_(2022)_-_img_13.jpg",
+  "title": "Amer Jaipur - Panna Meena ka Kund (2022) - img 13.jpg"
+ },
+ "jp-a2": {
+  "src": "/items/jp-a2.jpg",
+  "artist": "Dudva",
+  "license": "CC0",
+  "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Food_vendor_in_Jaipur.jpg",
+  "title": "Food vendor in Jaipur.jpg"
+ },
+ "jp-a3": {
+  "src": "/items/jp-a3.jpg",
+  "artist": "Tomascastelazo",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Hot_air_balloon_and_moon.jpg",
+  "title": "Hot air balloon and moon.jpg"
+ },
+ "jp-a4": {
+  "src": "/items/jp-a4.jpg",
+  "artist": "Jakub Hałun",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:20191218_Mubarak_Mahal,_City_Palace,_Jaipur_0936_9032.jpg",
+  "title": "20191218 Mubarak Mahal, City Palace, Jaipur 0936 9032.jpg"
+ },
+ "ud-a1": {
+  "src": "/items/ud-a1.jpg",
+  "artist": "Jakub Hałun",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:20191207_%C5%81%C3%B3d%C5%BA_turystyczna_na_Jeziorze_Pichola_1406_7139.jpg",
+  "title": "20191207 Łódź turystyczna na Jeziorze Pichola 1406 7139.jpg"
+ },
+ "ud-a2": {
+  "src": "/items/ud-a2.jpg",
+  "artist": "Hirumon",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:City_Palace_Udaipur_Rajasthan_India.JPG",
+  "title": "City Palace Udaipur Rajasthan India.JPG"
+ },
+ "ud-a3": {
+  "src": "/items/ud-a3.jpg",
+  "artist": "Basile Morin",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Spa_massage_parlor_in_Amantaka_luxury_Resort_%26_Hotel_in_Luang_Prabang_Laos.jpg",
+  "title": "Spa massage parlor in Amantaka luxury Resort & Hotel in Luang Prabang Laos.jpg"
+ },
+ "ud-a4": {
+  "src": "/items/ud-a4.jpg",
+  "artist": "Rakzika",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Sajjangarh-_monsoon_palace_06.jpg",
+  "title": "Sajjangarh- monsoon palace 06.jpg"
+ },
+ "ms-a1": {
+  "src": "/items/ms-a1.jpg",
+  "artist": "Paul Hamilton",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Mussoorie_Bazaar_from_Landour_(5275310799).jpg",
+  "title": "Mussoorie Bazaar from Landour (5275310799).jpg"
+ },
+ "ms-a2": {
+  "src": "/items/ms-a2.jpg",
+  "artist": "BestMan20",
+  "license": "CC0",
+  "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Kempty_Falls,_May_2024.jpg",
+  "title": "Kempty Falls, May 2024.jpg"
+ },
+ "ms-a3": {
+  "src": "/items/ms-a3.jpg",
+  "artist": "Singh.abhinav 021",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Sir_George_Everest_Bungalow.jpg",
+  "title": "Sir George Everest Bungalow.jpg"
+ },
+ "ms-a4": {
+  "src": "/items/ms-a4.jpg",
+  "artist": "Harshanh",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Gun_hill,_Mussoorie_03.JPG",
+  "title": "Gun hill, Mussoorie 03.JPG"
+ },
+ "vn-a1": {
+  "src": "/items/vn-a1.jpg",
+  "artist": "Goku2356",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ghats_of_Varanasi_2025.jpg",
+  "title": "Ghats of Varanasi 2025.jpg"
+ },
+ "vn-a2": {
+  "src": "/items/vn-a2.jpg",
+  "artist": "Sujay25",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ganga_Aarti_in_evening_at_Dashashwamedh_ghat,_Varanasi.jpg",
+  "title": "Ganga Aarti in evening at Dashashwamedh ghat, Varanasi.jpg"
+ },
+ "vn-a3": {
+  "src": "/items/vn-a3.jpg",
+  "artist": "Gannu03",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Shri_Kashi_Vishwanath_Temple_3.jpg",
+  "title": "Shri Kashi Vishwanath Temple 3.jpg"
+ },
+ "vn-a4": {
+  "src": "/items/vn-a4.jpg",
+  "artist": "Preeti Prajapati",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:14._Dhamek_Stupa,_Sarnath.jpg",
+  "title": "14. Dhamek Stupa, Sarnath.jpg"
+ },
+ "mn-a1": {
+  "src": "/items/mn-a1.jpg",
+  "artist": "Jayasree Sengupta",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Paragliding_Solang_Valley_2014.jpg",
+  "title": "Paragliding Solang Valley 2014.jpg"
+ },
+ "mn-a2": {
+  "src": "/items/mn-a2.jpg",
+  "artist": "Ganesh Mohan T",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Hidimba_Devi_Temple,_Dhungri_Manali_2.jpg",
+  "title": "Hidimba Devi Temple, Dhungri Manali 2.jpg"
+ },
+ "mn-a3": {
+  "src": "/items/mn-a3.jpg",
+  "artist": "Jagseer S Sidhu",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Atal_Tunnel_01_(cropped).jpg",
+  "title": "Atal Tunnel 01 (cropped).jpg"
+ },
+ "mn-a4": {
+  "src": "/items/mn-a4.jpg",
+  "artist": "Gillian39",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Jogini_Falls_surroundings.jpg",
+  "title": "Jogini Falls surroundings.jpg"
+ },
+ "cb-a1": {
+  "src": "/items/cb-a1.jpg",
+  "artist": "Dushyant Kaushik",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:The_jungle_safari_in_Jhirna_Zone,_Jim_Corbett_National_Park.jpg",
+  "title": "The jungle safari in Jhirna Zone, Jim Corbett National Park.jpg"
+ },
+ "cb-a2": {
+  "src": "/items/cb-a2.jpg",
+  "artist": "Divyansh Fulara",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Kosi_River,_Ramnagar,_Uttarakhand.jpg",
+  "title": "Kosi River, Ramnagar, Uttarakhand.jpg"
+ },
+ "cb-a3": {
+  "src": "/items/cb-a3.jpg",
+  "artist": "Purukhanna0027",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Garjiya_Temple.jpg",
+  "title": "Garjiya Temple.jpg"
+ },
+ "cb-a4": {
+  "src": "/items/cb-a4.jpg",
+  "artist": "Anni in",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:GIC_Kaladhungi.jpg",
+  "title": "GIC Kaladhungi.jpg"
+ },
+ "am-a1": {
+  "src": "/items/am-a1.jpg",
+  "artist": "Kunalaggarwal.delhi",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Morning_Golden_temple_Amritsar.JPG",
+  "title": "Morning Golden temple Amritsar.JPG"
+ },
+ "am-a2": {
+  "src": "/items/am-a2.jpg",
+  "artist": "Eclicks by Bunny",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Attari_-_Wagah_border.jpg",
+  "title": "Attari - Wagah border.jpg"
+ },
+ "am-a3": {
+  "src": "/items/am-a3.jpg",
+  "artist": "Ravi Dwivedi",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Amritsari_Kulcha_served_with_chhole.jpg",
+  "title": "Amritsari Kulcha served with chhole.jpg"
+ },
+ "am-a4": {
+  "src": "/items/am-a4.jpg",
+  "artist": "shankar s.",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Overall_view_of_the_Town_Hall-_Partition_Museum_(38938332321).jpg",
+  "title": "Overall view of the Town Hall- Partition Museum (38938332321).jpg"
+ },
+ "ks-a1": {
+  "src": "/items/ks-a1.jpg",
+  "artist": "Krishnendu Mazumdar",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Kheerganga_earlier.jpg",
+  "title": "Kheerganga earlier.jpg"
+ },
+ "ks-a2": {
+  "src": "/items/ks-a2.jpg",
+  "artist": "Ashish Gupta from Noida, India",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Panorama_Manikaran_Sahib_from_the_bridge_(17366892115).jpg",
+  "title": "Panorama Manikaran Sahib from the bridge (17366892115).jpg"
+ },
+ "ks-a3": {
+  "src": "/items/ks-a3.jpg",
+  "artist": "Contrapunctus-1",
+  "license": "CC0",
+  "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Building_in_Thathri,_Himachal_Pradesh.jpg",
+  "title": "Building in Thathri, Himachal Pradesh.jpg"
+ },
+ "ks-a4": {
+  "src": "/items/ks-a4.jpg",
+  "artist": "Jim Ankan Deka",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:The_village_of_Tosh_in_Himachal_Pradesh,_India_(photo_by_Jim_Ankan_Deka).jpg",
+  "title": "The village of Tosh in Himachal Pradesh, India (photo by Jim Ankan Deka).jpg"
+ },
+ "ag-a1": {
+  "src": "/items/ag-a1.jpg",
+  "artist": "MarcBW",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_Tomb_at_sunrise.JPG",
+  "title": "Taj Mahal Tomb at sunrise.JPG"
+ },
+ "ag-a2": {
+  "src": "/items/ag-a2.jpg",
+  "artist": "Jakub Hałun",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:20191204_Moat_and_walls_of_Agra_Fort_0925_6582.jpg",
+  "title": "20191204 Moat and walls of Agra Fort 0925 6582.jpg"
+ },
+ "ag-a3": {
+  "src": "/items/ag-a3.jpg",
+  "artist": "g.kaustav",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Mehtab_Bagh_facing_Taj.JPG",
+  "title": "Mehtab Bagh facing Taj.JPG"
+ },
+ "ag-a4": {
+  "src": "/items/ag-a4.jpg",
+  "artist": "Diego Delso",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Panch_Mahal-Fatehpur-Fatehpur_Sikri_India0014.JPG",
+  "title": "Panch Mahal-Fatehpur-Fatehpur Sikri India0014.JPG"
+ },
+ "nt-a1": {
+  "src": "/items/nt-a1.jpg",
+  "artist": "Chetan bisht",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Beautiful_Nanital_-_The_City_Of_Lakes.jpg",
+  "title": "Beautiful Nanital - The City Of Lakes.jpg"
+ },
+ "nt-a2": {
+  "src": "/items/nt-a2.jpg",
+  "artist": "Capankajsmilyo",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Nainital_Ropeway.jpg",
+  "title": "Nainital Ropeway.jpg"
+ },
+ "nt-a3": {
+  "src": "/items/nt-a3.jpg",
+  "artist": "Photographer Praveen Singh Bisht",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Durga_Lal_Shah_Municipal_Public_Library,_Nainital,_Uttarakhand,_India.jpg",
+  "title": "Durga Lal Shah Municipal Public Library, Nainital, Uttarakhand, India.jpg"
+ },
+ "nt-a4": {
+  "src": "/items/nt-a4.jpg",
+  "artist": "Rohit 2k59",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Red-rumped_Swallow_at_Camp_Shiva%27s_Den,_Pangot,_India_1.jpg",
+  "title": "Red-rumped Swallow at Camp Shiva's Den, Pangot, India 1.jpg"
+ },
+ "ga-a1": {
+  "src": "/items/ga-a1.jpg",
+  "artist": "Grand Parc - Bordeaux, France",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Retour_de_p%C3%AAche_de_nuit_-_Back_from_fishing_by_night_(11355707176).jpg",
+  "title": "Retour de pêche de nuit - Back from fishing by night (11355707176).jpg"
+ },
+ "ga-a2": {
+  "src": "/items/ga-a2.jpg",
+  "artist": "iMahesh",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Streets_of_Fontainhas,_Panaji_(03).jpg",
+  "title": "Streets of Fontainhas, Panaji (03).jpg"
+ },
+ "ga-a3": {
+  "src": "/items/ga-a3.jpg",
+  "artist": "Naveen Gollapalli",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Arabian_Sea_Scuba_Diving_spot_GOA.jpg",
+  "title": "Arabian Sea Scuba Diving spot GOA.jpg"
+ },
+ "ga-a4": {
+  "src": "/items/ga-a4.jpg",
+  "artist": "Raya Sharbain",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ashwem_Beach.jpg",
+  "title": "Ashwem Beach.jpg"
+ }
+}

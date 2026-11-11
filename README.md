@@ -44,3 +44,4 @@ Add `XAI_API_KEY` to `.env.local` to turn on Grok for chat slot-filling and the 
 | `lib/llm.ts` | Grok client and slot filling (+ rules fallback) |
 | `app/api/*` | Route handlers |
 | `app/*` | Screens |
+| `public/items/`, `lib/item-photos.json` | Photos for destinations, stays and activities, from Wikimedia Commons under free licences. Each slide credits its photo; the full list is in [public/items/CREDITS.md](public/items/CREDITS.md). Stays are fictional, so their photos show the real setting (ghat, lake, village), not a specific property. |

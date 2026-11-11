@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState, type ReactNode } from "react";
-import { avatarUrl, itemImage } from "@/lib/images";
+import { avatarUrl, itemImage, type ItemPhoto } from "@/lib/images";
 import { Cover } from "./ui";
 
 interface PlanForWhy {
@@ -10,7 +10,7 @@ interface PlanForWhy {
   activities: { id: string; name: string }[];
 }
 
-interface Slide { key: string; name: string; reason: string; image: string | null; emoji: string; hue: number; kind: string }
+interface Slide { key: string; name: string; reason: string; image: ItemPhoto | null; emoji: string; hue: number; kind: string }
 
 const STAY_EMOJI: Record<string, string> = { camp: "🏕️", hostel: "🛏️", heritage: "🏰", homestay: "🏡", resort: "🌴", hotel: "🏨" };
 
@@ -83,10 +83,19 @@ export function WhyCarousel({ plan }: { plan: PlanForWhy }) {
       render={(s) => (
         <figure className="overflow-hidden rounded-2xl border border-line bg-paper">
           {s.image ? (
-            <div className="relative aspect-[16/10]">
+            <div className="relative aspect-[16/10] bg-teal-soft">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={s.image} alt={s.name} className="absolute inset-0 h-full w-full object-cover" />
+              <img src={s.image.src} alt={s.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
               <span className="glass-dark absolute bottom-3 left-3 rounded-full px-3 py-1 text-sm font-semibold text-white">{s.name}</span>
+              <a
+                href={s.image.source}
+                target="_blank"
+                rel="noreferrer"
+                title={`${s.image.title} by ${s.image.artist}, ${s.image.license}, via Wikimedia Commons`}
+                className="absolute top-2 right-2 max-w-[60%] truncate rounded-full bg-black/35 px-2 py-0.5 text-[10px] text-white/90 backdrop-blur-sm hover:bg-black/55"
+              >
+                Photo: {s.image.artist} · {s.image.license}
+              </a>
             </div>
           ) : (
             <Cover hue={s.hue} emoji={s.emoji} className="aspect-[16/10]">
