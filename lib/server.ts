@@ -113,6 +113,16 @@ export function partyDiet(p: Profile, party: Party, override?: Diet | null): Die
   return strictestDiet([p.diet, override, ...relevant.map((c) => c.diet as Diet)]);
 }
 
+/** Destinations the user liked or saved (community templates) or gave a 👍 in a group trip room. */
+export async function likedDestinations(uid: string) {
+  const rows = await q<{ dest_id: string }>(
+    `select distinct t.dest_id from template_likes l join templates t on t.id = l.template_id where l.user_id = $1
+     union select distinct dest_id from trip_votes where user_id = $1 and vote = 'like'`,
+    [uid],
+  );
+  return rows.map((r) => r.dest_id).filter(Boolean);
+}
+
 export async function sessionBoost(uid: string, sid: string | null) {
   if (!sid) return {};
   const rows = await q<{ dest: string; ms: number }>(
@@ -125,13 +135,17 @@ export async function sessionBoost(uid: string, sid: string | null) {
 }
 
 export async function engineContext(uid: string, profile: Profile, party: Party, need: Need, sid: string | null, extra: Partial<EngineContext> = {}): Promise<EngineContext> {
-  const [store, dbs, past, boost, count] = await Promise.all([
+  const [store, dbs, past, session, count, liked] = await Promise.all([
     getStore(),
     dealbreakersFor(uid, party, need),
     q<{ dest_id: string }>("select dest_id from trips where owner_id = $1 and kind = 'past'", [uid]),
     sessionBoost(uid, sid),
     signalCount(uid),
+    likedDestinations(uid),
   ]);
+  // Long-term taste on top of this session's dwell: places the user liked or saved get a small lasting lift.
+  const boost: Record<string, number> = { ...session };
+  for (const d of liked) boost[d] = (boost[d] ?? 0) + 0.02;
   return {
     store,
     dims: profile.dims,

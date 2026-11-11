@@ -12,41 +12,41 @@ export interface OnboardingPair {
 
 export const PAIRS: OnboardingPair[] = [
   { id: "p01", question: "Your first morning on holiday?", dimension: "Pace",
-    a: { label: "Slow breakfast on the porch", img: "/onboarding/p01a.png", emoji: "☕", dims: { pace: -0.2 }, needs: { rest: 0.3 } },
-    b: { label: "Headlamps on, trek starts at dawn", img: "/onboarding/p01b.png", emoji: "🥾", dims: { pace: 0.2 }, needs: { thrill: 0.3 } } },
+    a: { label: "Slow breakfast on the porch", img: "/onboarding/p01a.jpg", emoji: "☕", dims: { pace: -0.2 }, needs: { rest: 0.3 } },
+    b: { label: "Headlamps on, trek starts at dawn", img: "/onboarding/p01b.jpg", emoji: "🥾", dims: { pace: 0.2 }, needs: { thrill: 0.3 } } },
   { id: "p02", question: "Pick your beach.", dimension: "Social density",
-    a: { label: "Empty beach, one chair", img: "/onboarding/p02a.png", emoji: "🏝️", dims: { social: -0.2 }, needs: { rest: 0.15, escape: 0.15 } },
-    b: { label: "Glowing, crowded night market", img: "/onboarding/p02b.png", emoji: "🏮", dims: { social: 0.2 }, needs: { explore: 0.2, celebrate: 0.1 } } },
+    a: { label: "Empty beach, one chair", img: "/onboarding/p02a.jpg", emoji: "🏝️", dims: { social: -0.2 }, needs: { rest: 0.15, escape: 0.15 } },
+    b: { label: "Glowing, crowded night market", img: "/onboarding/p02b.jpg", emoji: "🏮", dims: { social: 0.2 }, needs: { explore: 0.2, celebrate: 0.1 } } },
   { id: "p03", question: "Where would you rather wake up?", dimension: "Stay style",
-    a: { label: "Heritage haveli courtyard", img: "/onboarding/p03a.png", emoji: "🏛️", dims: { novelty: 0.15 }, needs: { explore: 0.2 } },
-    b: { label: "Glass-walled boutique hotel", img: "/onboarding/p03b.png", emoji: "🏙️", dims: { comfort: 0.15 }, needs: { indulge: 0.2 } } },
+    a: { label: "Heritage haveli courtyard", img: "/onboarding/p03a.jpg", emoji: "🏛️", dims: { novelty: 0.15 }, needs: { explore: 0.2 } },
+    b: { label: "Glass-walled boutique hotel", img: "/onboarding/p03b.jpg", emoji: "🏙️", dims: { comfort: 0.15 }, needs: { indulge: 0.2 } } },
   { id: "p04", question: "Tonight's bed?", dimension: "Comfort",
-    a: { label: "Tent under the stars", img: "/onboarding/p04a.png", emoji: "⛺", dims: { comfort: -0.2, nature: 0.1 }, needs: { thrill: 0.15, escape: 0.15 } },
-    b: { label: "Resort balcony, pool below", img: "/onboarding/p04b.png", emoji: "🛎️", dims: { comfort: 0.2 }, needs: { indulge: 0.15, rest: 0.15 } } },
+    a: { label: "Tent under the stars", img: "/onboarding/p04a.jpg", emoji: "⛺", dims: { comfort: -0.2, nature: 0.1 }, needs: { thrill: 0.15, escape: 0.15 } },
+    b: { label: "Resort balcony, pool below", img: "/onboarding/p04b.jpg", emoji: "🛎️", dims: { comfort: 0.2 }, needs: { indulge: 0.15, rest: 0.15 } } },
   { id: "p05", question: "Which path do you take?", dimension: "Novelty",
-    a: { label: "The busy hill-station high street", img: "/onboarding/p05a.png", emoji: "🚂", dims: { novelty: -0.2 }, needs: { reconnect: 0.15 } },
-    b: { label: "The unmarked trail into the forest", img: "/onboarding/p05b.png", emoji: "🌲", dims: { novelty: 0.2 }, needs: { explore: 0.15, escape: 0.15 } } },
+    a: { label: "The busy hill-station high street", img: "/onboarding/p05a.jpg", emoji: "🚂", dims: { novelty: -0.2 }, needs: { reconnect: 0.15 } },
+    b: { label: "The unmarked trail into the forest", img: "/onboarding/p05b.jpg", emoji: "🌲", dims: { novelty: 0.2 }, needs: { explore: 0.15, escape: 0.15 } } },
   { id: "p06", question: "How should the trip be planned?", dimension: "Control",
-    a: { label: "Printed, hour-by-hour itinerary", img: "/onboarding/p06a.png", emoji: "🗓️", dims: { control: -0.2 }, needs: {} },
-    b: { label: "An open map and a compass", img: "/onboarding/p06b.png", emoji: "🧭", dims: { control: 0.2 }, needs: { explore: 0.1 } } },
+    a: { label: "Printed, hour-by-hour itinerary", img: "/onboarding/p06a.jpg", emoji: "🗓️", dims: { control: -0.2 }, needs: {} },
+    b: { label: "An open map and a compass", img: "/onboarding/p06b.jpg", emoji: "🧭", dims: { control: 0.2 }, needs: { explore: 0.1 } } },
   { id: "p07", question: "Dinner tonight?", dimension: "Food",
-    a: { label: "Street stall at dusk", img: "/onboarding/p07a.png", emoji: "🍢", dims: { food: 0.2, luxury: -0.1 }, needs: { explore: 0.2 } },
-    b: { label: "Chef-plated fine dining", img: "/onboarding/p07b.png", emoji: "🍽️", dims: { luxury: 0.2 }, needs: { indulge: 0.15, celebrate: 0.15 } } },
+    a: { label: "Street stall at dusk", img: "/onboarding/p07a.jpg", emoji: "🍢", dims: { food: 0.2, luxury: -0.1 }, needs: { explore: 0.2 } },
+    b: { label: "Chef-plated fine dining", img: "/onboarding/p07b.jpg", emoji: "🍽️", dims: { luxury: 0.2 }, needs: { indulge: 0.15, celebrate: 0.15 } } },
   { id: "p08", question: "The view from your window?", dimension: "Nature vs city",
-    a: { label: "Misty valley", img: "/onboarding/p08a.png", emoji: "🌄", dims: { nature: 0.2 }, needs: { escape: 0.2 } },
-    b: { label: "City skyline at night", img: "/onboarding/p08b.png", emoji: "🌃", dims: { nature: -0.2 }, needs: { explore: 0.2 } } },
+    a: { label: "Misty valley", img: "/onboarding/p08a.jpg", emoji: "🌄", dims: { nature: 0.2 }, needs: { escape: 0.2 } },
+    b: { label: "City skyline at night", img: "/onboarding/p08b.jpg", emoji: "🌃", dims: { nature: -0.2 }, needs: { explore: 0.2 } } },
   { id: "p09", question: "This afternoon?", dimension: "Thrill",
-    a: { label: "White-water rafting", img: "/onboarding/p09a.png", emoji: "🛶", dims: { pace: 0.15 }, needs: { thrill: 0.3 } },
-    b: { label: "Hammock by a still lake", img: "/onboarding/p09b.png", emoji: "🧘", dims: { pace: -0.15 }, needs: { rest: 0.3 } } },
+    a: { label: "White-water rafting", img: "/onboarding/p09a.jpg", emoji: "🛶", dims: { pace: 0.15 }, needs: { thrill: 0.3 } },
+    b: { label: "Hammock by a still lake", img: "/onboarding/p09b.jpg", emoji: "🧘", dims: { pace: -0.15 }, needs: { rest: 0.3 } } },
   { id: "p10", question: "Your evening hangout?", dimension: "Indulgence",
-    a: { label: "Infinity pool and spa", img: "/onboarding/p10a.png", emoji: "💆", dims: { luxury: 0.2, social: -0.1 }, needs: { indulge: 0.3 } },
-    b: { label: "Lively hostel common room", img: "/onboarding/p10b.png", emoji: "🎸", dims: { social: 0.2, luxury: -0.2 }, needs: { celebrate: 0.15, thrill: 0.1 } } },
+    a: { label: "Infinity pool and spa", img: "/onboarding/p10a.jpg", emoji: "💆", dims: { luxury: 0.2, social: -0.1 }, needs: { indulge: 0.3 } },
+    b: { label: "Lively hostel common room", img: "/onboarding/p10b.jpg", emoji: "🎸", dims: { social: 0.2, luxury: -0.2 }, needs: { celebrate: 0.15, thrill: 0.1 } } },
   { id: "p11", question: "Which night stays with you?", dimension: "Reflect vs celebrate",
-    a: { label: "Dawn aarti at the ghats", img: "/onboarding/p11a.png", emoji: "🪔", dims: { spiritual: 0.25 }, needs: { reflect: 0.35 } },
-    b: { label: "Beach bonfire with friends", img: "/onboarding/p11b.png", emoji: "🔥", dims: { social: 0.15 }, needs: { celebrate: 0.3 } } },
+    a: { label: "Dawn aarti at the ghats", img: "/onboarding/p11a.jpg", emoji: "🪔", dims: { spiritual: 0.25 }, needs: { reflect: 0.35 } },
+    b: { label: "Beach bonfire with friends", img: "/onboarding/p11b.jpg", emoji: "🔥", dims: { social: 0.15 }, needs: { celebrate: 0.3 } } },
   { id: "p12", question: "Which weather pulls you?", dimension: "Climate",
-    a: { label: "Fresh snowfall, pine forest", img: "/onboarding/p12a.png", emoji: "❄️", dims: { climate: -0.25 }, needs: { escape: 0.2 } },
-    b: { label: "Sunny beach, coconut palms", img: "/onboarding/p12b.png", emoji: "🌴", dims: { climate: 0.25 }, needs: { rest: 0.15, celebrate: 0.1 } } },
+    a: { label: "Fresh snowfall, pine forest", img: "/onboarding/p12a.jpg", emoji: "❄️", dims: { climate: -0.25 }, needs: { escape: 0.2 } },
+    b: { label: "Sunny beach, coconut palms", img: "/onboarding/p12b.jpg", emoji: "🌴", dims: { climate: 0.25 }, needs: { rest: 0.15, celebrate: 0.1 } } },
 ];
 
 const PARTY_FOR_NEED: Record<Need, Party[]> = {
@@ -139,6 +139,41 @@ export function contrastiveUpdate(dims: Record<string, number>, chosen: Record<s
     }
   }
   return { dims: next, changes: Array.from(new Set(changes)) };
+}
+
+/**
+ * Engagement learning: a like (weight 1) or save (1.5) on a trip nudges the profile towards it; undoing it passes the
+ * negative weight. Need affinity moves 0.05 per unit, the four style dims move towards the trip's character, and if
+ * the liked need now beats one of the top three intents it replaces the weakest (existing intents keep their party).
+ */
+export function engagementUpdate(
+  p: { dims: Record<string, number>; need_affinity: Record<string, number>; intents: { need: Need; party: Party; score: number }[]; default_party: Party },
+  ev: { need: Need; attrs?: Record<string, number | string> },
+  weight: number,
+) {
+  const na = { ...p.need_affinity, [ev.need]: clamp((p.need_affinity[ev.need] ?? 0.3) + 0.05 * weight, 0, 1) };
+  const dims = { ...p.dims };
+  const changes: string[] = [];
+  if (ev.attrs) {
+    for (const [dim, attr] of [["social", "nightlife"], ["comfort", "comfort"], ["nature", "nature"], ["luxury", "luxury"]] as const) {
+      const v = Number(ev.attrs[attr]);
+      if (!Number.isFinite(v) || Math.abs(v - 0.5) < 0.1) continue;
+      dims[dim] = clamp((dims[dim] ?? 0.5) + 0.04 * weight * Math.sign(v - 0.5));
+      changes.push(`${dim} ${weight * (v - 0.5) > 0 ? "↑" : "↓"}`);
+    }
+  }
+  // Keep existing intents (and their parties); swap in the liked need only when it now outranks the weakest one.
+  const intents = (p.intents ?? []).map((i) => ({ ...i, score: na[i.need] ?? i.score }));
+  if (!intents.some((i) => i.need === ev.need) && weight > 0 && intents.length) {
+    const weakest = intents.reduce((m, i) => (i.score < m.score ? i : m), intents[0]);
+    if ((na[ev.need] ?? 0) > weakest.score) {
+      const parties = Array.from(new Set([...intents.map((i) => i.party), p.default_party]));
+      const party = PARTY_FOR_NEED[ev.need].find((x) => parties.includes(x)) ?? p.default_party;
+      intents.splice(intents.indexOf(weakest), 1, { need: ev.need, party, score: na[ev.need] });
+      changes.push(`new For You row: ${ev.need}`);
+    }
+  }
+  return { dims, need_affinity: na, intents, changes };
 }
 
 /** Reason chips: only offered when the choice doesn't explain itself (the plans differ on several things). */

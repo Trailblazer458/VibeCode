@@ -11,7 +11,7 @@ const AUTO_MS = 4500;
  * Advances on its own every 4.5s, wrapping to the start. It holds still while hovered, focused or just touched,
  * while off-screen or in a hidden tab, and never moves for people who prefer reduced motion.
  */
-export function Carousel<T>({ items, render, label, className = "", compact = false }: { items: T[]; render: (item: T, i: number) => ReactNode; label: string; className?: string; compact?: boolean }) {
+export function Carousel<T>({ items, render, label, className = "", compact = false, slideClass = "w-full" }: { items: T[]; render: (item: T, i: number) => ReactNode; label: string; className?: string; compact?: boolean; slideClass?: string }) {
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
@@ -21,7 +21,12 @@ export function Carousel<T>({ items, render, label, className = "", compact = fa
   const scrollTo = (i: number) => {
     const el = track.current;
     if (!el) return;
-    el.scrollTo({ left: Math.max(0, Math.min(items.length - 1, i)) * el.clientWidth, behavior: "smooth" });
+    const kids = el.children as HTMLCollectionOf<HTMLElement>;
+    const n = Math.max(0, Math.min(items.length - 1, i));
+    // Slides may be narrower than the track (several per view): scroll to the slide itself, capped at the end.
+    const left = Math.min(kids[n].offsetLeft - kids[0].offsetLeft, el.scrollWidth - el.clientWidth);
+    // Wrap to the start once the last slide is already in view.
+    el.scrollTo({ left: n > 0 && el.scrollLeft >= el.scrollWidth - el.clientWidth - 2 && left >= el.scrollLeft ? 0 : left, behavior: "smooth" });
   };
   // Controls may sit inside a link (plan cards): never let them navigate.
   const go = (e: MouseEvent, i: number) => {
@@ -65,14 +70,18 @@ export function Carousel<T>({ items, render, label, className = "", compact = fa
       <div
         ref={track}
         onScroll={(e) => {
-          const i = Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth));
+          const el = e.currentTarget;
+          const kids = Array.from(el.children as HTMLCollectionOf<HTMLElement>);
+          const x = el.scrollLeft + kids[0].offsetLeft;
+          const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 2;
+          const i = atEnd ? kids.length - 1 : kids.reduce((b, k, j) => (Math.abs(k.offsetLeft - x) < Math.abs(kids[b].offsetLeft - x) ? j : b), 0);
           idxRef.current = i;
           setIdx(i);
         }}
         className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
       >
         {items.map((it, i) => (
-          <div key={i} className="w-full shrink-0 snap-center px-1" aria-label={`${i + 1} of ${items.length}`}>{render(it, i)}</div>
+          <div key={i} className={`${slideClass} shrink-0 snap-start px-1`} aria-label={`${i + 1} of ${items.length}`}>{render(it, i)}</div>
         ))}
       </div>
       {items.length > 1 && !compact && (

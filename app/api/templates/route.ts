@@ -3,7 +3,8 @@ import { one, q } from "@/lib/db";
 import { DEFAULT_PAX, planFromItems } from "@/lib/engine/plan";
 import { nextWindow } from "@/lib/engine/triggers";
 import { NEED_LABEL, PARTY_LABEL } from "@/lib/engine/weights";
-import { engineContext, handle, HttpError, logSignal, requireUser, savePlans } from "@/lib/server";
+import { engineContext, handle, HttpError, logSignal, requireUser, savePlans, updateProfile } from "@/lib/server";
+import { engagementUpdate } from "@/lib/engine/profile";
 import type { Need, Party } from "@/lib/types";
 
 interface Tpl { id: string; author_id: string | null; author_name: string; title: string; blurb: string; need: Need; party: Party; dest_id: string; days: number; items: { stay: string; transport: string; food: string[]; activities: string[] }; visibility: string; trip_completed: boolean; trip_start: string | null; likes: number; saves: number; remixes: number; stock: boolean }
@@ -58,9 +59,16 @@ export async function POST(req: Request) {
       } else {
         await q("insert into template_likes (template_id, user_id, kind) values ($1,$2,$3)", [t.id, uid, b.action]);
         await q(`update templates set ${col} = ${col} + 1 where id = $1`, [t.id]);
-        await logSignal(uid, sid, `template_${b.action}`, "revealed", { templateId: t.id, destId: t.dest_id, need: t.need });
       }
-      return { ok: true };
+      // Feed it back into the profile: a save says more than a like; undoing either reverses the nudge.
+      const weight = (b.action === "save" ? 1.5 : 1) * (has ? -1 : 1);
+      const ctx = await engineContext(uid, profile, t.party, t.need, sid);
+      const w = nextWindow();
+      const attrs = planFromItems({ need: t.need, party: t.party, pax: DEFAULT_PAX[t.party], window: { start: w.start, days: t.days, label: w.label }, budgetPP: null }, t.items, ctx).attrs;
+      const upd = engagementUpdate(profile, { need: t.need, attrs }, weight);
+      await updateProfile(uid, { dims: upd.dims, need_affinity: upd.need_affinity, intents: upd.intents });
+      await logSignal(uid, sid, `template_${b.action}${has ? "_undo" : ""}`, "revealed", { templateId: t.id, destId: t.dest_id, need: t.need, changes: upd.changes });
+      return { ok: true, learned: has ? null : `Noted: more ${NEED_LABEL[t.need]} trips${upd.changes.some((c) => c.startsWith("new For You")) ? " (new row in For You)" : ""} and more places like ${DEST_BY_ID.get(t.dest_id)?.name ?? "this"}.` };
     }
     if (b.action === "remix") {
       const ctx = await engineContext(uid, profile, t.party, t.need, sid);

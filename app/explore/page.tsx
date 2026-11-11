@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, inr } from "@/lib/client";
 import { itemImage } from "@/lib/images";
-import { itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
+import { Carousel, itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
 import { Button, Card, Chip, Cover, CriteriaBar, ErrorNote, FitBadge, IntentPicker, PARTY_META, PLAN_GRID, PlanCard, Section, Shell, Spinner, type Criterion, type PlanLite } from "@/components/ui";
 
 const DESTS = [
@@ -106,32 +106,38 @@ export default function Explore() {
               </div>
               <p className="px-4 pb-2 text-xs text-muted">Switch who&apos;s going and watch the same stays re-rank. Polarity flips: nightlife adds points for friends and subtracts for families.</p>
               <IntentPicker need={need} party={party} onChange={(n, p) => { setNeed(n); setParty(p); setRes(null); }} />
+              <div className="px-4 pt-4"><Button className="w-full md:w-auto" onClick={() => plans({ destId: dest, need, party, context: "know_where" })} disabled={busy}>Plan the whole trip here →</Button></div>
               {!rank && <Spinner />}
               {rank && (
                 <Section title="Stays, ranked for this intent" sub={`Reviews from ${PARTY_META[party].label.toLowerCase()} travellers count double`}>
-                  <div className="grid gap-3 px-4 md:grid-cols-2 lg:grid-cols-3">
-                    {rank.stay.map((s, i) => (
-                      <Card key={s.id} className="rise flex flex-col overflow-hidden">
-                        <Cover hue={(DESTS.find((d) => d[0] === dest)?.[3] ?? 175) + i * 40} emoji="🏨" photo={itemImage(s.id)} className="h-32 p-3">
-                          <div className="flex items-start justify-between">
-                            <span className="glass-dark rounded-full px-2.5 py-0.5 text-xs font-bold text-white">#{i + 1}</span>
-                            <FitBadge fit={s.fit} />
+                  {/* One row: swipe or use the arrows; three per view on wide screens */}
+                  <div className="px-3">
+                    <Carousel
+                      label="Stays, ranked for this intent"
+                      slideClass="w-[85%] sm:w-1/2 lg:w-1/3"
+                      items={rank.stay}
+                      render={(s, i) => (
+                        <Card className="rise flex h-full flex-col overflow-hidden">
+                          <Cover hue={(DESTS.find((d) => d[0] === dest)?.[3] ?? 175) + i * 40} emoji="🏨" photo={itemImage(s.id)} className="h-32 p-3">
+                            <div className="flex items-start justify-between">
+                              <span className="glass-dark rounded-full px-2.5 py-0.5 text-xs font-bold text-white">#{i + 1}</span>
+                              <FitBadge fit={s.fit} />
+                            </div>
+                          </Cover>
+                          <div className="flex flex-1 flex-col gap-2.5 p-3">
+                            <div>
+                              <div className="font-display text-base leading-tight">{s.name}</div>
+                              <div className="text-xs text-muted">{inr(s.price)} per night</div>
+                            </div>
+                            <ProsCons good={s.good} goodKeys={s.goodKeys} flags={s.flags} blocked={s.blocked} />
+                            <div className="mt-auto"><MiniTestimonials quotes={itemQuotes(s, party)} /></div>
                           </div>
-                        </Cover>
-                        <div className="flex flex-1 flex-col gap-2.5 p-3">
-                          <div>
-                            <div className="font-display text-base leading-tight">{s.name}</div>
-                            <div className="text-xs text-muted">{inr(s.price)} per night</div>
-                          </div>
-                          <ProsCons good={s.good} goodKeys={s.goodKeys} flags={s.flags} blocked={s.blocked} />
-                          <div className="mt-auto"><MiniTestimonials quotes={itemQuotes(s, party)} /></div>
-                        </div>
-                      </Card>
-                    ))}
+                        </Card>
+                      )}
+                    />
                   </div>
                 </Section>
               )}
-              <div className="px-4 pt-5"><Button className="w-full md:w-auto" onClick={() => plans({ destId: dest, need, party, context: "know_where" })} disabled={busy}>Plan the whole trip here →</Button></div>
             </>
           )}
         </>

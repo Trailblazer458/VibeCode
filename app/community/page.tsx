@@ -13,14 +13,16 @@ export default function Community() {
   const [f, setF] = useState("All");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const load = () => api("/api/templates").then((r) => setD(r.templates)).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, []);
   const act = async (id: string, action: string) => {
     setBusy(id + action);
     const r = await api("/api/templates", { id, action });
     setBusy(null);
-    if (action === "remix") router.push(`/p/${r.planId}`);
-    else load();
+    if (action === "remix") return router.push(`/p/${r.planId}`);
+    if (r.learned) { setToast(r.learned); setTimeout(() => setToast(null), 4000); }
+    load();
   };
   const list = (d ?? []).filter((t) => f === "All" || (f === "Friends" ? t.relation !== "Curated" && t.relation !== "You" : f === "Curated" ? t.relation === "Curated" : t.relation === "You"));
   return (
@@ -28,6 +30,7 @@ export default function Community() {
       <div className="flex gap-1.5 px-4 pt-3">{["All", "Friends", "Curated", "Mine"].map((x) => <Chip key={x} small on={f === x} onClick={() => setF(x)}>{x}</Chip>)}</div>
       <p className="px-4 pt-2 text-xs text-muted">Remix = take the plan, change what you like. The difference between the template and your version is the strongest preference signal we get.</p>
       <ErrorNote error={err} />
+      {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-2xl border border-white/15 bg-ink/75 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-xl">{toast}</p>}
       {!d && <Spinner />}
       <div className="grid gap-3 px-4 pt-3 md:grid-cols-2 xl:grid-cols-3">
         {list.map((t) => (
