@@ -1,4 +1,5 @@
 "use client";
+import { intentTitle } from "@/lib/engine/weights";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -224,7 +225,7 @@ export function PlanCard({ p, wide, extra }: { p: PlanLite; wide?: boolean; extr
         </div>
         <div className="absolute bottom-2 left-3 text-white drop-shadow">
           <div className="font-display text-xl font-semibold leading-tight">{p.destName}</div>
-          <div className="text-xs opacity-90">{NEED_META[p.need]?.emoji} {NEED_META[p.need]?.label} · {PARTY_META[p.party]?.label}</div>
+          <div className="text-xs opacity-90">{NEED_META[p.need]?.emoji} {intentTitle(p.need, p.party)}</div>
         </div>
         <div className="absolute right-3 bottom-2"><LikeSave planId={p.id} signature={p.signature} /></div>
       </Cover>

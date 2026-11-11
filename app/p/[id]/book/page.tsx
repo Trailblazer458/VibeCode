@@ -1,8 +1,9 @@
 "use client";
+import { intentTitle } from "@/lib/engine/weights";
 import Link from "next/link";
 import { use, useEffect, useRef, useState } from "react";
 import { api, fmtDate, inr } from "@/lib/client";
-import { Card, Cover, ErrorNote, NEED_META, PARTY_META, Shell, Spinner } from "@/components/ui";
+import { Card, Cover, ErrorNote, NEED_META, Shell, Spinner } from "@/components/ui";
 import { destCover } from "@/lib/images";
 
 interface Line { id: string; name: string; price: number }
@@ -118,7 +119,7 @@ export default function Checkout({ params }: { params: Promise<{ id: string }> }
           <Cover hue={p.hue} emoji={p.emoji} photo={cover} className="rounded-3xl px-5 py-6 text-white">
             <p className="text-xs opacity-90">{when} · {p.window.days} days · {travellers} {travellers === 1 ? "traveller" : "travellers"}</p>
             <h1 className="font-display text-3xl font-semibold">{p.destName}</h1>
-            <p className="text-sm opacity-95">{NEED_META[p.need]?.emoji} {NEED_META[p.need]?.label} · {PARTY_META[p.party]?.label}</p>
+            <p className="text-sm opacity-95">{NEED_META[p.need]?.emoji} {intentTitle(p.need, p.party)}</p>
           </Cover>
 
           <Card className="divide-y divide-line">

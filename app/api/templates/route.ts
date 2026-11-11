@@ -2,7 +2,7 @@ import { DEST_BY_ID, ITEM_BY_ID } from "@/lib/data/catalog";
 import { one, q } from "@/lib/db";
 import { DEFAULT_PAX, planFromItems } from "@/lib/engine/plan";
 import { nextWindow } from "@/lib/engine/triggers";
-import { NEED_LABEL, PARTY_LABEL } from "@/lib/engine/weights";
+import { intentTitle, NEED_LABEL } from "@/lib/engine/weights";
 import { engineContext, handle, HttpError, logSignal, requireUser, savePlans, updateProfile } from "@/lib/server";
 import { engagementUpdate } from "@/lib/engine/profile";
 import type { Need, Party } from "@/lib/types";
@@ -35,7 +35,7 @@ export async function GET() {
         datesHidden: !t.trip_completed && t.author_id !== uid,
         relation: t.stock ? "Curated" : t.author_id === uid ? "You" : friends.includes(t.author_id ?? "") ? "Friend" : `Friend of ${fofMap.get(t.author_id ?? "")}`,
         destName: DEST_BY_ID.get(t.dest_id)?.name, emoji: DEST_BY_ID.get(t.dest_id)?.emoji, hue: DEST_BY_ID.get(t.dest_id)?.hue,
-        intent: `${NEED_LABEL[t.need]} · ${PARTY_LABEL[t.party]}`,
+        intent: intentTitle(t.need, t.party),
         itemNames: [t.items.stay, ...t.items.activities].map((i) => ITEM_BY_ID.get(i)?.name ?? i),
         liked: mine.some((m) => m.template_id === t.id && m.kind === "like"),
         saved: mine.some((m) => m.template_id === t.id && m.kind === "save"),

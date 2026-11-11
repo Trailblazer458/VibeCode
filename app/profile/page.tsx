@@ -1,4 +1,5 @@
 "use client";
+import { intentTitle } from "@/lib/engine/weights";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -54,7 +55,7 @@ export default function Profile() {
       </div>
 
       <Section title="Top intents" sub="Your For You feed opens with these">
-        <div className="flex flex-wrap gap-1.5 px-4">{p.intents.map((i) => <span key={i.need + i.party} className="rounded-full bg-teal-soft px-3 py-1 text-sm">{NEED_META[i.need].emoji} {NEED_META[i.need].label} · {PARTY_META[i.party].label}</span>)}</div>
+        <div className="flex flex-wrap gap-1.5 px-4">{p.intents.map((i) => <span key={i.need + i.party} className="rounded-full bg-teal-soft px-3 py-1 text-sm">{NEED_META[i.need].emoji} {intentTitle(i.need, i.party)}</span>)}</div>
       </Section>
 
       <Section title="Your dealbreakers" sub="Hard ones filter; soft ones down-rank. Inferred ones wait for your OK." action={<button className="text-xs font-semibold text-teal" onClick={() => setAddOpen(true)}>+ Add</button>}>
@@ -84,7 +85,7 @@ export default function Profile() {
         <div className="grid gap-2 px-4 md:grid-cols-2">
           {d.trips.map((t) => (
             <div key={t.id} className="overflow-hidden rounded-2xl border border-line bg-paper">
-              <Cover hue={t.hue} emoji={t.emoji} photo={destCover(t.dest_id, t.need)} className="h-16 px-3 py-2 text-white"><div className="font-display font-semibold">{t.name}</div><div className="text-xs opacity-90">{fmtDate(t.start_date)} · {t.days} days · {NEED_META[t.need].label} · {PARTY_META[t.party].label}</div></Cover>
+              <Cover hue={t.hue} emoji={t.emoji} photo={destCover(t.dest_id, t.need)} className="h-16 px-3 py-2 text-white"><div className="font-display font-semibold">{t.name}</div><div className="text-xs opacity-90">{fmtDate(t.start_date)} · {t.days} days · {intentTitle(t.need, t.party)}</div></Cover>
               <div className="flex flex-wrap items-center gap-2 p-3">
                 <Button className="!px-3 !py-1.5 text-xs" onClick={async () => { const r = await post({ action: "retake", tripId: t.id }); router.push(`/p/${r.planId}`); }}>Retake</Button>
                 {!t.checked ? <Button kind="accent" className="!px-3 !py-1.5 text-xs" onClick={() => { setCheckin(t); setRep([]); setSkip([]); setSurprise(""); }}>3-question check-in</Button> : <span className="text-xs text-ok">✓ Checked in</span>}

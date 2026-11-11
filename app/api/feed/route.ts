@@ -1,7 +1,7 @@
 import { DEST_BY_ID } from "@/lib/data/catalog";
 import { DEFAULT_PAX } from "@/lib/engine/plan";
 import { buildTriggers, nextWindow } from "@/lib/engine/triggers";
-import { NEED_EMOJI, NEED_LABEL, NEED_SUBS, PARTY_LABEL } from "@/lib/engine/weights";
+import { intentTitle, NEED_EMOJI, NEED_SUBS } from "@/lib/engine/weights";
 import { q } from "@/lib/db";
 import { defaultRequest, handle, requireUser, runPlans, sessionBoost } from "@/lib/server";
 import type { Need, Party } from "@/lib/types";
@@ -18,7 +18,7 @@ export async function GET() {
       const req = defaultRequest(profile, it.need, it.party, { maxPlans: 3, minPlans: 3 });
       const r = await runPlans(uid, sid, profile, req, "feed");
       rows.push({
-        need: it.need, party: it.party, label: `${NEED_EMOJI[it.need]} ${NEED_LABEL[it.need]} · ${PARTY_LABEL[it.party]}`,
+        need: it.need, party: it.party, label: `${NEED_EMOJI[it.need]} ${intentTitle(it.need, it.party)}`,
         sub: NEED_SUBS[it.need], setId: r.setId, plans: r.plans, criteria: r.criteria,
       });
     }
@@ -36,7 +36,7 @@ export async function GET() {
       window,
       trigger: nudges.triggers.find((t) => t.type === "calendar") ?? null,
       rows,
-      different: { need: nextNeed, party: altParty, label: `${NEED_EMOJI[nextNeed]} ${NEED_LABEL[nextNeed]} · ${PARTY_LABEL[altParty]}`, plan: alt.plans[0] ?? null, setId: alt.setId },
+      different: { need: nextNeed, party: altParty, label: `${NEED_EMOJI[nextNeed]} ${intentTitle(nextNeed, altParty)}`, plan: alt.plans[0] ?? null, setId: alt.setId },
       boosted: Object.keys(boost).map((d) => DEST_BY_ID.get(d)?.name),
     };
   });

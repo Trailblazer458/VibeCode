@@ -102,3 +102,22 @@ export function weightsFor(
   }
   return w;
 }
+
+/** Friendly trip headline for an intent and party: "Celebrate with your better half", "Relax in your own company". */
+const NEED_PHRASE: Record<Need, string> = {
+  rest: "Relax", reconnect: "Reconnect", explore: "Explore", thrill: "Chase a thrill", celebrate: "Celebrate",
+  reflect: "Slow down and reflect", indulge: "Indulge", escape: "Get away", learn: "Learn and create",
+};
+const PARTY_PHRASE: Record<Party, string> = {
+  solo: "on your own", couple: "with your better half", friends: "with your crew", family_kids: "with the little ones", family_elders: "with your parents",
+};
+const SOLO_TITLE: Partial<Record<Need, string>> = {
+  rest: "Relax in your own company", reconnect: "Reconnect with yourself", celebrate: "Celebrate yourself",
+  reflect: "Slow down and reflect, just you", indulge: "Treat yourself",
+};
+export function intentTitle(need: Need | string, party: Party | string): string {
+  if (party === "solo" && SOLO_TITLE[need as Need]) return SOLO_TITLE[need as Need]!;
+  const n = NEED_PHRASE[need as Need] ?? NEED_LABEL[need as Need] ?? need;
+  const p = PARTY_PHRASE[party as Party];
+  return p ? `${n} ${p}` : n;
+}

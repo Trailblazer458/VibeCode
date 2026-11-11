@@ -1,4 +1,5 @@
 "use client";
+import { intentTitle } from "@/lib/engine/weights";
 import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDate, inr } from "@/lib/client";
@@ -171,7 +172,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <Cover hue={p.hue} emoji={p.emoji} photo={cover} className="px-4 pt-5 pb-6 text-white md:mx-4 md:mt-4 md:rounded-3xl md:px-8 md:py-10">
         <p className="text-xs opacity-90">{p.window.label ?? fmtDate(p.window.start)} · {p.window.days} days · {p.pax.adults + p.pax.kids + p.pax.seniors} travellers</p>
         <h1 className="font-display text-3xl font-semibold">{p.destName}</h1>
-        <p className="text-sm opacity-95">{NEED_META[p.need].emoji} {NEED_META[p.need].label} · {PARTY_META[p.party].emoji} {PARTY_META[p.party].label}</p>
+        <p className="text-sm opacity-95">{NEED_META[p.need].emoji} {intentTitle(p.need, p.party)}</p>
         <p className="glass-dark mt-4 inline-block rounded-2xl px-4 py-2 text-2xl font-semibold">{inr(p.cost.perHead)} <span className="text-sm font-normal opacity-90">per person, all-in</span></p>
         <div className="absolute top-3 right-3"><LikeSave planId={p.id} signature={(p as { signature?: string }).signature} /></div>
         {cover && (
@@ -256,7 +257,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       </div>
 
       <Sheet open={!!swap} onClose={() => setSwap(null)} title={swap ? `Swap ${ELEM_LABEL[swap.elem].toLowerCase()}` : ""}>
-        <p className="mb-3 text-xs text-muted">Ranked for {NEED_META[p.need].label} · {PARTY_META[p.party].label}. Reviews from {PARTY_META[p.party].label.toLowerCase()} travellers count double.</p>
+        <p className="mb-3 text-xs text-muted">Ranked for your trip: {intentTitle(p.need, p.party).toLowerCase()}. Reviews from {PARTY_META[p.party].label.toLowerCase()} travellers count double.</p>
         {(() => {
           // Close calls: options within 5 points of the best fit on this list that are not in the plan. They often
           // lose only on a soft preference or price, so they are pulled to the top and highlighted.
@@ -271,7 +272,6 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
                   <div className="flex items-center gap-2 px-2 pt-1">
                     <span className="rounded-full bg-saffron px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">Alternates you should consider</span>
                   </div>
-                  <p className="px-2 text-xs text-ink/70">Within 5 points of the best fit here. Worth a look even if they miss one of your preferences.</p>
                   {close.map((a) => card(a, true))}
                 </div>
               )}
