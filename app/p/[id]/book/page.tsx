@@ -62,7 +62,8 @@ export default function Checkout({ params }: { params: Promise<{ id: string }> }
   const confetti = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    api(`/api/plan/${id}`).then((d) => setP(d.plan)).catch((e) => setErr(e.message));
+    // Already booked (a revisit or refresh): straight to the confirmation, without the confetti.
+    api(`/api/plan/${id}`).then((d) => { setP(d.plan); if (d.booked) setRef(d.booked); }).catch((e) => setErr(e.message));
   }, [id]);
 
   const book = async () => {

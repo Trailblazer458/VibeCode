@@ -30,7 +30,7 @@ Add `XAI_API_KEY` to `.env.local` to turn on Grok for chat slot-filling and the 
 4. **Plan with me:** tap *Parents want a temple trip, nothing tiring*, then *Next long weekend*, then **Create trip plan**. The criteria bar shows assumptions and how many options each filter hides.
 5. **Trips → College gang reunion:** date poll, anonymous criteria, *Preview hidden* on the ₹12k budget, approve the anonymous relax request on your own "no long road" rule, like/veto, confirm.
 6. **You:** confirm the inferred red-eye dealbreaker, do the Rishikesh check-in (skip bungee), **Retake**, then the nudge cadence and metrics.
-7. **Start fresh** (log out first): 12 swipe pairs, then a short "That's everything we need" screen, then a personalised feed (the persona is on the You tab).
+7. **Start fresh** (log out first): 15 yes/no experiences, then a short "That's everything we need" screen, then a guided tour of For You, Explore and Plan with me, then a personalised feed (the persona is on the You tab; replay the tour from there).
 
 ## Map
 

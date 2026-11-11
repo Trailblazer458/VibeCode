@@ -80,9 +80,21 @@ body::before {
 }
 
 /* GlowLink (components/ui.tsx): resting tint on the border, a spotlight that follows the pointer on hover. */
+/* Always-on glowing border: a teal and saffron gradient that slowly travels round the edge, with a soft breathing halo. */
+@property --ga { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes glow-spin { to { --ga: 360deg; } }
+@keyframes glow-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(227 134 42 / 0), 0 6px 24px -12px rgb(14 90 87 / 0.35); }
+  50% { box-shadow: 0 0 22px 2px rgb(227 134 42 / 0.35), 0 6px 24px -12px rgb(14 90 87 / 0.35); }
+}
 .glow-link .glow-link-ring {
-  background: linear-gradient(120deg, rgb(14 90 87 / 0.45), rgb(227 134 42 / 0.45), rgb(14 90 87 / 0.25));
+  background: conic-gradient(from var(--ga), #0e5a57, #e3862a, #f5c26b, #0e5a57 55%, #e3862a 80%, #0e5a57);
+  animation: glow-spin 4s linear infinite;
   transition: opacity 0.3s;
+}
+.glow-link { animation: glow-breathe 3s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .glow-link .glow-link-ring, .glow-link { animation: none; }
 }
 .glow-link .glow-link-ring::after {
   content: "";
@@ -101,7 +113,6 @@ body::before {
 .glow-link:hover .glow-link-ring::after,
 .glow-link:hover .glow-link-inner,
 .glow-link:focus-visible .glow-link-ring::after { opacity: 1; }
-.glow-link { box-shadow: 0 6px 24px -12px rgb(14 90 87 / 0.35); }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }

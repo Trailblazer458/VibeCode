@@ -89,7 +89,7 @@ export default function PlanWithMe() {
   ];
   return (
     <Shell title="Plan with me" right={engine && <span className="text-[10px] text-muted">{engine === "grok" ? "Grok" : "rules"}</span>}>
-      <div className="sticky top-[53px] z-10 border-b border-line bg-sand/95 px-4 py-2 backdrop-blur">
+      <div data-tour="plan-slots" className="sticky top-[53px] z-10 border-b border-line bg-sand/95 px-4 py-2 backdrop-blur">
         <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
           {S.map((s) => (
             <span key={s.k} className={`shrink-0 rounded-lg border px-2 py-1 text-[11px] ${s.v ? "border-teal/30 bg-teal-soft" : s.req ? "border-dashed border-saffron text-warn" : "border-dashed border-line text-muted"}`}>
@@ -119,7 +119,7 @@ export default function PlanWithMe() {
         )}
         <div ref={bottom} />
       </div>
-      <div className="fixed inset-x-0 bottom-[57px] z-20 border-t border-line bg-paper/95 p-3 backdrop-blur md:bottom-0 md:left-60 md:px-8 md:py-4">
+      <div data-tour="plan-bar" className="fixed inset-x-0 bottom-[57px] z-20 border-t border-line bg-paper/95 p-3 backdrop-blur md:bottom-0 md:left-60 md:px-8 md:py-4">
         <div className="mx-auto max-w-3xl md:flex md:items-center md:gap-3">
           <form className="flex flex-1 gap-2" onSubmit={(e) => { e.preventDefault(); send(text); }}>
             <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Type how you feel and what you need…" className="min-w-0 flex-1 rounded-xl border border-line bg-sand px-3 py-2.5 text-sm outline-teal" />

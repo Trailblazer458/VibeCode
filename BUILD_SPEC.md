@@ -85,11 +85,12 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
 
 ## Journey (to-be)
 
-1. **First open:** swipe onboarding.
-   - 12 "this or that" scene pairs, each mapped to a dimension.
+1. **First open:** yes/no onboarding.
+   - 15 single experiences (photo + caption), each answered Yes or No. A Yes applies the card's dimension and need-state effect; a No pushes the other way at half strength (`NO_WEIGHT`); a skip says nothing. One clear signal per card instead of a forced choice between two scenes.
    - Diet is asked directly, never inferred.
    - The user picks who they usually travel with, a budget and optional dealbreakers.
    - It ends with a short "That's everything we need" screen and goes straight to For You. The persona is still computed and shown on the profile, not at the end of onboarding.
+   - A guided tour then walks through For You, Explore and Plan with me (spotlight + card per element, Back/Next/Skip). It is replayable from the You tab; progress is kept in the browser only.
 2. **For You** (landing page):
    - A trigger banner (long weekend plus bridge-day leave).
    - **Top 3 intents**, each a row of ≥3 plans.
@@ -146,6 +147,11 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
 | Revealed | Plan chosen vs rejected, swaps, remixes, votes, retakes | Medium; contrastive updates |
 | Passive | Dwell time on plans | **Within the session only** (re-rank); never long-term profiling |
 
+## Sponsored placements
+
+- Advertisers are a fixed list (`lib/data/sponsors.ts`). Sponsorship never changes a fit score or a rank.
+- It only adds a "Sponsored Ad" label where the item already appears in a ranked list (Explore stays, swap window), never on the top pick and at most two per list (`adSlots` in `lib/engine/plan.ts`). The best match always wins on its merits; the revenue comes from labelled, relevant alternatives.
+
 ## Out of scope / later
 
 - **Mentioned in the doc, not built:**
@@ -194,4 +200,4 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
 
 ## Images
 
-Swipe scenes load from `/public/onboarding/p01a.jpg` … `p12b.jpg`: Wikimedia Commons photos matched to each caption, cropped to 4:5, credited on the card and in `public/onboarding/CREDITS.md` (data in `lib/onboarding-photos.json`). A missing file falls back to the gradient + emoji.
+Onboarding experiences load from `/public/onboarding/p01a.jpg` … `p12b.jpg` (15 of the 24 are used): Wikimedia Commons photos matched to each caption, cropped to 4:5, credited on the card and in `public/onboarding/CREDITS.md` (data in `lib/onboarding-photos.json`). A missing file falls back to the gradient + emoji.

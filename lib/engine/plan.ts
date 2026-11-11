@@ -7,6 +7,7 @@ import type {
 } from "../types";
 import { ScoreStore } from "./store";
 import { suits } from "./suitability";
+import { SPONSORED } from "../data/sponsors";
 import { itemTags, TAG_LABEL } from "./tags";
 import { ASPECT_LABEL, NEED_LABEL, PACE, PARTY_LABEL, TRANSIT_TOLERANCE, weightsFor } from "./weights";
 
@@ -708,7 +709,21 @@ export function rankElement(kind: "stay" | "transport" | "food" | "activity", de
         reviews: ctx.store.reviewCount(s.item.id),
       };
     })
-    .sort((a, b) => b.fit - a.fit);
+    .sort((a, b) => b.fit - a.fit)
+    .map((x, i, all) => ({ ...x, sponsored: adSlots(all.map((y) => y.id)).has(i) }));
+}
+
+/**
+ * Which positions of an already-ranked list carry a "Sponsored Ad" label. Ranking is never changed: the label only
+ * discloses that an advertiser's item is in the list. Never the top pick (the best match wins on its own merits) and
+ * at most two per list, so the list never reads as a wall of ads.
+ */
+export function adSlots(rankedIds: string[], max = 2): Set<number> {
+  const out = new Set<number>();
+  rankedIds.forEach((id, i) => {
+    if (i > 0 && out.size < max && SPONSORED.has(id)) out.add(i);
+  });
+  return out;
 }
 
 /** Rebuild a plan from explicit item choices (swaps, template remixes, retakes) with fresh scores and checks. */

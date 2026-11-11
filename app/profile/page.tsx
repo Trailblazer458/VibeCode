@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { api, fmtDate } from "@/lib/client";
 import { destCover } from "@/lib/images";
 import { Button, Card, Chip, Cover, ErrorNote, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner } from "@/components/ui";
+import { startTour } from "@/components/tour";
 
 interface DB { id: string; attribute: string; label: string; kind: string; context_party: string | null; confidence: number; source: string; status: string }
 interface Trip { id: string; dest_id: string; name: string; need: string; party: string; destName: string; emoji: string; hue: number; start_date: string; days: number; visibility: string; checked: boolean; itemNames: { id: string; name: string }[] }
@@ -40,7 +41,12 @@ export default function Profile() {
   const p = d.profile;
   const toggle = (a: string[], v: string) => (a.includes(v) ? a.filter((x) => x !== v) : [...a, v]);
   return (
-    <Shell title="You" right={<button className="text-xs text-muted" onClick={async () => { await api("/api/session", { mode: "logout" }); router.push("/"); }}>Log out</button>}>
+    <Shell title="You" right={
+      <div className="flex items-center gap-3">
+        <button className="text-xs font-semibold text-teal" onClick={() => { startTour(); router.push("/feed"); }}>Take the tour</button>
+        <button className="text-xs text-muted" onClick={async () => { await api("/api/session", { mode: "logout" }); router.push("/"); }}>Log out</button>
+      </div>
+    }>
       {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-2xl border border-white/15 bg-ink/75 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-xl">{toast}</p>}
       <div className="cover mx-4 mt-4 rounded-3xl p-5 text-white" style={{ ["--h" as string]: 190 }}>
         <p className="text-xs uppercase tracking-widest opacity-80">{p.name} · {p.home_city}</p>

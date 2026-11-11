@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { inr } from "@/lib/client";
 import { destCover, type ItemPhoto } from "@/lib/images";
 import { LikeSave, LikeToast } from "./likes";
+import { Tour } from "./tour";
 import { MiniTestimonials, travelledLabel } from "./reviews";
 
 /** "Kasol: strong on adventure, which matters most for a thrill trip with friends" -> "Strong on adventure". */
@@ -48,6 +49,7 @@ export function Shell({ children, title, back, right }: { children: ReactNode; t
       <main className={`${CONTENT} flex-1 pb-24 md:px-4 md:pb-12`}>{children}</main>
       <Nav />
       <LikeToast />
+      <Tour />
     </div>
   );
 }
@@ -70,7 +72,7 @@ function Nav() {
         <ul className="grid grid-cols-5">
           {NAV_ITEMS.map((i) => (
             <li key={i.href}>
-              <Link href={i.href} className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] ${isOn(i.href) ? "text-teal font-semibold" : "text-muted"}`}>
+              <Link href={i.href} data-tour={`nav-${i.href.slice(1)}`} className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] ${isOn(i.href) ? "text-teal font-semibold" : "text-muted"}`}>
                 <span className="text-base leading-none">{i.icon}</span>
                 {i.label}
               </Link>
@@ -84,7 +86,7 @@ function Nav() {
         <ul className="mt-8 space-y-1">
           {NAV_ITEMS.map((i) => (
             <li key={i.href}>
-              <Link href={i.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${isOn(i.href) ? "bg-teal-soft font-semibold text-teal" : "text-ink hover:bg-sand"}`}>
+              <Link href={i.href} data-tour={`nav-${i.href.slice(1)}`} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${isOn(i.href) ? "bg-teal-soft font-semibold text-teal" : "text-ink hover:bg-sand"}`}>
                 <span className="w-5 text-center text-base leading-none">{i.icon}</span>
                 {i.label}
               </Link>
@@ -109,7 +111,7 @@ export function GlowLink({ href, children, className = "" }: { href: string; chi
     e.currentTarget.style.setProperty("--gy", `${e.clientY - r.top}px`);
   };
   return (
-    <Link href={href} onMouseMove={onMove} className={`glow-link group relative block rounded-2xl p-[1.5px] ${className}`}>
+    <Link href={href} onMouseMove={onMove} className={`glow-link group relative block rounded-2xl p-[2px] ${className}`}>
       <span aria-hidden className="glow-link-ring pointer-events-none absolute inset-0 rounded-2xl" />
       <span className="relative block overflow-hidden rounded-[15px] bg-paper">
         <span aria-hidden className="glow-link-inner pointer-events-none absolute inset-0" />
@@ -310,6 +312,22 @@ export function Sheet({ open, onClose, children, title }: { open: boolean; onClo
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line md:hidden" />
         {title && <h3 className="mb-3 font-display text-lg font-semibold">{title}</h3>}
         {children}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Discloses a paid placement. "corner": a diagonal ribbon across the bottom-right corner of a photo. "tab": a strip hanging from the top edge
+ * of a text card (give the card extra top padding). The parent needs `relative overflow-hidden`.
+ */
+export function SponsoredRibbon({ variant = "corner" }: { variant?: "corner" | "tab" }) {
+  if (variant === "tab")
+    return <div className="pointer-events-none absolute top-0 left-3 z-10 rounded-b-lg bg-ink/85 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">Sponsored Ad</div>;
+  return (
+    <div className="pointer-events-none absolute right-0 bottom-0 z-10 h-24 w-24 overflow-hidden" aria-label="Sponsored Ad">
+      <div className="absolute right-[-34px] bottom-[18px] w-[140px] -rotate-45 bg-ink/85 py-1 text-center text-[9px] font-bold uppercase tracking-wider text-white shadow-md">
+        Sponsored Ad
       </div>
     </div>
   );

@@ -1,52 +1,41 @@
-// Profile building: swipe onboarding, persona, intents, and learning from choices and edits.
+// Profile building: yes/no experience onboarding, persona, intents, and learning from choices and edits.
 import type { Need, Party } from "../types";
 import { NEED_LABEL } from "./weights";
 
-export interface OnboardingPair {
+/**
+ * Onboarding is a run of single experiences, each answered Yes or No. One clear signal per card, instead of a forced
+ * choice between two scenes the user may like (or dislike) equally. Each card moves the dimensions and need states it
+ * stands for: a Yes applies the full effect, a No pushes the other way at half strength (not wanting a dawn trek says
+ * less than wanting one). Skipped cards say nothing.
+ */
+export interface ExperienceCard {
   id: string;
-  question: string;
+  label: string;
+  img: string;
+  emoji: string;
   dimension: string;
-  a: { label: string; img: string; emoji: string; dims: Record<string, number>; needs: Partial<Record<Need, number>> };
-  b: { label: string; img: string; emoji: string; dims: Record<string, number>; needs: Partial<Record<Need, number>> };
+  dims: Record<string, number>;
+  needs: Partial<Record<Need, number>>;
 }
 
-export const PAIRS: OnboardingPair[] = [
-  { id: "p01", question: "Your first morning on holiday?", dimension: "Pace",
-    a: { label: "Slow breakfast on the porch", img: "/onboarding/p01a.jpg", emoji: "☕", dims: { pace: -0.2 }, needs: { rest: 0.3 } },
-    b: { label: "Headlamps on, trek starts at dawn", img: "/onboarding/p01b.jpg", emoji: "🥾", dims: { pace: 0.2 }, needs: { thrill: 0.3 } } },
-  { id: "p02", question: "Pick your beach.", dimension: "Social density",
-    a: { label: "Empty beach, one chair", img: "/onboarding/p02a.jpg", emoji: "🏝️", dims: { social: -0.2 }, needs: { rest: 0.15, escape: 0.15 } },
-    b: { label: "Glowing, crowded night market", img: "/onboarding/p02b.jpg", emoji: "🏮", dims: { social: 0.2 }, needs: { explore: 0.2, celebrate: 0.1 } } },
-  { id: "p03", question: "Where would you rather wake up?", dimension: "Stay style",
-    a: { label: "Heritage haveli courtyard", img: "/onboarding/p03a.jpg", emoji: "🏛️", dims: { novelty: 0.15 }, needs: { explore: 0.2 } },
-    b: { label: "Glass-walled boutique hotel", img: "/onboarding/p03b.jpg", emoji: "🏙️", dims: { comfort: 0.15 }, needs: { indulge: 0.2 } } },
-  { id: "p04", question: "Tonight's bed?", dimension: "Comfort",
-    a: { label: "Tent under the stars", img: "/onboarding/p04a.jpg", emoji: "⛺", dims: { comfort: -0.2, nature: 0.1 }, needs: { thrill: 0.15, escape: 0.15 } },
-    b: { label: "Resort balcony, pool below", img: "/onboarding/p04b.jpg", emoji: "🛎️", dims: { comfort: 0.2 }, needs: { indulge: 0.15, rest: 0.15 } } },
-  { id: "p05", question: "Which path do you take?", dimension: "Novelty",
-    a: { label: "The busy hill-station high street", img: "/onboarding/p05a.jpg", emoji: "🚂", dims: { novelty: -0.2 }, needs: { reconnect: 0.15 } },
-    b: { label: "The unmarked trail into the forest", img: "/onboarding/p05b.jpg", emoji: "🌲", dims: { novelty: 0.2 }, needs: { explore: 0.15, escape: 0.15 } } },
-  { id: "p06", question: "How should the trip be planned?", dimension: "Control",
-    a: { label: "Printed, hour-by-hour itinerary", img: "/onboarding/p06a.jpg", emoji: "🗓️", dims: { control: -0.2 }, needs: {} },
-    b: { label: "An open map and a compass", img: "/onboarding/p06b.jpg", emoji: "🧭", dims: { control: 0.2 }, needs: { explore: 0.1 } } },
-  { id: "p07", question: "Dinner tonight?", dimension: "Food",
-    a: { label: "Street stall at dusk", img: "/onboarding/p07a.jpg", emoji: "🍢", dims: { food: 0.2, luxury: -0.1 }, needs: { explore: 0.2 } },
-    b: { label: "Chef-plated fine dining", img: "/onboarding/p07b.jpg", emoji: "🍽️", dims: { luxury: 0.2 }, needs: { indulge: 0.15, celebrate: 0.15 } } },
-  { id: "p08", question: "The view from your window?", dimension: "Nature vs city",
-    a: { label: "Misty valley", img: "/onboarding/p08a.jpg", emoji: "🌄", dims: { nature: 0.2 }, needs: { escape: 0.2 } },
-    b: { label: "City skyline at night", img: "/onboarding/p08b.jpg", emoji: "🌃", dims: { nature: -0.2 }, needs: { explore: 0.2 } } },
-  { id: "p09", question: "This afternoon?", dimension: "Thrill",
-    a: { label: "White-water rafting", img: "/onboarding/p09a.jpg", emoji: "🛶", dims: { pace: 0.15 }, needs: { thrill: 0.3 } },
-    b: { label: "Hammock by a still lake", img: "/onboarding/p09b.jpg", emoji: "🧘", dims: { pace: -0.15 }, needs: { rest: 0.3 } } },
-  { id: "p10", question: "Your evening hangout?", dimension: "Indulgence",
-    a: { label: "Infinity pool and spa", img: "/onboarding/p10a.jpg", emoji: "💆", dims: { luxury: 0.2, social: -0.1 }, needs: { indulge: 0.3 } },
-    b: { label: "Lively hostel common room", img: "/onboarding/p10b.jpg", emoji: "🎸", dims: { social: 0.2, luxury: -0.2 }, needs: { celebrate: 0.15, thrill: 0.1 } } },
-  { id: "p11", question: "Which night stays with you?", dimension: "Reflect vs celebrate",
-    a: { label: "Dawn aarti at the ghats", img: "/onboarding/p11a.jpg", emoji: "🪔", dims: { spiritual: 0.25 }, needs: { reflect: 0.35 } },
-    b: { label: "Beach bonfire with friends", img: "/onboarding/p11b.jpg", emoji: "🔥", dims: { social: 0.15 }, needs: { celebrate: 0.3 } } },
-  { id: "p12", question: "Which weather pulls you?", dimension: "Climate",
-    a: { label: "Fresh snowfall, pine forest", img: "/onboarding/p12a.jpg", emoji: "❄️", dims: { climate: -0.25 }, needs: { escape: 0.2 } },
-    b: { label: "Sunny beach, coconut palms", img: "/onboarding/p12b.jpg", emoji: "🌴", dims: { climate: 0.25 }, needs: { rest: 0.15, celebrate: 0.1 } } },
+export const NO_WEIGHT = 0.5;
+
+export const CARDS: ExperienceCard[] = [
+  { id: "c01", label: "A slow breakfast on the porch, nowhere to be", img: "/onboarding/p01a.jpg", emoji: "☕", dimension: "Pace", dims: { pace: -0.2 }, needs: { rest: 0.3 } },
+  { id: "c02", label: "Headlamps on, the trek starts at dawn", img: "/onboarding/p01b.jpg", emoji: "🥾", dimension: "Pace", dims: { pace: 0.2, nature: 0.1 }, needs: { thrill: 0.3, escape: 0.1 } },
+  { id: "c03", label: "An empty beach and one chair", img: "/onboarding/p02a.jpg", emoji: "🏝️", dimension: "Social", dims: { social: -0.2 }, needs: { rest: 0.15, escape: 0.15 } },
+  { id: "c04", label: "A glowing, crowded night market", img: "/onboarding/p02b.jpg", emoji: "🏮", dimension: "Social", dims: { social: 0.2, food: 0.1 }, needs: { explore: 0.2, celebrate: 0.1 } },
+  { id: "c05", label: "Waking up in a heritage haveli courtyard", img: "/onboarding/p03a.jpg", emoji: "🏛️", dimension: "Culture", dims: { novelty: 0.15 }, needs: { explore: 0.25, learn: 0.1 } },
+  { id: "c06", label: "A tent under the stars", img: "/onboarding/p04a.jpg", emoji: "⛺", dimension: "Comfort", dims: { comfort: -0.2, nature: 0.15 }, needs: { thrill: 0.15, escape: 0.15 } },
+  { id: "c07", label: "No fixed plan, just an open map", img: "/onboarding/p06b.jpg", emoji: "🧭", dimension: "Spontaneity", dims: { control: 0.2, novelty: 0.1 }, needs: { explore: 0.15 } },
+  { id: "c08", label: "Dinner at a street stall at dusk", img: "/onboarding/p07a.jpg", emoji: "🍢", dimension: "Food", dims: { food: 0.2, luxury: -0.1 }, needs: { explore: 0.2 } },
+  { id: "c09", label: "A chef-plated fine-dining evening", img: "/onboarding/p07b.jpg", emoji: "🍽️", dimension: "Luxury", dims: { luxury: 0.2 }, needs: { indulge: 0.2, celebrate: 0.15 } },
+  { id: "c10", label: "A misty valley outside your window", img: "/onboarding/p08a.jpg", emoji: "🌄", dimension: "Nature", dims: { nature: 0.2 }, needs: { escape: 0.25 } },
+  { id: "c11", label: "White-water rafting this afternoon", img: "/onboarding/p09a.jpg", emoji: "🛶", dimension: "Thrill", dims: { pace: 0.15 }, needs: { thrill: 0.35 } },
+  { id: "c12", label: "An infinity pool and a spa evening", img: "/onboarding/p10a.jpg", emoji: "💆", dimension: "Indulgence", dims: { luxury: 0.2, comfort: 0.15 }, needs: { indulge: 0.3, rest: 0.1 } },
+  { id: "c13", label: "Dawn aarti at the ghats", img: "/onboarding/p11a.jpg", emoji: "🪔", dimension: "Spiritual", dims: { spiritual: 0.25 }, needs: { reflect: 0.35 } },
+  { id: "c14", label: "A beach bonfire with friends", img: "/onboarding/p11b.jpg", emoji: "🔥", dimension: "Celebration", dims: { social: 0.15 }, needs: { celebrate: 0.3, reconnect: 0.1 } },
+  { id: "c15", label: "Fresh snowfall in a pine forest", img: "/onboarding/p12a.jpg", emoji: "❄️", dimension: "Climate", dims: { climate: -0.25 }, needs: { escape: 0.2 } },
 ];
 
 const PARTY_FOR_NEED: Record<Need, Party[]> = {
@@ -62,17 +51,17 @@ const PARTY_FOR_NEED: Record<Need, Party[]> = {
 };
 
 export function applyOnboarding(
-  answers: { pair_id: string; choice: "a" | "b" }[],
+  answers: { card_id: string; choice: "yes" | "no" }[],
   parties: Party[],
 ) {
   const dims: Record<string, number> = { pace: 0.5, social: 0.5, novelty: 0.5, comfort: 0.5, control: 0.5, food: 0.5, nature: 0.5, luxury: 0.5, spiritual: 0.5, climate: 0.5 };
   const needs: Record<string, number> = { rest: 0.3, reconnect: 0.3, explore: 0.3, thrill: 0.3, celebrate: 0.3, reflect: 0.2, indulge: 0.25, escape: 0.3, learn: 0.15 };
   for (const a of answers) {
-    const pair = PAIRS.find((p) => p.id === a.pair_id);
-    if (!pair) continue;
-    const opt = pair[a.choice];
-    for (const [k, v] of Object.entries(opt.dims)) dims[k] = clamp((dims[k] ?? 0.5) + v);
-    for (const [k, v] of Object.entries(opt.needs)) needs[k] = clamp((needs[k] ?? 0.3) + (v as number));
+    const card = CARDS.find((c) => c.id === a.card_id);
+    if (!card) continue;
+    const k = a.choice === "yes" ? 1 : -NO_WEIGHT;
+    for (const [d, v] of Object.entries(card.dims)) dims[d] = clamp((dims[d] ?? 0.5) + v * k);
+    for (const [n, v] of Object.entries(card.needs)) needs[n] = clamp((needs[n] ?? 0.3) + (v as number) * k);
   }
   const ps = parties.length ? parties : (["friends"] as Party[]);
   if (ps.includes("family_elders")) needs.reflect = clamp(needs.reflect + 0.1);

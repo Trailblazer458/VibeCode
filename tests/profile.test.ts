@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { engagementUpdate } from "../lib/engine/profile";
+import { applyOnboarding, CARDS, engagementUpdate } from "../lib/engine/profile";
 
 const base = {
   dims: { social: 0.5, comfort: 0.5, nature: 0.5, luxury: 0.5 },
@@ -29,5 +29,29 @@ describe("likes and saves feed the profile", () => {
     const undone = engagementUpdate({ ...base, ...liked }, { need: "rest", attrs: { luxury: 0.9 } }, -1);
     expect(undone.need_affinity.rest).toBeCloseTo(base.need_affinity.rest);
     expect(undone.dims.luxury).toBeCloseTo(0.5);
+  });
+});
+
+describe("yes/no onboarding", () => {
+  const all = (ids: string[], choice: "yes" | "no") => ids.map((card_id) => ({ card_id, choice }));
+  it("a thrill-seeker who says yes to treks and rafting and no to slow mornings leads with Thrill", () => {
+    const r = applyOnboarding([...all(["c02", "c06", "c11"], "yes"), ...all(["c01", "c03", "c12"], "no")], ["friends"]);
+    expect(r.intents[0].need).toBe("thrill");
+    expect(r.needs.rest).toBeLessThan(0.3);
+    expect(r.dims.pace).toBeGreaterThan(0.5);
+  });
+
+  it("a no moves the profile the other way, at half the strength of a yes", () => {
+    const yes = applyOnboarding(all(["c13"], "yes"), ["solo"]);
+    const no = applyOnboarding(all(["c13"], "no"), ["solo"]);
+    expect(yes.dims.spiritual - 0.5).toBeCloseTo(2 * (0.5 - no.dims.spiritual));
+    expect(no.needs.reflect).toBeLessThan(0.2);
+  });
+
+  it("every card points at a real photo and moves at least one need", () => {
+    for (const c of CARDS) {
+      expect(c.img).toMatch(/^\/onboarding\/p\d{2}[ab]\.jpg$/);
+      expect(Object.keys(c.needs).length).toBeGreaterThan(0);
+    }
   });
 });

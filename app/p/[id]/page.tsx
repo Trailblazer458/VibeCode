@@ -3,13 +3,13 @@ import { intentTitle } from "@/lib/engine/weights";
 import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDate, inr } from "@/lib/client";
-import { Button, Card, Chip, Cover, ErrorNote, FitBadge, IntentPicker, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner, type PlanLite } from "@/components/ui";
+import { Button, Card, Chip, Cover, ErrorNote, FitBadge, IntentPicker, NEED_META, PARTY_META, Section, Sheet, Shell, SponsoredRibbon, Spinner, type PlanLite } from "@/components/ui";
 import { Testimonials, WhyCarousel } from "@/components/why";
 import { LikeSave } from "@/components/likes";
 import { destCover } from "@/lib/images";
 import { itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
 
-interface Alt { id: string; name: string; price: number; mode?: string; fit: number; tags: string[]; blocked: string[]; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number }
+interface Alt { id: string; name: string; price: number; mode?: string; fit: number; tags: string[]; blocked: string[]; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number; sponsored?: boolean }
 type Plan = PlanLite & {
   destId: string; pax: { adults: number; kids: number; seniors: number; pets: number }; rooms: string;
   stay: { id: string; name: string; type: string; area: string; fit: number; price: number };
@@ -25,7 +25,7 @@ const PRICE_UNIT: Record<Elem, string> = { stay: "/night", transport: " pp one w
 export default function PlanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const [d, setD] = useState<{ plan: Plan; alts: Record<Elem, Alt[]>; swapCost?: Record<string, { pp: number; total: number; perHead: number }>; budgetPP?: number | null; chosen: boolean; siblings: number } | null>(null);
+  const [d, setD] = useState<{ plan: Plan; alts: Record<Elem, Alt[]>; swapCost?: Record<string, { pp: number; total: number; perHead: number }>; budgetPP?: number | null; chosen: boolean; siblings: number; booked?: string | null } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [swap, setSwap] = useState<{ elem: Elem; removeId: string } | null>(null);
@@ -147,7 +147,8 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
     const current = swap?.removeId === a.id;
     const elsewhere = !current && inPlan.has(a.id);
     return (
-      <div key={a.id} className={`space-y-2.5 rounded-2xl border p-3 ${current ? "border-teal bg-teal-soft" : close ? "border-saffron bg-white shadow-sm" : "border-line bg-white/60"}`}>
+      <div key={a.id} className={`relative space-y-2.5 overflow-hidden rounded-2xl border p-3 ${a.sponsored ? "pt-7" : ""} ${current ? "border-teal bg-teal-soft" : close ? "border-saffron bg-white shadow-sm" : "border-line bg-white/60"}`}>
+        {a.sponsored && <SponsoredRibbon variant="tab" />}
         <div className="flex items-center gap-2">
           <div className="min-w-0 flex-1"><div className="truncate font-display text-base leading-tight">{a.name}</div><div className="text-xs text-muted">{inr(a.price)}{swap ? (a.mode === "self_drive" ? " per car one way" : PRICE_UNIT[swap.elem]) : ""} · {a.reviews} reviews</div></div>
           {!current && !elsewhere && !a.blocked.length && a.fit >= curFit + 5 && <span className="rounded-full bg-ok/10 px-2 py-0.5 text-[11px] font-semibold text-ok">Better fit</span>}
@@ -251,7 +252,11 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div className="mx-4 mt-6 grid grid-cols-2 gap-2">
         <Button onClick={choose} disabled={busy || d.chosen}>{d.chosen ? "✓ Chosen" : "Choose this plan"}</Button>
         <Button kind="ghost" onClick={() => setShare(true)}>Share as template</Button>
-        <Button kind="accent" className="col-span-2" onClick={() => router.push(`/p/${id}/book`)}>Book this trip →</Button>
+        {d.booked ? (
+          <button disabled className="col-span-2 cursor-not-allowed rounded-xl bg-line px-4 py-2.5 text-sm font-semibold text-muted" title={`Booking reference ${d.booked}`}>✓ Trip booked</button>
+        ) : (
+          <Button kind="accent" className="col-span-2" onClick={() => router.push(`/p/${id}/book`)}>Book this trip →</Button>
+        )}
       </div>
       </div>
       </div>

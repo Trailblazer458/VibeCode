@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, inr } from "@/lib/client";
 import { itemImage } from "@/lib/images";
 import { Carousel, itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
-import { Button, Card, Chip, Cover, CriteriaBar, ErrorNote, FitBadge, IntentPicker, PARTY_META, PLAN_GRID, PlanCard, Section, Shell, Spinner, type Criterion, type PlanLite } from "@/components/ui";
+import { Button, Card, Chip, Cover, CriteriaBar, ErrorNote, FitBadge, IntentPicker, PARTY_META, PLAN_GRID, PlanCard, Section, Shell, SponsoredRibbon, Spinner, type Criterion, type PlanLite } from "@/components/ui";
 
 const DESTS = [
   ["rishikesh", "Rishikesh", "🛶", 175], ["jaipur", "Jaipur", "🏰", 25], ["udaipur", "Udaipur", "🌅", 40], ["mussoorie", "Mussoorie", "🌲", 140],
@@ -11,7 +11,7 @@ const DESTS = [
   ["kasol", "Kasol", "🏕️", 115], ["agra", "Agra", "🕌", 15], ["nainital", "Nainital", "🚣", 195], ["goa", "North Goa", "🏖️", 190],
 ] as const;
 type Tab = "where" | "intent" | "budget" | "reel";
-interface Alt { id: string; name: string; price: number; fit: number; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; blocked: string[] }
+interface Alt { id: string; name: string; price: number; fit: number; good: string[]; goodKeys?: string[]; flags?: Flag[]; evidence: { snippet: string; sameParty: boolean } | null; blocked: string[]; sponsored?: boolean }
 interface Res { plans: PlanLite[]; criteria: Criterion[]; nPlans: number; uncertainty: number }
 
 export default function Explore() {
@@ -87,7 +87,7 @@ export default function Explore() {
 
   return (
     <Shell title="Explore">
-      <div className="no-scrollbar flex gap-1.5 overflow-x-auto px-4 pt-3">
+      <div data-tour="explore-tabs" className="no-scrollbar flex gap-1.5 overflow-x-auto px-4 pt-3">
         {([["where", "📍 I know where"], ["intent", "✦ By intent"], ["budget", "💸 Budget-first"], ["reel", "📲 From a Reel"]] as const).map(([k, l]) => (
           <Chip key={k} on={tab === k} onClick={() => { setTab(k); setRes(null); setDisabled([]); }}>{l}</Chip>
         ))}
@@ -98,7 +98,7 @@ export default function Explore() {
         <>
           {!dest && (
             <Section title="Where are you going?" sub="The destination is fixed; we still plan the stay, transport, pace and checks around your intent">
-              <div className="grid grid-cols-3 gap-2 px-4 md:grid-cols-4 lg:grid-cols-6">
+              <div data-tour="explore-dests" className="grid grid-cols-3 gap-2 px-4 md:grid-cols-4 lg:grid-cols-6">
                 {DESTS.map(([id, name, emoji, hue]) => (
                   <button key={id} onClick={() => setDest(id)} className="overflow-hidden rounded-xl text-left">
                     <Cover hue={hue} emoji={emoji} photo={itemImage(id)} className="h-20 p-2 md:h-28"><span className="absolute bottom-1.5 left-2 text-sm font-semibold text-white drop-shadow">{name}</span></Cover>
@@ -128,8 +128,9 @@ export default function Explore() {
                       slideClass="w-[85%] sm:w-1/2 lg:w-1/3"
                       items={rank.stay}
                       render={(s, i) => (
-                        <Card className="rise flex h-full flex-col overflow-hidden">
+                        <Card className="rise relative flex h-full flex-col overflow-hidden">
                           <Cover hue={(DESTS.find((d) => d[0] === dest)?.[3] ?? 175) + i * 40} emoji="🏨" photo={itemImage(s.id)} className="h-32 p-3">
+                            {s.sponsored && <SponsoredRibbon />}
                             <div className="flex items-start justify-between">
                               <span className="glass-dark rounded-full px-2.5 py-0.5 text-xs font-bold text-white">#{i + 1}</span>
                               <FitBadge fit={s.fit} />

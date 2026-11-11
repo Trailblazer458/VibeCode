@@ -10,6 +10,12 @@ import type { Plan, TripRequest } from "@/lib/types";
 
 type Stored = Plan & { signature?: string; templateId?: string; templateAuthor?: string };
 
+/** The booking reference if this user has booked this plan (the prototype records bookings as signals). */
+async function bookingRef(uid: string, id: string) {
+  const r = await one<{ ref: string }>("select payload->>'ref' as ref from signals where user_id = $1 and type = 'plan_booked' and payload->>'planId' = $2 order by id desc limit 1", [uid, id]);
+  return r?.ref ?? null;
+}
+
 async function load(id: string, uid: string) {
   const row = await one<{ plan: Stored; set_id: string; user_id: string }>("select plan, set_id, user_id from plans where id = $1", [id]);
   if (!row) throw new HttpError(404, "Plan not found");
@@ -32,6 +38,7 @@ export async function GET(_req: Request, ctxArg: { params: Promise<{ id: string 
     };
     const set = row.set_id ? await one<{ plan_ids: string[]; request: Partial<TripRequest> | null }>("select plan_ids, request from plan_sets where id = $1", [row.set_id]) : null;
     const chosen = await one("select 1 as x from plan_choices where chosen_plan_id = $1", [id]);
+    const booked = await bookingRef(uid, id);
 
     // Exact price of every possible swap: rebuild the plan with the swap applied and compare. Keyed
     // "element:removeId>addId"; pp is per person for the whole trip (transport is return), total is for the group.
@@ -48,7 +55,7 @@ export async function GET(_req: Request, ctxArg: { params: Promise<{ id: string 
     for (const [elem, key] of [["food", "food"], ["activity", "activities"]] as const)
       for (const cur of ids[key])
         for (const alt of alts[elem]) if (!ids[key].includes(alt.id)) swapCost[`${elem}:${cur}>${alt.id}`] = price({ ...ids, [key]: ids[key].map((x) => (x === cur ? alt.id : x)) });
-    return { plan: p, alts, swapCost, budgetPP, siblings: (set?.plan_ids ?? []).length, chosen: !!chosen };
+    return { plan: p, alts, swapCost, budgetPP, siblings: (set?.plan_ids ?? []).length, chosen: !!chosen, booked };
   });
 }
 
@@ -68,6 +75,9 @@ export async function POST(req: Request, ctxArg: { params: Promise<{ id: string 
     // Prototype checkout: no payment is taken. A booking is the strongest signal we get, so it updates the profile
     // like a like or save does, at double weight, and is logged with a reference the confirmation screen shows.
     if (body.action === "book") {
+      // Booking twice is a no-op that returns the first reference, so a refresh or double tap never re-books.
+      const existing = await bookingRef(uid, id);
+      if (existing) return { ok: true, ref: existing, already: true };
       const ref = "TG-" + id.replace(/^pl_/, "").slice(-6).toUpperCase();
       const upd = engagementUpdate(profile, { need: p.need, attrs: p.attrs }, 2);
       await updateProfile(uid, { dims: upd.dims, need_affinity: upd.need_affinity, intents: upd.intents });

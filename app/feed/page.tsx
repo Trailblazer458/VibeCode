@@ -30,7 +30,8 @@ export default function FeedPage() {
         <p className="text-sm text-muted">{greet}{d ? `, ${d.profile.name}` : ""}</p>
         <h1 className="font-display text-3xl font-semibold leading-tight">Trips that fit you</h1>
         {d?.profile.persona && <p className="mt-0.5 text-xs text-muted">{d.profile.persona} · tuned from your choices, edits and trips</p>}
-        <GlowLink href="/plan" className="mt-4">
+        <div data-tour="plan-with-me" className="mt-4 rounded-2xl">
+        <GlowLink href="/plan">
           <span className="flex items-center gap-3 px-4 py-3">
             <span className="text-xl">✎</span>
             <span className="flex-1">
@@ -40,13 +41,14 @@ export default function FeedPage() {
             <span className="text-teal transition group-hover:translate-x-0.5">→</span>
           </span>
         </GlowLink>
+        </div>
       </div>
       <ErrorNote error={err} />
       {!d && !err && <Spinner label="Scoring trip options for your top intents…" />}
       {d && (
         <>
           {d.trigger && (
-            <div className="mx-4 mt-4 flex flex-col gap-3 rounded-2xl md:flex-row md:items-center border border-line border-l-4 border-l-teal bg-white/85 px-4 py-3 shadow-sm backdrop-blur-xl">
+            <div data-tour="trip-window" className="mx-4 mt-4 flex flex-col gap-3 rounded-2xl md:flex-row md:items-center border border-line border-l-4 border-l-teal bg-white/85 px-4 py-3 shadow-sm backdrop-blur-xl">
               <div className="min-w-0 md:flex-1">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-teal">Upcoming trip window</div>
                 <div className="mt-0.5 text-base font-semibold leading-snug text-ink">{d.trigger.title}</div>
@@ -59,13 +61,15 @@ export default function FeedPage() {
             </div>
           )}
           {d.boosted.length > 0 && <p className="mx-4 mt-3 rounded-xl bg-teal-soft px-3 py-2 text-xs text-teal">↻ Re-ranked this session: you spent time on {d.boosted.join(", ")}.</p>}
-          {d.rows.map((r) => (
-            <Section key={r.label} title={r.label} sub={r.sub} action={<Link href={`/explore?need=${r.need}&party=${r.party}`} className="text-xs font-semibold text-teal">More →</Link>}>
+          {d.rows.map((r, ri) => (
+            <div key={r.label} data-tour={ri === 0 ? "feed-row" : undefined}>
+            <Section title={r.label} sub={r.sub} action={<Link href={`/explore?need=${r.need}&party=${r.party}`} className="text-xs font-semibold text-teal">More →</Link>}>
               <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-2 md:overflow-visible xl:grid-cols-3">
                 {r.plans.map((p) => <PlanCard key={p.id} p={p} />)}
                 {r.plans.length === 0 && <Card className="w-full p-4 text-sm text-muted">No plan fits every filter for these dates. Try Explore with a different budget.</Card>}
               </div>
             </Section>
+            </div>
           ))}
           {d.different.plan && (
             <Section title="✶ Something different" sub={`Outside your usual top three: ${d.different.label}. This is how your profile grows.`}>
