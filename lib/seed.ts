@@ -1,6 +1,6 @@
 // Seeds the catalog, the "offline" review pipeline output, the demo persona and social data.
 import { ALL_ITEMS, ITEM_BY_ID } from "./data/catalog";
-import { aggregate, extractHeuristic, generateReviews, type Extraction } from "./data/reviews";
+import { aggregate, extractHeuristic, generateReviews, PHRASES, type Extraction } from "./data/reviews";
 import {
   DEMO_DEALBREAKERS, DEMO_ID, DEMO_PAST_TRIPS, FRIENDSHIPS, GROUP_TRIP, HOLIDAYS, PROFILES, TEMPLATES,
 } from "./data/people";
@@ -23,12 +23,30 @@ export function computeReviewPipeline() {
   return { reviews, extractions, scores };
 }
 
-export async function seedAll(d: Driver) {
+/** Changes whenever the catalog or the review phrase bank changes; stored in app_meta (see lib/db.ts). */
+export const CATALOG_VERSION = (() => {
+  const s = JSON.stringify({ items: ALL_ITEMS, phrases: PHRASES });
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return `${ALL_ITEMS.length}-${(h >>> 0).toString(36)}`;
+})();
+
+async function insertCatalog(d: Driver) {
   const { reviews, extractions, scores } = computeReviewPipeline();
   await bulkInsert(d, "items", ALL_ITEMS.map((i) => ({ id: i.id, kind: i.kind, dest_id: "destId" in i ? i.destId : i.id, name: i.name, data: i })));
   await bulkInsert(d, "reviews", reviews);
   await bulkInsert(d, "review_extractions", extractions.map((e) => ({ ...e, extractor: "rules" })));
   await bulkInsert(d, "item_aspect_scores", scores);
+}
+
+/** Rebuild only the catalog and review tables (items, reviews, extractions, scores). User data is untouched. */
+export async function refreshCatalog(d: Driver) {
+  for (const t of ["item_aspect_scores", "review_extractions", "reviews", "items"]) await d.query(`delete from ${t}`);
+  await insertCatalog(d);
+}
+
+export async function seedAll(d: Driver) {
+  await insertCatalog(d);
   await bulkInsert(d, "holiday_calendar", HOLIDAYS.map((h) => ({ date: h.date, name: h.name, region: "IN" })));
 
   await bulkInsert(d, "profiles", PROFILES.map((p) => ({ ...p, onboarded: true, is_demo: p.id === DEMO_ID, calendar_opt_in: p.id === DEMO_ID })));

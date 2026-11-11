@@ -12,7 +12,7 @@ interface PlanForWhy {
 
 interface Slide { key: string; name: string; reason: string; image: ItemPhoto | null; emoji: string; hue: number; kind: string }
 
-const STAY_EMOJI: Record<string, string> = { camp: "🏕️", hostel: "🛏️", heritage: "🏰", homestay: "🏡", resort: "🌴", hotel: "🏨" };
+const STAY_EMOJI: Record<string, string> = { camp: "🏕️", hostel: "🛏️", heritage: "🏰", homestay: "🏡", resort: "🌴", hotel: "🏨", ashram: "🕉️" };
 
 /** Turns the engine's "Name: reason" lines into slides; other lines (like dwell notes) are skipped. */
 function slidesFor(p: PlanForWhy): Slide[] {

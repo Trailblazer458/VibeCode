@@ -30,6 +30,22 @@ describe("intent-conditioned ranking", () => {
     expect(new Set(r.plans.map((p) => p.destId)).size).toBe(r.plans.length);
   });
 
+  it("changes the trip itself when the intent changes at a fixed destination", () => {
+    // Couples converge on romantic stays more than friends do, so their bar for distinct stays is lower.
+    for (const [party, minStays] of [["friends", 3], ["couple", 2]] as const) {
+      for (const destId of ["rishikesh", "udaipur", "manali", "goa"]) {
+        const trips = (["rest", "thrill", "celebrate", "reflect", "learn"] as const).map((need) => {
+          const p = buildPlans({ need, party, window, budgetPP: null, destId }, ctx()).plans[0];
+          return { need, stay: p.stay.id, acts: p.activities.map((a) => a.id).sort().join("+") };
+        });
+        console.log(party, destId, trips.map((t) => `${t.need}: ${t.stay} | ${t.acts}`));
+        // Five intents should not collapse onto the same plan: stays and activity sets both vary.
+        expect(new Set(trips.map((t) => t.stay)).size, `${party} ${destId} stays`).toBeGreaterThanOrEqual(minStays);
+        expect(new Set(trips.map((t) => t.acts)).size, `${party} ${destId} activities`).toBeGreaterThanOrEqual(4);
+      }
+    }
+  });
+
   it("applies no budget filter when the budget is flexible (null)", () => {
     const capped = buildPlans({ need: "indulge", party: "couple", window, budgetPP: 15000 }, ctx());
     const open = buildPlans({ need: "indulge", party: "couple", window, budgetPP: null }, ctx());

@@ -70,10 +70,26 @@ export async function ensureReady() {
     g.__tgReady = (async () => {
       const d = await driver();
       await d.exec(SCHEMA_SQL);
+      const { CATALOG_VERSION, refreshCatalog, seedAll } = await import("./seed");
       const rows = await d.query<{ n: number }>("select count(*)::int as n from profiles where id = 'arjun'");
       if (!rows[0] || rows[0].n === 0) {
-        const { seedAll } = await import("./seed");
         await seedAll(d);
+        await d.query("insert into app_meta (key, value) values ('catalog_version', $1) on conflict (key) do update set value = excluded.value", [CATALOG_VERSION]);
+      } else {
+        // Already seeded: if the code catalog changed, exactly one instance claims the new version (single atomic
+        // statement) and rebuilds the catalog tables. If the rebuild fails, the claim is released so it retries.
+        const claimed = await d.query(
+          "insert into app_meta (key, value) values ('catalog_version', $1) on conflict (key) do update set value = excluded.value where app_meta.value is distinct from excluded.value returning key",
+          [CATALOG_VERSION],
+        );
+        if (claimed.length) {
+          try {
+            await refreshCatalog(d);
+          } catch (e) {
+            await d.query("delete from app_meta where key = 'catalog_version'");
+            throw e;
+          }
+        }
       }
     })().catch((e) => {
       g.__tgReady = undefined;

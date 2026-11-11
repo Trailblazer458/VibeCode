@@ -296,6 +296,12 @@ create index if not exists idx_extractions_item on review_extractions(item_id);
 create index if not exists idx_plans_user on plans(user_id);
 create index if not exists idx_trips_owner on trips(owner_id);
 
+-- Catalog version stamp: when the code catalog changes, catalog tables are rebuilt once (lib/db.ts).
+create table if not exists app_meta (
+  key text primary key,
+  value text not null
+);
+
 -- Data fix-up for databases seeded before stock templates were renamed (idempotent).
 update templates set author_name = 'Curated by TripGenie' where author_id is null and author_name <> 'Curated by TripGenie';
 `;

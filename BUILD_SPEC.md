@@ -177,8 +177,9 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
 ## Seed data
 
 - **Catalog:** 12 destinations from Delhi.
-  - Per destination: 3 stays, 3 transport options, 4 food spots, 4 activities.
-  - **~430 synthetic reviews** written in mixed party voices, from a phrase bank.
+  - Per destination: 6–7 stays, 5 ways to get there, 7 food spots, 8–11 activities (329 items), spread so every intent has its own picks (rest/indulge, family, romance, thrill, reflect, learn & create, escape, explore). Stays and new restaurants are fictional; activities are real places.
+  - **~2,300 synthetic reviews** from a phrase bank of ~220 phrases, many written in a specific party's voice (kids, parents, partner, gang, solo), with individual taste on top of the party's typical preference. Quotes therefore change with both intent and party.
+  - **Catalog versioning:** a hash of the catalog and phrase bank is stored in `app_meta`. When it changes, one server instance rebuilds the items, reviews, extractions and scores tables on its next cold start (user data untouched).
 - **Persona: Arjun.**
   - 31, Gurugram, non-veg; partner Meera is vegetarian.
   - Budget ₹30k per person.
