@@ -266,6 +266,17 @@ create table if not exists template_likes (
   primary key (template_id, user_id, kind)
 );
 
+-- Likes and saves on generated plans, keyed by the plan signature (stable across feed reloads, unlike plan ids).
+create table if not exists plan_likes (
+  user_id text not null,
+  signature text not null,
+  kind text not null,
+  dest_id text,
+  need text,
+  created_at timestamptz default now(),
+  primary key (user_id, signature, kind)
+);
+
 create table if not exists holiday_calendar (
   date date not null,
   name text not null,

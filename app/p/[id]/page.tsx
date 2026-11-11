@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { api, fmtDate, inr } from "@/lib/client";
 import { Button, Card, Chip, Cover, ErrorNote, FitBadge, IntentPicker, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner, type PlanLite } from "@/components/ui";
 import { Testimonials, WhyCarousel } from "@/components/why";
+import { LikeSave } from "@/components/likes";
 import { destCover } from "@/lib/images";
 import { itemQuotes, MiniTestimonials, ProsCons, type Flag } from "@/components/reviews";
 
@@ -114,6 +115,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
         <h1 className="font-display text-3xl font-semibold">{p.destName}</h1>
         <p className="text-sm opacity-95">{NEED_META[p.need].emoji} {NEED_META[p.need].label} · {PARTY_META[p.party].emoji} {PARTY_META[p.party].label}</p>
         <p className="glass-dark mt-4 inline-block rounded-2xl px-4 py-2 text-2xl font-semibold">{inr(p.cost.perHead)} <span className="text-sm font-normal opacity-90">per person, all-in</span></p>
+        <div className="absolute top-3 right-3"><LikeSave planId={p.id} signature={(p as { signature?: string }).signature} /></div>
         {cover && (
           <a href={cover.source} target="_blank" rel="noreferrer" className="absolute right-3 bottom-2 max-w-[55%] truncate text-[10px] text-white/75 hover:text-white">
             Photo: {cover.artist} · {cover.license}

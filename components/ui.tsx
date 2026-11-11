@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { inr } from "@/lib/client";
 import { destCover, type ItemPhoto } from "@/lib/images";
+import { LikeSave, LikeToast } from "./likes";
 import { MiniTestimonials, travelledLabel } from "./reviews";
 
 /** "Kasol: strong on adventure, which matters most for a thrill trip with friends" -> "Strong on adventure". */
@@ -45,6 +46,7 @@ export function Shell({ children, title, back, right }: { children: ReactNode; t
       )}
       <main className={`${CONTENT} flex-1 pb-24 md:px-4 md:pb-12`}>{children}</main>
       <Nav />
+      <LikeToast />
     </div>
   );
 }
@@ -204,7 +206,7 @@ export function ErrorNote({ error }: { error: string | null }) {
 }
 
 export interface PlanLite {
-  id: string; title: string; destId?: string; destName: string; emoji: string; hue: number; fit: number; need: string; party: string;
+  id: string; signature?: string; title: string; destId?: string; destName: string; emoji: string; hue: number; fit: number; need: string; party: string;
   window: { start: string; days: number; label?: string };
   cost: { perHead: number; total: number; transport: number; stay: number; food: number; activities: number; local: number };
   transport: { name: string; mode: string; hours: number }; stay: { name: string; type: string };
@@ -226,6 +228,7 @@ export function PlanCard({ p, wide, extra }: { p: PlanLite; wide?: boolean; extr
           <div className="font-display text-xl font-semibold leading-tight">{p.destName}</div>
           <div className="text-xs opacity-90">{NEED_META[p.need]?.emoji} {NEED_META[p.need]?.label} · {PARTY_META[p.party]?.label}</div>
         </div>
+        <div className="absolute right-3 bottom-2"><LikeSave planId={p.id} signature={p.signature} /></div>
       </Cover>
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">

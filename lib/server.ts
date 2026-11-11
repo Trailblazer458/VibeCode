@@ -113,10 +113,11 @@ export function partyDiet(p: Profile, party: Party, override?: Diet | null): Die
   return strictestDiet([p.diet, override, ...relevant.map((c) => c.diet as Diet)]);
 }
 
-/** Destinations the user liked or saved (community templates) or gave a 👍 in a group trip room. */
+/** Destinations the user liked or saved (plan cards, community templates) or gave a 👍 in a group trip room. */
 export async function likedDestinations(uid: string) {
   const rows = await q<{ dest_id: string }>(
     `select distinct t.dest_id from template_likes l join templates t on t.id = l.template_id where l.user_id = $1
+     union select distinct dest_id from plan_likes where user_id = $1
      union select distinct dest_id from trip_votes where user_id = $1 and vote = 'like'`,
     [uid],
   );
