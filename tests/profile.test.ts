@@ -34,8 +34,8 @@ describe("likes and saves feed the profile", () => {
 
 describe("yes/no onboarding", () => {
   const all = (ids: string[], choice: "yes" | "no") => ids.map((card_id) => ({ card_id, choice }));
-  it("a thrill-seeker who says yes to treks and rafting and no to slow mornings leads with Thrill", () => {
-    const r = applyOnboarding([...all(["c02", "c06", "c11"], "yes"), ...all(["c01", "c03", "c12"], "no")], ["friends"]);
+  it("a thrill-seeker who says yes to the dawn trek and no to slow mornings leads with Thrill", () => {
+    const r = applyOnboarding([...all(["c02"], "yes"), ...all(["c01", "c09", "c13"], "no")], ["friends"]);
     expect(r.intents[0].need).toBe("thrill");
     expect(r.needs.rest).toBeLessThan(0.3);
     expect(r.dims.pace).toBeGreaterThan(0.5);
@@ -46,6 +46,12 @@ describe("yes/no onboarding", () => {
     const no = applyOnboarding(all(["c13"], "no"), ["solo"]);
     expect(yes.dims.spiritual - 0.5).toBeCloseTo(2 * (0.5 - no.dims.spiritual));
     expect(no.needs.reflect).toBeLessThan(0.2);
+  });
+
+  it("is eight cards that between them reach every need state", () => {
+    expect(CARDS.length).toBe(8);
+    const reached = new Set(CARDS.flatMap((c) => Object.keys(c.needs)));
+    expect([...reached].sort()).toEqual(["celebrate", "escape", "explore", "indulge", "learn", "reconnect", "reflect", "rest", "thrill"]);
   });
 
   it("every card points at a real photo and moves at least one need", () => {

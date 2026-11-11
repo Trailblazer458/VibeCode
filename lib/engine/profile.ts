@@ -20,22 +20,17 @@ export interface ExperienceCard {
 
 export const NO_WEIGHT = 0.5;
 
+// Eight cards, kept short so people finish. Together they touch every need state, and the style dimensions the
+// dropped scenes used to carry (comfort, climate, food) ride along on the closest remaining card.
 export const CARDS: ExperienceCard[] = [
   { id: "c01", label: "A slow breakfast on the porch, nowhere to be", img: "/onboarding/p01a.jpg", emoji: "☕", dimension: "Pace", dims: { pace: -0.2 }, needs: { rest: 0.3 } },
-  { id: "c02", label: "Headlamps on, the trek starts at dawn", img: "/onboarding/p01b.jpg", emoji: "🥾", dimension: "Pace", dims: { pace: 0.2, nature: 0.1 }, needs: { thrill: 0.3, escape: 0.1 } },
-  { id: "c03", label: "An empty beach and one chair", img: "/onboarding/p02a.jpg", emoji: "🏝️", dimension: "Social", dims: { social: -0.2 }, needs: { rest: 0.15, escape: 0.15 } },
-  { id: "c04", label: "A glowing, crowded night market", img: "/onboarding/p02b.jpg", emoji: "🏮", dimension: "Social", dims: { social: 0.2, food: 0.1 }, needs: { explore: 0.2, celebrate: 0.1 } },
-  { id: "c05", label: "Waking up in a heritage haveli courtyard", img: "/onboarding/p03a.jpg", emoji: "🏛️", dimension: "Culture", dims: { novelty: 0.15 }, needs: { explore: 0.25, learn: 0.1 } },
-  { id: "c06", label: "A tent under the stars", img: "/onboarding/p04a.jpg", emoji: "⛺", dimension: "Comfort", dims: { comfort: -0.2, nature: 0.15 }, needs: { thrill: 0.15, escape: 0.15 } },
-  { id: "c07", label: "No fixed plan, just an open map", img: "/onboarding/p06b.jpg", emoji: "🧭", dimension: "Spontaneity", dims: { control: 0.2, novelty: 0.1 }, needs: { explore: 0.15 } },
-  { id: "c08", label: "Dinner at a street stall at dusk", img: "/onboarding/p07a.jpg", emoji: "🍢", dimension: "Food", dims: { food: 0.2, luxury: -0.1 }, needs: { explore: 0.2 } },
-  { id: "c09", label: "A chef-plated fine-dining evening", img: "/onboarding/p07b.jpg", emoji: "🍽️", dimension: "Luxury", dims: { luxury: 0.2 }, needs: { indulge: 0.2, celebrate: 0.15 } },
-  { id: "c10", label: "A misty valley outside your window", img: "/onboarding/p08a.jpg", emoji: "🌄", dimension: "Nature", dims: { nature: 0.2 }, needs: { escape: 0.25 } },
-  { id: "c11", label: "White-water rafting this afternoon", img: "/onboarding/p09a.jpg", emoji: "🛶", dimension: "Thrill", dims: { pace: 0.15 }, needs: { thrill: 0.35 } },
-  { id: "c12", label: "An infinity pool and a spa evening", img: "/onboarding/p10a.jpg", emoji: "💆", dimension: "Indulgence", dims: { luxury: 0.2, comfort: 0.15 }, needs: { indulge: 0.3, rest: 0.1 } },
+  { id: "c02", label: "Headlamps on, the trek starts at dawn", img: "/onboarding/p01b.jpg", emoji: "🥾", dimension: "Adventure", dims: { pace: 0.2, nature: 0.1, comfort: -0.1 }, needs: { thrill: 0.35, escape: 0.1 } },
+  { id: "c04", label: "A glowing, crowded night market", img: "/onboarding/p02b.jpg", emoji: "🏮", dimension: "Social", dims: { social: 0.2, food: 0.15 }, needs: { explore: 0.2, celebrate: 0.1 } },
+  { id: "c05", label: "Waking up in a heritage haveli courtyard", img: "/onboarding/p03a.jpg", emoji: "🏛️", dimension: "Culture", dims: { novelty: 0.15 }, needs: { explore: 0.25, learn: 0.15 } },
+  { id: "c09", label: "A chef-plated fine-dining evening", img: "/onboarding/p07b.jpg", emoji: "🍽️", dimension: "Luxury", dims: { luxury: 0.2, comfort: 0.15 }, needs: { indulge: 0.3, celebrate: 0.1 } },
+  { id: "c10", label: "A misty valley outside your window", img: "/onboarding/p08a.jpg", emoji: "🌄", dimension: "Nature", dims: { nature: 0.2, climate: -0.1 }, needs: { escape: 0.3 } },
   { id: "c13", label: "Dawn aarti at the ghats", img: "/onboarding/p11a.jpg", emoji: "🪔", dimension: "Spiritual", dims: { spiritual: 0.25 }, needs: { reflect: 0.35 } },
-  { id: "c14", label: "A beach bonfire with friends", img: "/onboarding/p11b.jpg", emoji: "🔥", dimension: "Celebration", dims: { social: 0.15 }, needs: { celebrate: 0.3, reconnect: 0.1 } },
-  { id: "c15", label: "Fresh snowfall in a pine forest", img: "/onboarding/p12a.jpg", emoji: "❄️", dimension: "Climate", dims: { climate: -0.25 }, needs: { escape: 0.2 } },
+  { id: "c14", label: "A beach bonfire with friends", img: "/onboarding/p11b.jpg", emoji: "🔥", dimension: "Celebration", dims: { social: 0.15, climate: 0.1 }, needs: { celebrate: 0.3, reconnect: 0.15 } },
 ];
 
 const PARTY_FOR_NEED: Record<Need, Party[]> = {

@@ -86,7 +86,7 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
 ## Journey (to-be)
 
 1. **First open:** yes/no onboarding.
-   - 15 single experiences (photo + caption), each answered Yes or No. A Yes applies the card's dimension and need-state effect; a No pushes the other way at half strength (`NO_WEIGHT`); a skip says nothing. One clear signal per card instead of a forced choice between two scenes.
+   - 8 single experiences (photo + caption, kept short so people finish; together they reach every need state), each answered Yes or No. A Yes applies the card's dimension and need-state effect; a No pushes the other way at half strength (`NO_WEIGHT`); a skip says nothing. One clear signal per card instead of a forced choice between two scenes.
    - Diet is asked directly, never inferred.
    - The user picks who they usually travel with, a budget and optional dealbreakers.
    - It ends with a short "That's everything we need" screen and goes straight to For You. The persona is still computed and shown on the profile, not at the end of onboarding.
@@ -200,4 +200,4 @@ The criteria bar shows every applied filter, its source (you, group, assumed, tr
 
 ## Images
 
-Onboarding experiences load from `/public/onboarding/p01a.jpg` … `p12b.jpg` (15 of the 24 are used): Wikimedia Commons photos matched to each caption, cropped to 4:5, credited on the card and in `public/onboarding/CREDITS.md` (data in `lib/onboarding-photos.json`). A missing file falls back to the gradient + emoji.
+Onboarding experiences load from `/public/onboarding/p01a.jpg` … `p12b.jpg` (8 of the 24 are used): Wikimedia Commons photos matched to each caption, cropped to 4:5, credited on the card and in `public/onboarding/CREDITS.md` (data in `lib/onboarding-photos.json`). A missing file falls back to the gradient + emoji.
