@@ -46,13 +46,13 @@ export default function FeedPage() {
       {d && (
         <>
           {d.trigger && (
-            <div className="mx-4 mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-line border-l-4 border-l-teal bg-white/85 px-4 py-3 shadow-sm backdrop-blur-xl">
-              <div className="min-w-0 flex-1">
+            <div className="mx-4 mt-4 flex flex-col gap-3 rounded-2xl md:flex-row md:items-center border border-line border-l-4 border-l-teal bg-white/85 px-4 py-3 shadow-sm backdrop-blur-xl">
+              <div className="min-w-0 md:flex-1">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-teal">Upcoming trip window</div>
                 <div className="mt-0.5 text-base font-semibold leading-snug text-ink">{d.trigger.title}</div>
                 <div className="mt-0.5 text-sm leading-snug text-ink/75">{d.trigger.body} Plans below are built for {d.window.label}.</div>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex shrink-0 flex-row-reverse items-center justify-end gap-3 md:flex-row">
                 <Link href="/nudges" className="text-xs font-semibold text-teal hover:underline">All windows</Link>
                 <Link href={`/plan?trigger=${encodeURIComponent(d.trigger.key)}`} className="rounded-full bg-teal px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal/90">Plan a trip →</Link>
               </div>

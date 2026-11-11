@@ -215,8 +215,6 @@ export interface PlanLite {
 }
 
 export function PlanCard({ p, wide, extra }: { p: PlanLite; wide?: boolean; extra?: ReactNode }) {
-  const warn = p.readiness.filter((r) => r.status !== "ok");
-  const fail = p.readiness.some((r) => r.status === "fail");
   return (
     <Link href={`/p/${p.id}`} className={`rise flex shrink-0 flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-sm transition hover:shadow-md ${wide ? "w-full" : "w-[78%] sm:w-80 md:w-full"}`}>
       <Cover hue={p.hue} emoji={p.emoji} photo={destCover(p.destId, p.need)} className="h-28 p-3">
@@ -238,10 +236,6 @@ export function PlanCard({ p, wide, extra }: { p: PlanLite; wide?: boolean; extr
           <span className="truncate">🏨 {p.stay.name}</span>
         </div>
         {p.why[0] && <p className="line-clamp-2 text-sm leading-snug">{shortWhy(p.why[0])}</p>}
-        <div className="flex items-center gap-2 text-[11px]">
-          <span className="rounded-full bg-teal-soft px-2 py-0.5 text-teal">✓ {p.readiness.length - warn.length} checks passed</span>
-          {warn.length > 0 && <span className={`rounded-full px-2 py-0.5 ${fail ? "bg-saffron/20 text-warn" : "bg-saffron-soft text-warn"}`}>{warn.length} {warn.length === 1 ? "thing" : "things"} to check</span>}
-        </div>
         {extra}
         {p.evidence.length > 0 && (
           <div className="mt-auto">

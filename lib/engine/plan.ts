@@ -575,7 +575,7 @@ function checks(
   const share = (t.item.hours * 2) / (days * 16);
   const tol = TRANSIT_TOLERANCE[req.need] * (party === "family_elders" ? 0.85 : 1);
   out.push({
-    key: "transit", label: "Door-to-door time",
+    key: "transit", label: "Door-to-door time", items: [t.item.id],
     status: share <= tol ? "ok" : share <= tol * 1.2 ? "warn" : "fail",
     detail: `${t.item.hours}h each way: ${Math.round(share * 100)}% of your waking trip time (limit for this intent: ${Math.round(tol * 100)}%).`,
   });
@@ -585,20 +585,21 @@ function checks(
   const vulnerable = party === "solo" || party === "family_kids" || party === "family_elders";
   if (late) {
     out.push({
-      key: "arrival", label: "Late-night arrival",
+      key: "arrival", label: "Late-night arrival", items: [t.item.id],
       status: s.item.areaSafety < 0.75 || vulnerable ? "fail" : "warn",
       detail: `Arrives around ${fmt(arrive)} in ${s.item.area} (area safety ${Math.round(s.item.areaSafety * 100)}/100). Pre-book a verified pickup or take the earlier option.`,
     });
   } else if (arrive + 3 < s.item.checkIn && arrive > 5) {
-    out.push({ key: "arrival", label: "Arrival vs check-in", status: "warn", detail: `Arrives ${fmt(arrive)}, check-in ${s.item.checkIn}:00. Request early check-in or plan a first stop.` });
+    out.push({ key: "arrival", label: "Arrival vs check-in", items: [s.item.id], status: "warn", detail: `Arrives ${fmt(arrive)}, check-in ${s.item.checkIn}:00. Request early check-in or plan a first stop.` });
   } else {
-    out.push({ key: "arrival", label: "Arrival time", status: "ok", detail: `Arrives around ${fmt(arrive)}, comfortably before dark.` });
+    out.push({ key: "arrival", label: "Arrival time", items: [t.item.id], status: "ok", detail: `Arrives around ${fmt(arrive)}, comfortably before dark.` });
   }
 
   if (DIET_RANK[diet] >= 2) {
     const okMeals = food.filter((f) => f.item.diet !== "nonveg_focus").length;
     out.push({
       key: "diet", label: diet === "jain" ? "Jain food" : "Vegetarian food",
+      items: [...(s.item.veg === "limited" ? [s.item.id] : []), ...food.filter((f) => f.item.diet === "nonveg_focus").map((f) => f.item.id)],
       status: s.item.veg === "limited" ? "fail" : okMeals === food.length ? "ok" : "warn",
       detail: `${s.item.veg === "veg_only" ? "Pure-veg stay" : "Stay has a veg menu"}; ${okMeals}/${food.length} picked restaurants are veg-friendly.`,
     });
@@ -606,7 +607,7 @@ function checks(
     out.push({ key: "diet", label: "Food", status: "ok", detail: `No restrictions; ${food.length} restaurants matched to your taste.` });
   }
 
-  out.push({ key: "rooms", label: "Room setup", status: rooms.ok ? "ok" : "warn", detail: rooms.label + (rooms.note ? `: ${rooms.note}` : "") + ` for ${heads(pax)} ${heads(pax) === 1 ? "person" : "people"}.` });
+  out.push({ key: "rooms", label: "Room setup", items: [s.item.id], status: rooms.ok ? "ok" : "warn", detail: rooms.label + (rooms.note ? `: ${rooms.note}` : "") + ` for ${heads(pax)} ${heads(pax) === 1 ? "person" : "people"}.` });
 
   const sf = dest.season[month(req.window.start)];
   out.push({ key: "season", label: "Season fit", status: sf >= 0.7 ? "ok" : sf >= 0.4 ? "warn" : "fail", detail: sf >= 0.7 ? "Good time to go." : sf >= 0.4 ? "Shoulder season: check weather and closures." : "Off-season for this trip." });
@@ -614,7 +615,9 @@ function checks(
   const respected = ctx.dealbreakers.filter((x) => x.kind === "hard" && hardTags.includes(x.attribute)).map((x) => x.label);
   const softHits = ctx.dealbreakers.filter((x) => x.kind === "soft" && softTags.includes(x.attribute) && [...s.tags, ...t.tags, ...acts.flatMap((a) => a.tags)].includes(x.attribute));
   if (softHits.length) {
-    out.push({ key: "dealbreakers", label: "Your preferences", status: "warn", detail: `Includes something you usually avoid: ${softHits.map((x) => x.label.toLowerCase()).join("; ")}. Swap it below.` });
+    const avoid = new Set(softHits.map((x) => x.attribute));
+    const hitIds = [s, t, ...acts].filter((x) => x.tags.some((tag) => avoid.has(tag))).map((x) => x.item.id);
+    out.push({ key: "dealbreakers", label: "Your preferences", items: hitIds, status: "warn", detail: `Includes something you usually avoid: ${softHits.map((x) => x.label.toLowerCase()).join("; ")}. Swap it below.` });
   } else if (respected.length || softTags.length) {
     out.push({ key: "dealbreakers", label: "Your dealbreakers", status: "ok", detail: `Respected: ${[...respected, ...ctx.dealbreakers.filter((x) => x.kind === "soft").map((x) => x.label)].slice(0, 4).join("; ")}.` });
   }
@@ -623,7 +626,7 @@ function checks(
   const sa = s.aspects;
   const killer = (status: ReadinessCheck["status"], label: string, detail: string, aspect?: Aspect, high = true) => {
     const sn = aspect ? ctx.store.snippets(s.item.id, aspect, party, high)[0] : undefined;
-    out.push({ key: "killer", label, status, detail: detail + (sn ? ` Guest review: “${sn.snippet}”` : "") });
+    out.push({ key: "killer", label, items: [s.item.id], status, detail: detail + (sn ? ` Guest review: “${sn.snippet}”` : "") });
   };
   if (party === "family_kids") {
     if ((sa.nightlife ?? 0) > 0.6) killer("fail", "Trip-killer: late-night noise", "Families report noise at night here.", "nightlife", true);
@@ -633,20 +636,20 @@ function checks(
   if (party === "family_elders") {
     if ((sa.elder_friendly ?? 0.5) < 0.5) killer("fail", "Trip-killer: stairs and access", "Guests mention steps or no lift.", "elder_friendly", false);
     else killer("ok", "Easy for seniors", "Lift or ground-floor access reported.", "elder_friendly", true);
-    if (acts.some((a) => a.item.intensity > 0.45)) out.push({ key: "killer", label: "Activity intensity", status: "warn", detail: "One activity involves walking or steps; keep a rest slot." });
+    if (acts.some((a) => a.item.intensity > 0.45)) out.push({ key: "killer", label: "Activity intensity", items: acts.filter((a) => a.item.intensity > 0.45).map((a) => a.item.id), status: "warn", detail: "One activity involves walking or steps; keep a rest slot." });
   }
   if (party === "couple" && (sa.romance ?? 0.5) < 0.45) killer("warn", "Privacy & ambience", "Couples find this stay more lively than romantic.", "romance", false);
   if (party === "friends" && (sa.social ?? 0.5) < 0.35) killer("warn", "Evenings", "Groups say it gets very quiet after 9pm.", "nightlife", false);
-  if (party === "solo" && s.item.areaSafety < 0.7) out.push({ key: "killer", label: "Solo safety", status: "warn", detail: `Area safety ${Math.round(s.item.areaSafety * 100)}/100. Prefer well-lit routes after dark.` });
+  if (party === "solo" && s.item.areaSafety < 0.7) out.push({ key: "killer", label: "Solo safety", items: [s.item.id], status: "warn", detail: `Area safety ${Math.round(s.item.areaSafety * 100)}/100. Prefer well-lit routes after dark.` });
   if (req.need === "rest") {
     if ((sa.quiet ?? 0.5) < 0.45) killer("fail", "Trip-killer: noisy stay", "A rest trip needs quiet nights.", "quiet", false);
-    if (acts.length / Math.max(1, days - 1) > 1.4) out.push({ key: "killer", label: "Pace", status: "warn", detail: "More than one activity a day; this may feel packed for a rest trip." });
+    if (acts.length / Math.max(1, days - 1) > 1.4) out.push({ key: "killer", label: "Pace", items: acts.map((a) => a.item.id), status: "warn", detail: "More than one activity a day; this may feel packed for a rest trip." });
   }
   if (req.need === "reflect" && (d.aspects.crowd ?? 0) > 0.8) out.push({ key: "killer", label: "Crowds at the sites", status: "warn", detail: "Expect queues at the main darshan or aarti; dawn slots are calmer." });
-  if (req.need === "thrill" && !acts.some((a) => (a.aspects.adventure ?? 0) > 0.6)) out.push({ key: "killer", label: "Adventure", status: "warn", detail: "No high-adrenaline activity fits your filters here." });
-  if (req.need === "celebrate" && ![...acts, ...food].some((a) => (a.aspects.romance ?? 0) > 0.75 || (a.aspects.luxury ?? 0) > 0.75)) out.push({ key: "killer", label: "Signature moment", status: "warn", detail: "No standout celebration experience picked yet." });
-  if (req.need === "indulge" && (sa.luxury ?? 0.5) < 0.65) out.push({ key: "killer", label: "Luxury level", status: "warn", detail: "This stay is comfortable rather than indulgent." });
-  if (req.need === "learn" && (sa.work_friendly ?? 0.5) < 0.5) out.push({ key: "killer", label: "Connectivity", status: "warn", detail: "Wi-Fi and desk space are not reported here." });
+  if (req.need === "thrill" && !acts.some((a) => (a.aspects.adventure ?? 0) > 0.6)) out.push({ key: "killer", label: "Adventure", items: acts.map((a) => a.item.id), status: "warn", detail: "No high-adrenaline activity fits your filters here." });
+  if (req.need === "celebrate" && ![...acts, ...food].some((a) => (a.aspects.romance ?? 0) > 0.75 || (a.aspects.luxury ?? 0) > 0.75)) out.push({ key: "killer", label: "Signature moment", items: acts.map((a) => a.item.id), status: "warn", detail: "No standout celebration experience picked yet." });
+  if (req.need === "indulge" && (sa.luxury ?? 0.5) < 0.65) out.push({ key: "killer", label: "Luxury level", items: [s.item.id], status: "warn", detail: "This stay is comfortable rather than indulgent." });
+  if (req.need === "learn" && (sa.work_friendly ?? 0.5) < 0.5) out.push({ key: "killer", label: "Connectivity", items: [s.item.id], status: "warn", detail: "Wi-Fi and desk space are not reported here." });
   return out;
 }
 

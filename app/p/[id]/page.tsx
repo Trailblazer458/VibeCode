@@ -113,16 +113,34 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
   };
 
   const altsFor = swap ? d.alts[swap.elem] : [];
-  const row = (elem: Elem, item: { id: string; name: string; fit: number; price: number }, meta: string) => (
-    <div key={item.id} className="flex items-center gap-3 border-t border-line px-3 py-2.5 first:border-t-0">
+  // Readiness warnings, pinned to the item they are about. Plans saved before checks carried item ids fall back to the
+  // check's key; anything not tied to one item (season, crowds at the sites) shows once above the trip.
+  type Check = { key: string; label: string; status: string; detail: string; items?: string[] };
+  const toCheck = (p.readiness as Check[]).filter((r) => r.status !== "ok");
+  const itemsOf = (r: Check) => r.items ?? (r.key === "transit" || r.key === "arrival" ? [p.transport.id] : r.key === "rooms" ? [p.stay.id] : []);
+  // A check about every activity (pace, no adventure, no signature moment) shows once on the Activities card, not per row.
+  const actIds = p.activities.map((a) => a.id);
+  const allActs = (r: Check) => actIds.length > 1 && actIds.every((id) => itemsOf(r).includes(id));
+  const flagsFor = (id: string) => toCheck.filter((r) => itemsOf(r).includes(id) && !allActs(r));
+  const actFlags = toCheck.filter(allActs);
+  const tripWide = toCheck.filter((r) => itemsOf(r).length === 0);
+  const note = (r: Check) => <><b>⚠ {r.label.replace(/^Trip-killer: /, "")}:</b> {r.detail}</>;
+  const row = (elem: Elem, item: { id: string; name: string; fit: number; price: number }, meta: string) => {
+    const flags = flagsFor(item.id);
+    return (
+    <div key={item.id} className={`flex items-center gap-3 border-t border-line px-3 py-2.5 first:border-t-0 ${flags.length ? "border-l-4 border-l-saffron bg-saffron-soft/60" : ""}`}>
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-medium">{item.name}</div>
         <div className="text-xs text-muted">{meta}</div>
+        {flags.map((r) => (
+          <div key={r.label} className="mt-1 text-xs leading-snug text-warn">{note(r)}</div>
+        ))}
       </div>
       <FitBadge fit={item.fit} />
       <button className="text-xs font-semibold text-teal" onClick={() => setSwap({ elem, removeId: item.id })}>Swap</button>
     </div>
-  );
+    );
+  };
 
   return (
     <Shell back="/feed" title={p.title} right={<FitBadge fit={p.fit} />}>
@@ -165,6 +183,9 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div>
       <Section title="The trip">
         <div className="mx-4 space-y-3">
+          {tripWide.map((r) => (
+            <p key={r.label} className="rounded-xl border-l-4 border-l-saffron bg-saffron-soft px-3 py-2 text-xs leading-snug text-warn">{note(r)}</p>
+          ))}
           <Card>{row("transport", p.transport, `${p.transport.hours}h door-to-door · departs ${Math.floor(p.transport.depart)}:${String(Math.round((p.transport.depart % 1) * 60)).padStart(2, "0")} · ${inr(p.transport.price)} ${p.transport.mode === "self_drive" ? "per car" : "pp"} one way`)}</Card>
           <Card>
             <div className="px-3 pt-2.5 text-xs font-semibold uppercase tracking-wide text-muted">Stay at</div>
@@ -172,6 +193,9 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
           </Card>
           <Card>
             <div className="px-3 pt-2.5 text-xs font-semibold uppercase tracking-wide text-muted">Activities</div>
+            {actFlags.map((r) => (
+              <p key={r.label} className="mx-3 mt-2 rounded-lg border-l-4 border-l-saffron bg-saffron-soft px-2.5 py-1.5 text-xs leading-snug text-warn">{note(r)}</p>
+            ))}
             {p.activities.map((a) => row("activity", a, `Day ${a.day} · ${a.price ? inr(a.price) + " pp" : "free"}`))}
           </Card>
           <Card>

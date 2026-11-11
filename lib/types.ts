@@ -189,6 +189,8 @@ export interface ReadinessCheck {
   label: string;
   status: "ok" | "warn" | "fail";
   detail: string;
+  /** Plan items this check is about, so the plan page can flag them. Empty or missing means the trip as a whole. */
+  items?: string[];
 }
 
 export interface Plan {
