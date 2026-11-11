@@ -94,6 +94,28 @@ function Nav() {
   );
 }
 
+/**
+ * A link card whose border glows where the pointer is (a spotlight that follows the cursor), with a faint glow inside.
+ * At rest, and on touch screens, the border keeps a soft teal-to-saffron tint so it still stands out. Same size as a
+ * normal card: the glow is a 1.5px gradient border, not extra padding.
+ */
+export function GlowLink({ href, children, className = "" }: { href: string; children: ReactNode; className?: string }) {
+  const onMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty("--gx", `${e.clientX - r.left}px`);
+    e.currentTarget.style.setProperty("--gy", `${e.clientY - r.top}px`);
+  };
+  return (
+    <Link href={href} onMouseMove={onMove} className={`glow-link group relative block rounded-2xl p-[1.5px] ${className}`}>
+      <span aria-hidden className="glow-link-ring pointer-events-none absolute inset-0 rounded-2xl" />
+      <span className="relative block overflow-hidden rounded-[15px] bg-paper">
+        <span aria-hidden className="glow-link-inner pointer-events-none absolute inset-0" />
+        <span className="relative block">{children}</span>
+      </span>
+    </Link>
+  );
+}
+
 export function Chip({ on, children, onClick, tone = "teal", small }: { on?: boolean; children: ReactNode; onClick?: () => void; tone?: "teal" | "saffron"; small?: boolean }) {
   const onCls = tone === "teal" ? "bg-teal text-white border-teal" : "bg-saffron text-white border-saffron";
   return (

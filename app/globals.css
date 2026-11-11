@@ -79,6 +79,30 @@ body::before {
   }
 }
 
+/* GlowLink (components/ui.tsx): resting tint on the border, a spotlight that follows the pointer on hover. */
+.glow-link .glow-link-ring {
+  background: linear-gradient(120deg, rgb(14 90 87 / 0.45), rgb(227 134 42 / 0.45), rgb(14 90 87 / 0.25));
+  transition: opacity 0.3s;
+}
+.glow-link .glow-link-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(180px circle at var(--gx, 50%) var(--gy, 50%), rgb(227 134 42 / 0.95), rgb(14 90 87 / 0.7) 45%, transparent 75%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.glow-link .glow-link-inner {
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgb(227 134 42 / 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.glow-link:hover .glow-link-ring::after,
+.glow-link:hover .glow-link-inner,
+.glow-link:focus-visible .glow-link-ring::after { opacity: 1; }
+.glow-link { box-shadow: 0 6px 24px -12px rgb(14 90 87 / 0.35); }
+
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 .cover {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/client";
-import { Card, ErrorNote, PLAN_GRID, PlanCard, Section, Shell, Spinner, type PlanLite } from "@/components/ui";
+import { Card, ErrorNote, GlowLink, PLAN_GRID, PlanCard, Section, Shell, Spinner, type PlanLite } from "@/components/ui";
 
 interface Feed {
   needsOnboarding?: boolean;
@@ -30,24 +30,26 @@ export default function FeedPage() {
         <p className="text-sm text-muted">{greet}{d ? `, ${d.profile.name}` : ""}</p>
         <h1 className="font-display text-3xl font-semibold leading-tight">Trips that fit you</h1>
         {d?.profile.persona && <p className="mt-0.5 text-xs text-muted">{d.profile.persona} · tuned from your choices, edits and trips</p>}
-        <Link href="/plan" className="mt-4 flex items-center gap-3 rounded-2xl border border-teal/30 bg-paper px-4 py-3 shadow-sm">
-          <span className="text-xl">✎</span>
-          <span className="flex-1">
-            <span className="block text-sm font-semibold text-teal">Plan with me</span>
-            <span className="block text-xs text-muted">“Want to take my parents somewhere calm, 3 days, under 20k”</span>
+        <GlowLink href="/plan" className="mt-4">
+          <span className="flex items-center gap-3 px-4 py-3">
+            <span className="text-xl">✎</span>
+            <span className="flex-1">
+              <span className="block text-sm font-semibold text-teal">Plan with me</span>
+              <span className="block text-xs text-muted">“Want to take my parents somewhere calm, 3 days, under 20k”</span>
+            </span>
+            <span className="text-teal transition group-hover:translate-x-0.5">→</span>
           </span>
-          <span className="text-teal">→</span>
-        </Link>
+        </GlowLink>
       </div>
       <ErrorNote error={err} />
-      {!d && !err && <Spinner label="Scoring 168 trip elements for your top intents…" />}
+      {!d && !err && <Spinner label="Scoring trip options for your top intents…" />}
       {d && (
         <>
           {d.trigger && (
-            <Link href="/nudges" className="mx-4 mt-4 block rounded-2xl border border-white/40 bg-saffron/85 px-4 py-3 text-white shadow-lg shadow-saffron/20 backdrop-blur-xl">
-              <div className="text-xs font-semibold uppercase tracking-wide opacity-90">Why now</div>
+            <Link href="/nudges" className="mx-4 mt-4 block rounded-2xl border border-teal/15 bg-teal-soft px-4 py-3 text-teal transition hover:border-teal/30">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-teal/75">Upcoming trip window</div>
               <div className="font-semibold">{d.trigger.title}</div>
-              <div className="text-sm opacity-95">{d.trigger.body} Plans below are built for {d.window.label}.</div>
+              <div className="text-sm text-teal/80">{d.trigger.body} Plans below are built for {d.window.label}.</div>
             </Link>
           )}
           {d.boosted.length > 0 && <p className="mx-4 mt-3 rounded-xl bg-teal-soft px-3 py-2 text-xs text-teal">↻ Re-ranked this session: you spent time on {d.boosted.join(", ")}.</p>}

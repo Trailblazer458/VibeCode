@@ -1,32 +1,74 @@
 "use client";
 // Shared review UI: the carousel, plain-language pros and heads-ups, and in-card testimonials.
 // No imports from ./ui so plan cards (in ui.tsx) can use it without a circular import.
-import { useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { avatarUrl } from "@/lib/images";
 
-/** Horizontal snap carousel; works with swipe, trackpad and buttons. `compact` puts small controls under the slides. */
+const AUTO_MS = 4500;
+
+/**
+ * Horizontal snap carousel; works with swipe, trackpad and buttons. `compact` puts small controls under the slides.
+ * Advances on its own every 4.5s, wrapping to the start. It holds still while hovered, focused or just touched,
+ * while off-screen or in a hidden tab, and never moves for people who prefer reduced motion.
+ */
 export function Carousel<T>({ items, render, label, className = "", compact = false }: { items: T[]; render: (item: T, i: number) => ReactNode; label: string; className?: string; compact?: boolean }) {
+  const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
+  const idxRef = useRef(0);
+  const hold = useRef(false);
+  const lastTouch = useRef(0);
+  const scrollTo = (i: number) => {
+    const el = track.current;
+    if (!el) return;
+    el.scrollTo({ left: Math.max(0, Math.min(items.length - 1, i)) * el.clientWidth, behavior: "smooth" });
+  };
   // Controls may sit inside a link (plan cards): never let them navigate.
   const go = (e: MouseEvent, i: number) => {
     e.preventDefault();
     e.stopPropagation();
-    const el = track.current;
-    if (!el) return;
-    const n = Math.max(0, Math.min(items.length - 1, i));
-    el.scrollTo({ left: n * el.clientWidth, behavior: "smooth" });
+    lastTouch.current = Date.now();
+    scrollTo(i);
   };
+
+  useEffect(() => {
+    if (items.length < 2) return;
+    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const t = setInterval(() => {
+      const el = root.current;
+      if (!el || hold.current || document.hidden || Date.now() - lastTouch.current < AUTO_MS * 2) return;
+      const r = el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      scrollTo((idxRef.current + 1) % items.length);
+    }, AUTO_MS);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length]);
   const dots = items.map((_, i) => (
     <button key={i} type="button" aria-label={`Go to ${i + 1}`} onClick={(e) => go(e, i)} className={`h-1.5 rounded-full transition-all ${i === idx ? "w-4 bg-teal" : "w-1.5 bg-ink/20"}`} />
   ));
   const overlay = "absolute top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/70 bg-white/70 text-ink shadow-md backdrop-blur-md transition hover:bg-white disabled:opacity-0";
   const small = "flex h-6 w-6 items-center justify-center rounded-full border border-line bg-white/70 text-xs text-ink transition hover:bg-white disabled:opacity-30";
   return (
-    <div className={`relative ${className}`} role="region" aria-roledescription="carousel" aria-label={label}>
+    <div
+      ref={root}
+      className={`relative ${className}`}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={label}
+      onMouseEnter={() => (hold.current = true)}
+      onMouseLeave={() => (hold.current = false)}
+      onFocus={() => (hold.current = true)}
+      onBlur={() => (hold.current = false)}
+      onTouchStart={() => (lastTouch.current = Date.now())}
+    >
       <div
         ref={track}
-        onScroll={(e) => setIdx(Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth)))}
+        onScroll={(e) => {
+          const i = Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth));
+          idxRef.current = i;
+          setIdx(i);
+        }}
         className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
       >
         {items.map((it, i) => (
