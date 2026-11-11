@@ -306,6 +306,18 @@ function scoreList<T extends Item>(items: T[], lens: Party, W: Record<string, nu
   });
 }
 
+/**
+ * The one place element scores get their penalties, so the plan, the swap list and rebuilt plans always agree:
+ * soft dealbreakers cost 0.08 each, and transport loses 0.012 per hour on the road.
+ */
+function penalised<T extends Item>(kind: "stay" | "transport" | "food" | "activity", list: Scored<T>[], softTags: string[]): Scored<T>[] {
+  return list.map((s) => {
+    const soft = s.tags.filter((t) => softTags.includes(t)).length * 0.08;
+    const road = kind === "transport" ? 0.012 * (s.item as unknown as Transport).hours : 0;
+    return { ...s, x: s.x - soft - road };
+  });
+}
+
 function planForDest(
   dest: Destination,
   req: TripRequest,
@@ -329,14 +341,13 @@ function planForDest(
   const destScored = scoreList([dest], party, W, store)[0];
   if (destScored.tags.some((t) => hardTags.includes(t))) return [{ fail: "dest_tag" }];
 
-  const softPenalty = (tags: string[]) => tags.filter((t) => softTags.includes(t)).length * 0.08;
   const okTags = (tags: string[]) => !tags.some((t) => hardTags.includes(t));
 
   // transport
   const transitT = has("transit") as { max: number } | undefined;
   let transports = scoreList(TRANSPORT.filter((t) => t.destId === dest.id), party, W, store)
     .filter((t) => okTags(t.tags) && (!transitT || t.item.hours <= transitT.max));
-  transports = transports.map((t) => ({ ...t, x: t.x - 0.012 * t.item.hours - softPenalty(t.tags) })).sort((a, b) => b.x - a.x);
+  transports = penalised("transport", transports, softTags).sort((a, b) => b.x - a.x);
   if (!transports.length) return [{ fail: "transport" }];
 
   // stays
@@ -347,69 +358,91 @@ function planForDest(
       (!has("pets") || s.item.petFriendly) &&
       (!dietT || (s.item.veg !== "limited" && (dietT.diet !== "jain" || s.item.jain))),
   );
-  stays = stays.map((s) => ({ ...s, x: s.x - softPenalty(s.tags) })).sort((a, b) => b.x - a.x);
+  stays = penalised("stay", stays, softTags).sort((a, b) => b.x - a.x);
   if (!stays.length) return [{ fail: "stay" }];
 
   // food
-  const foods = scoreList(FOOD.filter((f) => f.destId === dest.id), party, W, store)
-    .filter((f) => okTags(f.tags) && (!dietT || (f.item.diet !== "nonveg_focus" && (dietT.diet !== "jain" || f.item.jain || f.item.diet === "veg_only"))))
-    .map((f) => ({ ...f, x: f.x - softPenalty(f.tags) }))
+  const foods = penalised("food", scoreList(FOOD.filter((f) => f.destId === dest.id), party, W, store)
+    .filter((f) => okTags(f.tags) && (!dietT || (f.item.diet !== "nonveg_focus" && (dietT.diet !== "jain" || f.item.jain || f.item.diet === "veg_only")))), softTags)
     .sort((a, b) => b.x - a.x);
 
   // activities
   const intT = has("intensity") as { max: number } | undefined;
-  const acts = scoreList(ACTIVITIES.filter((a) => a.destId === dest.id), party, W, store)
-    .filter((a) => okTags(a.tags) && (!intT || a.item.intensity <= intT.max))
-    .map((a) => ({ ...a, x: a.x - softPenalty(a.tags) }))
+  const acts = penalised("activity", scoreList(ACTIVITIES.filter((a) => a.destId === dest.id), party, W, store)
+    .filter((a) => okTags(a.tags) && (!intT || a.item.intensity <= intT.max)), softTags)
     .sort((a, b) => b.x - a.x);
 
   const days = req.window.days;
   const paceLevels = variants ? [PACE[req.need], Math.max(0.7, PACE[req.need] - 0.6), PACE[req.need] + 0.6] : [PACE[req.need]];
   const budgetT = has("budget") && !!req.budgetPP;
-  const cap = req.budgetPP ?? Infinity;
-  const out: (Built | Fail)[] = [];
-  const combos: [Scored<Stay>, Scored<Transport>][] = [];
-  for (const s of stays.slice(0, 3)) for (const t of transports.slice(0, 3)) combos.push([s, t]);
-  combos.sort((a, b) => b[0].x * 0.6 + b[1].x * 0.4 - (a[0].x * 0.6 + a[1].x * 0.4));
-  // add cheapest combo as a budget fallback
-  const cheapS = [...stays].sort((a, b) => a.item.price - b.item.price)[0];
-  const cheapT = [...transports].sort((a, b) => a.item.price - b.item.price)[0];
-  combos.push([cheapS, cheapT]);
+  const cap = budgetT ? (req.budgetPP as number) : Infinity;
+  const nFood = Math.min(3, Math.max(2, days));
+  const n = Math.max(1, heads(pax));
+  const pay = payers(pax);
 
-  const usedStay = new Set<string>();
-  for (const pace of paceLevels) {
-    const nActs = Math.min(acts.length, Math.max(1, Math.round(pace * Math.max(1, days - 1))));
-    const pickedActs = acts.slice(0, nActs);
-    const pickedFood = foods.slice(0, Math.min(3, Math.max(2, days)));
-    let made = false;
-    const ordered = variants ? [...combos.filter(([s]) => !usedStay.has(s.item.id)), ...combos.filter(([s]) => usedStay.has(s.item.id))] : combos;
-    for (const [s, t] of ordered) {
-      let p = assemble(dest, destScored, s, t, pickedFood, pickedActs, req, pax, diet, W, ctx, softTags, hardTags);
-      if (budgetT && p.plan.cost.perHead > cap) {
-        // trim the priciest activities (keep at least one) and use the cheapest food picks before giving up on this combo
-        let acts2 = [...pickedActs];
-        let food2 = [...pickedFood];
-        while (p.plan.cost.perHead > cap && acts2.length > 1) {
-          const priciest = acts2.reduce((m, a) => (a.item.price > m.item.price ? a : m), acts2[0]);
-          if (priciest.item.price === 0) break;
-          acts2 = acts2.filter((a) => a !== priciest);
-          p = assemble(dest, destScored, s, t, food2, acts2, req, pax, diet, W, ctx, softTags, hardTags);
-        }
-        if (p.plan.cost.perHead > cap && foods.length > 1) {
-          food2 = [...foods].sort((a, b) => a.item.price - b.item.price).slice(0, pickedFood.length);
-          p = assemble(dest, destScored, s, t, food2, acts2, req, pax, diet, W, ctx, softTags, hardTags);
-        }
-        if (p.plan.cost.perHead > cap) continue;
+  /**
+   * Best plan for one stay + transport within the budget. Starts from the top-scoring activities and food and, only
+   * while over budget, makes the single change that loses the least fit per rupee saved: drop an activity, or swap
+   * an activity or food spot for a cheaper unused one. It never jumps to "cheapest everything", so leftover budget
+   * stays spent on better-fitting picks. Cost and score are computed directly (same formulas as assemble).
+   */
+  const fitCombo = (s: Scored<Stay>, t: Scored<Transport>, nActs: number): Built | null => {
+    let a = acts.slice(0, nActs);
+    let f = foods.slice(0, nFood);
+    const base = assemble(dest, destScored, s, t, f, a, req, pax, diet, W, ctx, softTags, hardTags);
+    if (base.plan.cost.perHead <= cap) return base;
+    const fixed = base.plan.cost.transport + base.plan.cost.stay + base.plan.cost.local;
+    const mean = (xs: { x: number }[]) => (xs.length ? xs.reduce((m, v) => m + v.x, 0) / xs.length : 0);
+    const cost = (ff: typeof f, aa: typeof a) => {
+      const avgFood = ff.length ? ff.reduce((m, v) => m + v.item.price, 0) / ff.length : 500;
+      return Math.round((fixed + Math.round(avgFood * pay * days * 2) + Math.round(aa.reduce((m, v) => m + v.item.price, 0) * pay)) / n);
+    };
+    // Mirrors the plan score (0.13 activities + 0.1 food) plus a small value per activity so trips aren't hollowed out.
+    const score = (ff: typeof f, aa: typeof a) => 0.13 * mean(aa) + 0.1 * mean(ff) + 0.03 * aa.length;
+    let c = cost(f, a);
+    for (let guard = 0; c > cap && guard < 40; guard++) {
+      const moves: [typeof f, typeof a][] = [];
+      if (a.length > 1) for (const x of a) if (x.item.price > 0) moves.push([f, a.filter((y) => y !== x)]);
+      for (const [i, x] of f.entries()) for (const y of foods) if (!f.includes(y) && y.item.price < x.item.price) moves.push([f.map((v, j) => (j === i ? y : v)), a]);
+      for (const [i, x] of a.entries()) for (const y of acts) if (!a.includes(y) && y.item.price < x.item.price) moves.push([f, a.map((v, j) => (j === i ? y : v))]);
+      let best: [typeof f, typeof a, number] | null = null;
+      let bestRatio = Infinity;
+      const sc = score(f, a);
+      for (const [ff, aa] of moves) {
+        const cc = cost(ff, aa);
+        const saving = c - cc;
+        if (saving <= 0) continue;
+        const ratio = Math.max(0, sc - score(ff, aa)) / saving;
+        if (ratio < bestRatio) { bestRatio = ratio; best = [ff, aa, cc]; }
       }
-      out.push(p);
-      usedStay.add(s.item.id);
-      made = true;
-      if (!variants) break;
-      if (out.length >= 6) break;
-      if (made && pace !== paceLevels[0]) break;
+      if (!best) break;
+      [f, a, c] = best;
     }
-    if (!made) out.push({ fail: "budget" });
-    if (!variants) break;
+    if (c > cap) return null;
+    return assemble(dest, destScored, s, t, f, a, req, pax, diet, W, ctx, softTags, hardTags);
+  };
+
+  // Every stay + transport pair is a candidate (not just the top three), best-scoring pairs first.
+  const combos: [Scored<Stay>, Scored<Transport>][] = [];
+  for (const s of stays) for (const t of transports) combos.push([s, t]);
+  combos.sort((a, b) => b[0].x * 0.6 + b[1].x * 0.4 - (a[0].x * 0.6 + a[1].x * 0.4));
+
+  const out: (Built | Fail)[] = [];
+  const usedStay = new Set<string>();
+  for (const [pi, pace] of paceLevels.entries()) {
+    const nActs = Math.min(acts.length, Math.max(1, Math.round(pace * Math.max(1, days - 1))));
+    const feasible = combos.map(([s, t]) => fitCombo(s, t, nActs)).filter((p): p is Built => !!p).sort((a, b) => b.x - a.x);
+    if (!feasible.length) { out.push({ fail: "budget" }); if (!variants) break; continue; }
+    if (!variants) { out.push(feasible[0]); break; }
+    // Variants: the first pace offers up to six plans on different stays; other paces add their best new stay.
+    const want = pi === 0 ? 6 : 1;
+    let added = 0;
+    for (const p of feasible) {
+      if (usedStay.has(p.plan.stay.id)) continue;
+      out.push(p);
+      usedStay.add(p.plan.stay.id);
+      if (++added >= want || out.length >= 8) break;
+    }
   }
   return out;
 }
@@ -641,7 +674,8 @@ function round2(n: number) {
 export function rankElement(kind: "stay" | "transport" | "food" | "activity", destId: string, need: Need, party: Party, ctx: EngineContext, secondary?: Need | null) {
   const W = groupWeights({ need, party, secondaryNeed: secondary } as TripRequest, ctx);
   const list = kind === "stay" ? STAYS : kind === "transport" ? TRANSPORT : kind === "food" ? FOOD : ACTIVITIES;
-  const scored = scoreList((list as Item[]).filter((i) => "destId" in i && i.destId === destId), party, W, ctx.store);
+  const soft = ctx.dealbreakers.filter((d) => d.kind === "soft").map((d) => d.attribute);
+  const scored = penalised(kind, scoreList((list as Item[]).filter((i) => "destId" in i && i.destId === destId), party, W, ctx.store), soft);
   const hard = ctx.dealbreakers.filter((d) => d.kind === "hard").map((d) => d.attribute);
   return scored
     .map((s) => {
@@ -683,13 +717,14 @@ export function planFromItems(
   const stay = STAYS.find((s) => s.id === ids.stay)!;
   const dest = DEST_BY_ID.get(stay.destId)!;
   const tr = TRANSPORT.find((t) => t.id === ids.transport)!;
-  const d = scoreList([dest], req.party, W, ctx.store)[0];
-  const s = scoreList([stay], req.party, W, ctx.store)[0];
-  const t = scoreList([tr], req.party, W, ctx.store)[0];
-  const f = scoreList(FOOD.filter((x) => ids.food.includes(x.id)), req.party, W, ctx.store);
-  const a = scoreList(ACTIVITIES.filter((x) => ids.activities.includes(x.id)), req.party, W, ctx.store);
   const hardTags = ctx.dealbreakers.filter((x) => x.kind === "hard").map((x) => x.attribute);
   const softTags = ctx.dealbreakers.filter((x) => x.kind === "soft").map((x) => x.attribute);
+  // Same penalties as planning and the swap list, so a swapped-in item keeps the fit it was offered at.
+  const d = scoreList([dest], req.party, W, ctx.store)[0];
+  const s = penalised("stay", scoreList([stay], req.party, W, ctx.store), softTags)[0];
+  const t = penalised("transport", scoreList([tr], req.party, W, ctx.store), softTags)[0];
+  const f = penalised("food", scoreList(FOOD.filter((x) => ids.food.includes(x.id)), req.party, W, ctx.store), softTags);
+  const a = penalised("activity", scoreList(ACTIVITIES.filter((x) => ids.activities.includes(x.id)), req.party, W, ctx.store), softTags);
   return assemble(dest, d, s, t, f, a, req, pax, diet, W, ctx, softTags, hardTags).plan;
 }
 

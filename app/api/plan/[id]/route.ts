@@ -30,9 +30,23 @@ export async function GET(_req: Request, ctxArg: { params: Promise<{ id: string 
       food: rankElement("food", p.destId, p.need, p.party, ctx),
       activity: rankElement("activity", p.destId, p.need, p.party, ctx),
     };
-    const set = row.set_id ? await one<{ plan_ids: string[] }>("select plan_ids from plan_sets where id = $1", [row.set_id]) : null;
+    const set = row.set_id ? await one<{ plan_ids: string[]; request: Partial<TripRequest> | null }>("select plan_ids, request from plan_sets where id = $1", [row.set_id]) : null;
     const chosen = await one("select 1 as x from plan_choices where chosen_plan_id = $1", [id]);
-    return { plan: p, alts, siblings: (set?.plan_ids ?? []).length, chosen: !!chosen };
+
+    // Upgrades: for stay and transport, the best clearly-better option (5+ points, no dealbreaker). The plan is rebuilt
+    // with it swapped in so the extra cost per person is exact, not estimated.
+    const tr: TripRequest = { need: p.need, party: p.party, pax: p.pax, window: p.window, budgetPP: set?.request && "budgetPP" in set.request ? (set.request.budgetPP ?? null) : profile.budget_pp };
+    const ids = { stay: p.stay.id, transport: p.transport.id, food: p.food.map((f) => f.id), activities: p.activities.map((a) => a.id) };
+    const upgrades: { elem: "stay" | "transport"; id: string; name: string; fit: number; currentFit: number; extraPP: number; overBudget: boolean }[] = [];
+    for (const elem of ["stay", "transport"] as const) {
+      const cur = alts[elem].find((x) => x.id === ids[elem]);
+      const better = alts[elem].find((x) => x.id !== ids[elem] && !x.blocked.length && x.fit >= (cur?.fit ?? p[elem].fit) + 5);
+      if (!better) continue;
+      const np = planFromItems(tr, { ...ids, [elem]: better.id }, ctx);
+      const extraPP = np.cost.perHead - p.cost.perHead;
+      upgrades.push({ elem, id: better.id, name: better.name, fit: better.fit, currentFit: cur?.fit ?? p[elem].fit, extraPP, overBudget: !!tr.budgetPP && np.cost.perHead > tr.budgetPP });
+    }
+    return { plan: p, alts, upgrades, siblings: (set?.plan_ids ?? []).length, chosen: !!chosen };
   });
 }
 

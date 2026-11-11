@@ -19,11 +19,12 @@ type Plan = PlanLite & {
 };
 const ELEM_LABEL = { stay: "Stay", transport: "Getting there", food: "Food", activity: "Activities" } as const;
 type Elem = keyof typeof ELEM_LABEL;
+interface Upgrade { elem: "stay" | "transport"; id: string; name: string; fit: number; currentFit: number; extraPP: number; overBudget: boolean }
 
 export default function PlanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const [d, setD] = useState<{ plan: Plan; alts: Record<Elem, Alt[]>; chosen: boolean; siblings: number } | null>(null);
+  const [d, setD] = useState<{ plan: Plan; alts: Record<Elem, Alt[]>; upgrades?: Upgrade[]; chosen: boolean; siblings: number } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [swap, setSwap] = useState<{ elem: Elem; removeId: string } | null>(null);
@@ -60,14 +61,29 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
   const p = d.plan;
   const cover = destCover(p.destId, p.need);
 
-  const doSwap = async (addId: string) => {
-    if (!swap) return;
+  const swapTo = async (elem: Elem, removeId: string, addId: string) => {
     setBusy(true);
-    const r = await api(`/api/plan/${id}`, { action: "swap", element: swap.elem, removeId: swap.removeId, addId });
+    const r = await api(`/api/plan/${id}`, { action: "swap", element: elem, removeId, addId });
     setSwap(null);
     setBusy(false);
     flash(r.message);
     load();
+  };
+  const doSwap = async (addId: string) => {
+    if (swap) await swapTo(swap.elem, swap.removeId, addId);
+  };
+  // "Better fit for ₹X more": shown under the stay or transport it would replace.
+  const upgradeChip = (elem: "stay" | "transport") => {
+    const u = d.upgrades?.find((x) => x.elem === elem);
+    if (!u) return null;
+    const cost = u.extraPP > 0 ? `for ${inr(u.extraPP)} more per person` : u.extraPP < 0 ? `and ${inr(-u.extraPP)} cheaper per person` : "at the same price";
+    return (
+      <div className="flex flex-wrap items-center gap-2 border-t border-line bg-saffron-soft/60 px-3 py-2">
+        <span className="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold text-warn">Better fit</span>
+        <span className="min-w-0 flex-1 text-xs text-ink"><b>{u.name}</b> ({u.fit}% vs {u.currentFit}%) {cost}{u.overBudget ? " · goes over your budget" : ""}</span>
+        <button disabled={busy} onClick={() => swapTo(elem, p[elem].id, u.id)} className="text-xs font-semibold text-teal">Switch →</button>
+      </div>
+    );
   };
   const choose = async () => {
     setBusy(true);
@@ -149,8 +165,8 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div>
       <Section title="The trip">
         <div className="mx-4 space-y-3">
-          <Card>{row("transport", p.transport, `${p.transport.hours}h door-to-door · departs ${Math.floor(p.transport.depart)}:${String(Math.round((p.transport.depart % 1) * 60)).padStart(2, "0")} · ${inr(p.transport.price)} pp one way`)}</Card>
-          <Card>{row("stay", p.stay, `${p.stay.type} · ${p.stay.area} · ${inr(p.stay.price)}/night · ${p.rooms}`)}</Card>
+          <Card>{row("transport", p.transport, `${p.transport.hours}h door-to-door · departs ${Math.floor(p.transport.depart)}:${String(Math.round((p.transport.depart % 1) * 60)).padStart(2, "0")} · ${inr(p.transport.price)} pp one way`)}{upgradeChip("transport")}</Card>
+          <Card>{row("stay", p.stay, `${p.stay.type} · ${p.stay.area} · ${inr(p.stay.price)}/night · ${p.rooms}`)}{upgradeChip("stay")}</Card>
           <Card>
             <div className="px-3 pt-2.5 text-xs font-semibold uppercase tracking-wide text-muted">Activities</div>
             {p.activities.map((a) => row("activity", a, `Day ${a.day} · ${a.price ? inr(a.price) + " pp" : "free"}`))}

@@ -46,6 +46,34 @@ describe("intent-conditioned ranking", () => {
     }
   });
 
+  it("fits a tight budget without dominated picks or a big unspent remainder", () => {
+    for (const [destId, budgetPP] of [["mussoorie", 15000], ["rishikesh", 12000], ["udaipur", 18000], ["goa", 20000]] as const) {
+      const p = buildPlans({ need: "rest", party: "couple", window: { start: "2026-11-21", days: 4 }, budgetPP, destId }, ctx()).plans[0];
+      if (!p) continue;
+      expect(p.cost.perHead).toBeLessThanOrEqual(budgetPP);
+      const foods = rankElement("food", destId, "rest", "couple", ctx());
+      const acts = rankElement("activity", destId, "rest", "couple", ctx());
+      // No picked item has an unpicked alternative that fits better AND costs no more.
+      for (const [picked, all] of [[p.food, foods], [p.activities, acts]] as const) {
+        const ids = new Set(picked.map((x) => x.id));
+        for (const x of picked) {
+          const dominated = all.find((y) => !ids.has(y.id) && !y.blocked.length && y.fit > x.fit + 2 && y.price <= x.price);
+          expect(dominated, `${destId}: ${x.name} (${x.fit}%) picked over ${dominated?.name} (${dominated?.fit}%)`).toBeUndefined();
+        }
+      }
+      console.log(destId, budgetPP, "->", p.cost.perHead, p.stay.name, p.food.map((f) => `${f.name} ${f.fit}`).join(", "));
+    }
+  });
+
+  it("shows the same fit for an element in the plan and in the swap list", () => {
+    const p = buildPlans({ need: "rest", party: "couple", window: { start: "2026-11-21", days: 4 }, budgetPP: 30000, destId: "mussoorie" }, ctx()).plans[0];
+    const fitOf = (kind: "stay" | "transport" | "food" | "activity", id: string) => rankElement(kind, "mussoorie", "rest", "couple", ctx()).find((x) => x.id === id)?.fit;
+    expect(fitOf("transport", p.transport.id)).toBe(p.transport.fit);
+    expect(fitOf("stay", p.stay.id)).toBe(p.stay.fit);
+    for (const f of p.food) expect(fitOf("food", f.id)).toBe(f.fit);
+    for (const a of p.activities) expect(fitOf("activity", a.id)).toBe(a.fit);
+  });
+
   it("applies no budget filter when the budget is flexible (null)", () => {
     const capped = buildPlans({ need: "indulge", party: "couple", window, budgetPP: 15000 }, ctx());
     const open = buildPlans({ need: "indulge", party: "couple", window, budgetPP: null }, ctx());
