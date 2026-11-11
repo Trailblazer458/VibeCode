@@ -183,7 +183,7 @@ export function buildPlans(req: TripRequest, ctx: EngineContext): PlanResult {
     key: "transit", label: `Travel ≤ ${maxOneWay.toFixed(1)}h each way (${Math.round(tol * 100)}% of a ${req.window.days}-day ${NEED_LABEL[req.need].toLowerCase()} trip)`,
     kind: "hard", source: "intent", hidden: 0, enabled: !disabled.has("transit"), test: { type: "transit", max: maxOneWay },
   });
-  crit.push({ key: "season", label: "Good season for these dates", kind: "hard", source: "trip", hidden: 0, enabled: !disabled.has("season"), test: { type: "season" } });
+  crit.push({ key: "season", label: "Right time of year to visit", kind: "hard", source: "trip", hidden: 0, enabled: !disabled.has("season"), test: { type: "season" } });
   if (pax.pets > 0) crit.push({ key: "pets", label: "Pet-friendly stays", kind: "hard", source: "you", hidden: 0, enabled: !disabled.has("pets"), test: { type: "pets" } });
   if (party === "family_elders" || party === "family_kids") {
     crit.push({
