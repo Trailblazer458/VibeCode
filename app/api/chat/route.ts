@@ -3,9 +3,14 @@ import { DEFAULT_PAX } from "@/lib/engine/plan";
 import { extractRules, extractSlots, missingRequired, templateQuestion, type Slots } from "@/lib/llm";
 import { handle, HttpError, logSignal, requireUser, runPlans, userTriggers } from "@/lib/server";
 import { DEST_BY_ID } from "@/lib/data/catalog";
-import { NEED_LABEL, PARTY_LABEL } from "@/lib/engine/weights";
+import { NEED_LABEL } from "@/lib/engine/weights";
 import type { Need, Party, TripRequest } from "@/lib/types";
 
+const CHIP_NEED: Record<Need, string> = {
+  rest: "Rest and recharge", reconnect: "Quality time", explore: "Explore culture and food", thrill: "An adventure",
+  celebrate: "Celebrate", reflect: "A spiritual trip", indulge: "Indulge in luxury", escape: "Escape to the mountains", learn: "A workcation",
+};
+const CHIP_PARTY: Record<Party, string> = { solo: "solo", couple: "with my partner", friends: "with friends", family_kids: "with the kids", family_elders: "with my parents" };
 const PARTY_PHRASE: Record<Party, string> = { solo: "solo", couple: "as a couple", friends: "with friends", family_kids: "with the kids", family_elders: "with my parents" };
 
 const hits = new Map<string, number[]>();
@@ -30,26 +35,24 @@ export async function POST(req: Request) {
     if (body.action === "trigger") {
       const trig = (await userTriggers(uid, profile)).triggers.find((t) => t.key === body.key);
       if (!trig) throw new HttpError(404, "That trip window has passed");
-      const usual = (profile.intents ?? []).map((i) => `${NEED_LABEL[i.need]} trips ${PARTY_PHRASE[i.party]}`).join(", ");
-      const message = `Plan a trip for ${trig.title}: ${trig.body}${usual ? ` I usually enjoy ${usual}.` : ""}`;
-      let ex = await extractSlots([{ role: "user", content: message }], {});
-      // Without the AI, keyword rules would latch onto the "I usually enjoy…" hint; read only the event itself and let
-      // the profile's top intent fill in whatever the event doesn't say.
-      if (ex.engine === "rules") ex = { ...ex, slots: extractRules(`${trig.title.replace(/ in \d+ days?$/, "")}. ${trig.body}`, {}) };
-      const w = nextWindow();
-      const slots: Slots = {
-        ...ex.slots,
-        start: trig.when,
-        days: trig.days ?? ex.slots.days ?? w.days,
-        whenText: trig.title.replace(/ in \d+ days$/, ""),
-        destId: trig.destId ?? ex.slots.destId ?? null,
-        need: ex.slots.need ?? profile.intents?.[0]?.need ?? null,
-        party: ex.slots.party ?? (trig.type === "personal" ? "couple" : profile.intents?.[0]?.party ?? profile.default_party),
+      const when = trig.title.replace(/ in \d+ days?$/, "");
+      // Best guess at intent and party, used only to order the suggestion chips. It is never shown or sent as the
+      // user's words: the user answers the opener themselves (tap a chip or type), as in the normal chat.
+      const usual = (profile.intents ?? []).map((i) => `${NEED_LABEL[i.need]} ${PARTY_PHRASE[i.party]}`).join(", ");
+      let ex = await extractSlots([{ role: "user", content: `Upcoming: ${when}. ${trig.body}${usual ? ` Traveller's usual trips: ${usual}.` : ""}` }], {});
+      if (ex.engine === "rules") ex = { ...ex, slots: extractRules(`${when}. ${trig.body}`, {}) };
+      const guess = {
+        need: (ex.slots.need ?? profile.intents?.[0]?.need ?? "rest") as Need,
+        party: (ex.slots.party ?? (trig.type === "personal" ? "couple" : profile.intents?.[0]?.party ?? profile.default_party)) as Party,
       };
+      const options = [guess, ...(profile.intents ?? [])].filter((o, i, all) => all.findIndex((x) => x.need === o.need && x.party === o.party) === i).slice(0, 4);
+      const w = nextWindow();
+      // Only what the event itself fixes: dates, length and (for destination events) the place.
+      const slots: Slots = { start: trig.when, days: trig.days ?? w.days, whenText: when, destId: trig.destId ?? null };
       const dest = slots.destId ? DEST_BY_ID.get(slots.destId)?.name : null;
-      const reply = `Here are plans for ${slots.whenText}${dest ? ` in ${dest}` : ""}: ${slots.need ? NEED_LABEL[slots.need as Need] : "your usual"} trip, ${slots.party ? PARTY_LABEL[slots.party as Party].toLowerCase() : "your usual group"}, ${slots.days} days. Tell me if you want to change anything.`;
-      await logSignal(uid, sid, "trigger_plan", "stated", { key: trig.key, slots, engine: ex.engine });
-      return { slots, messages: [{ role: "user", content: message }, { role: "assistant", content: reply }], engine: ex.engine };
+      const reply = `${when}${dest ? ` in ${dest}` : ""}: ${trig.body} I've set the dates. What kind of trip are you in the mood for, and who's coming? Tap a suggestion or tell me in your own words.`;
+      await logSignal(uid, sid, "trigger_open", "stated", { key: trig.key, guess, engine: ex.engine });
+      return { slots, reply, chips: options.map((o) => `${CHIP_NEED[o.need]} ${CHIP_PARTY[o.party]}`), engine: ex.engine };
     }
 
     if (body.action === "create") {

@@ -51,8 +51,8 @@ export default function PlanWithMe() {
     }
     setBusy(false);
   };
-  // Opened from "Plan a trip" on an upcoming trip window: let the AI read the event, show what it understood as a short
-  // chat exchange, and build the plans straight away. The user can still type to change anything.
+  // Opened from "Plan a trip" on an upcoming trip window: the assistant opens with the event and its dates, and offers
+  // suggestions (its best guess first). Nothing is sent on the user's behalf; the chat waits for a tap or a message.
   const fromTrigger = useRef(false);
   useEffect(() => {
     const key = new URLSearchParams(window.location.search).get("trigger");
@@ -63,12 +63,10 @@ export default function PlanWithMe() {
       setErr(null);
       try {
         const t = await api("/api/chat", { action: "trigger", key });
-        setMsgs((m) => [...m, ...t.messages]);
+        setMsgs([{ role: "assistant", content: t.reply }]);
         setSlots(t.slots);
         setEngine(t.engine);
-        setChips([]);
-        setTurns(1);
-        setRes(await api("/api/chat", { action: "create", slots: t.slots, disabled: [] }));
+        setChips(t.chips ?? []);
       } catch (e) {
         setErr((e as Error).message);
       }
