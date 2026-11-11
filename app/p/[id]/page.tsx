@@ -142,6 +142,30 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
     );
   };
 
+  const card = (a: Alt, close: boolean) => {
+    const current = swap?.removeId === a.id;
+    const elsewhere = !current && inPlan.has(a.id);
+    return (
+      <div key={a.id} className={`space-y-2.5 rounded-2xl border p-3 ${current ? "border-teal bg-teal-soft" : close ? "border-saffron bg-white shadow-sm" : "border-line bg-white/60"}`}>
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1"><div className="truncate font-display text-base leading-tight">{a.name}</div><div className="text-xs text-muted">{inr(a.price)}{swap ? (a.mode === "self_drive" ? " per car one way" : PRICE_UNIT[swap.elem]) : ""} · {a.reviews} reviews</div></div>
+          {!current && !elsewhere && !a.blocked.length && a.fit >= curFit + 5 && <span className="rounded-full bg-ok/10 px-2 py-0.5 text-[11px] font-semibold text-ok">Better fit</span>}
+          <FitBadge fit={a.fit} />
+        </div>
+        <ProsCons good={a.good} goodKeys={a.goodKeys} flags={a.flags} blocked={a.blocked} />
+        <MiniTestimonials quotes={itemQuotes(a, p.party)} />
+        {!current && !elsewhere && costLine(a)}
+        {!current && !elsewhere && (
+          <button disabled={busy} onClick={() => doSwap(a.id)} className="w-full rounded-xl bg-teal px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal/90 active:scale-[0.99] disabled:opacity-50">
+            Use this instead →
+          </button>
+        )}
+        {current && <p className="text-xs font-semibold text-teal">In your plan</p>}
+        {elsewhere && <p className="text-xs text-muted">Already elsewhere in your plan</p>}
+      </div>
+    );
+  };
+
   return (
     <Shell back="/feed" title={p.title} right={<FitBadge fit={p.fit} />}>
       <Cover hue={p.hue} emoji={p.emoji} photo={cover} className="px-4 pt-5 pb-6 text-white md:mx-4 md:mt-4 md:rounded-3xl md:px-8 md:py-10">
@@ -226,34 +250,35 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
       <div className="mx-4 mt-6 grid grid-cols-2 gap-2">
         <Button onClick={choose} disabled={busy || d.chosen}>{d.chosen ? "✓ Chosen" : "Choose this plan"}</Button>
         <Button kind="ghost" onClick={() => setShare(true)}>Share as template</Button>
-        <Button kind="accent" className="col-span-2" onClick={() => flash("Prototype: this hands off to checkout with all items pre-filled.")}>Book this trip →</Button>
+        <Button kind="accent" className="col-span-2" onClick={() => router.push(`/p/${id}/book`)}>Book this trip →</Button>
       </div>
       </div>
       </div>
 
       <Sheet open={!!swap} onClose={() => setSwap(null)} title={swap ? `Swap ${ELEM_LABEL[swap.elem].toLowerCase()}` : ""}>
         <p className="mb-3 text-xs text-muted">Ranked for {NEED_META[p.need].label} · {PARTY_META[p.party].label}. Reviews from {PARTY_META[p.party].label.toLowerCase()} travellers count double.</p>
-        <div className="space-y-2">
-          {altsFor.map((a) => {
-            const current = swap?.removeId === a.id;
-            const elsewhere = !current && inPlan.has(a.id);
-            return (
-              <div key={a.id} className={`space-y-2.5 rounded-2xl border p-3 ${current ? "border-teal bg-teal-soft" : "border-line bg-white/60"}`}>
-                <div className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1"><div className="truncate font-display text-base leading-tight">{a.name}</div><div className="text-xs text-muted">{inr(a.price)}{swap ? (a.mode === "self_drive" ? " per car one way" : PRICE_UNIT[swap.elem]) : ""} · {a.reviews} reviews</div></div>
-                  {!current && !elsewhere && !a.blocked.length && a.fit >= curFit + 5 && <span className="rounded-full bg-ok/10 px-2 py-0.5 text-[11px] font-semibold text-ok">Better fit</span>}
-                  <FitBadge fit={a.fit} />
+        {(() => {
+          // Close calls: options within 5 points of the best fit on this list that are not in the plan. They often
+          // lose only on a soft preference or price, so they are pulled to the top and highlighted.
+          const best = Math.max(...altsFor.map((a) => a.fit));
+          const isClose = (a: (typeof altsFor)[number]) => swap?.removeId !== a.id && !inPlan.has(a.id) && a.fit >= best - 5;
+          const close = altsFor.filter(isClose);
+          const rest = altsFor.filter((a) => !isClose(a));
+          return (
+            <div className="space-y-2">
+              {close.length > 0 && (
+                <div className="space-y-2 rounded-3xl border border-saffron/50 bg-saffron-soft/70 p-2">
+                  <div className="flex items-center gap-2 px-2 pt-1">
+                    <span className="rounded-full bg-saffron px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">Alternates you should consider</span>
+                  </div>
+                  <p className="px-2 text-xs text-ink/70">Within 5 points of the best fit here. Worth a look even if they miss one of your preferences.</p>
+                  {close.map((a) => card(a, true))}
                 </div>
-                <ProsCons good={a.good} goodKeys={a.goodKeys} flags={a.flags} blocked={a.blocked} />
-                <MiniTestimonials quotes={itemQuotes(a, p.party)} />
-                {!current && !elsewhere && costLine(a)}
-                {!current && !elsewhere && <button disabled={busy} onClick={() => doSwap(a.id)} className="text-xs font-semibold text-teal">Use this instead →</button>}
-                {current && <p className="text-xs font-semibold text-teal">In your plan</p>}
-                {elsewhere && <p className="text-xs text-muted">Already elsewhere in your plan</p>}
-              </div>
-            );
-          })}
-        </div>
+              )}
+              {rest.map((a) => card(a, false))}
+            </div>
+          );
+        })()}
       </Sheet>
 
       <Sheet open={!!chips} onClose={() => setChips(null)} title="Quick one: why not the others?">

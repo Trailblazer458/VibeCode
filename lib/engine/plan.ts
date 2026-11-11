@@ -6,6 +6,7 @@ import type {
   Activity, Aspect, Destination, Diet, Food, Item, Need, Party, PartyComp, Plan, ReadinessCheck, Stay, Transport, TripRequest,
 } from "../types";
 import { ScoreStore } from "./store";
+import { suits } from "./suitability";
 import { itemTags, TAG_LABEL } from "./tags";
 import { ASPECT_LABEL, NEED_LABEL, PACE, PARTY_LABEL, TRANSIT_TOLERANCE, weightsFor } from "./weights";
 
@@ -355,6 +356,7 @@ function planForDest(
   let stays = scoreList(STAYS.filter((s) => s.destId === dest.id), party, W, store).filter(
     (s) =>
       okTags(s.tags) &&
+      suits(s.item, party, pax) &&
       (!has("pets") || s.item.petFriendly) &&
       (!dietT || (s.item.veg !== "limited" && (dietT.diet !== "jain" || s.item.jain))),
   );
@@ -363,13 +365,13 @@ function planForDest(
 
   // food
   const foods = penalised("food", scoreList(FOOD.filter((f) => f.destId === dest.id), party, W, store)
-    .filter((f) => okTags(f.tags) && (!dietT || (f.item.diet !== "nonveg_focus" && (dietT.diet !== "jain" || f.item.jain || f.item.diet === "veg_only")))), softTags)
+    .filter((f) => okTags(f.tags) && suits(f.item, party, pax) && (!dietT || (f.item.diet !== "nonveg_focus" && (dietT.diet !== "jain" || f.item.jain || f.item.diet === "veg_only")))), softTags)
     .sort((a, b) => b.x - a.x);
 
   // activities
   const intT = has("intensity") as { max: number } | undefined;
   const acts = penalised("activity", scoreList(ACTIVITIES.filter((a) => a.destId === dest.id), party, W, store)
-    .filter((a) => okTags(a.tags) && (!intT || a.item.intensity <= intT.max)), softTags)
+    .filter((a) => okTags(a.tags) && suits(a.item, party, pax) && (!intT || a.item.intensity <= intT.max)), softTags)
     .sort((a, b) => b.x - a.x);
 
   const days = req.window.days;
@@ -674,11 +676,11 @@ function round2(n: number) {
 }
 
 /** Ranked alternatives for one element of a plan (used by "Swap" and the I-know-where view). */
-export function rankElement(kind: "stay" | "transport" | "food" | "activity", destId: string, need: Need, party: Party, ctx: EngineContext, secondary?: Need | null) {
+export function rankElement(kind: "stay" | "transport" | "food" | "activity", destId: string, need: Need, party: Party, ctx: EngineContext, secondary?: Need | null, pax: PartyComp = DEFAULT_PAX[party]) {
   const W = groupWeights({ need, party, secondaryNeed: secondary } as TripRequest, ctx);
   const list = kind === "stay" ? STAYS : kind === "transport" ? TRANSPORT : kind === "food" ? FOOD : ACTIVITIES;
   const soft = ctx.dealbreakers.filter((d) => d.kind === "soft").map((d) => d.attribute);
-  const scored = penalised(kind, scoreList((list as Item[]).filter((i) => "destId" in i && i.destId === destId), party, W, ctx.store), soft);
+  const scored = penalised(kind, scoreList((list as Item[]).filter((i) => "destId" in i && i.destId === destId && suits(i, party, pax)), party, W, ctx.store), soft);
   const hard = ctx.dealbreakers.filter((d) => d.kind === "hard").map((d) => d.attribute);
   return scored
     .map((s) => {

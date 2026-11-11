@@ -1,7 +1,7 @@
 import { ITEM_BY_ID } from "@/lib/data/catalog";
 import { one, q } from "@/lib/db";
 import { planFromItems, rankElement } from "@/lib/engine/plan";
-import { CHIP_TO_DEALBREAKER, contrastiveUpdate, reasonChips } from "@/lib/engine/profile";
+import { CHIP_TO_DEALBREAKER, contrastiveUpdate, engagementUpdate, reasonChips } from "@/lib/engine/profile";
 import { getStore } from "@/lib/engine/store";
 import { itemTags, TAG_LABEL } from "@/lib/engine/tags";
 import { ASPECT_LABEL } from "@/lib/engine/weights";
@@ -25,10 +25,10 @@ export async function GET(_req: Request, ctxArg: { params: Promise<{ id: string 
     const p = row.plan;
     const ctx = await engineContext(uid, profile, p.party, p.need, sid);
     const alts = {
-      stay: rankElement("stay", p.destId, p.need, p.party, ctx),
-      transport: rankElement("transport", p.destId, p.need, p.party, ctx),
-      food: rankElement("food", p.destId, p.need, p.party, ctx),
-      activity: rankElement("activity", p.destId, p.need, p.party, ctx),
+      stay: rankElement("stay", p.destId, p.need, p.party, ctx, null, p.pax),
+      transport: rankElement("transport", p.destId, p.need, p.party, ctx, null, p.pax),
+      food: rankElement("food", p.destId, p.need, p.party, ctx, null, p.pax),
+      activity: rankElement("activity", p.destId, p.need, p.party, ctx, null, p.pax),
     };
     const set = row.set_id ? await one<{ plan_ids: string[]; request: Partial<TripRequest> | null }>("select plan_ids, request from plan_sets where id = $1", [row.set_id]) : null;
     const chosen = await one("select 1 as x from plan_choices where chosen_plan_id = $1", [id]);
@@ -64,6 +64,16 @@ export async function POST(req: Request, ctxArg: { params: Promise<{ id: string 
       const set = row.set_id ? await one<{ request: Partial<TripRequest> | null }>("select request from plan_sets where id = $1", [row.set_id]) : null;
       return set?.request && "budgetPP" in set.request ? (set.request.budgetPP ?? null) : profile.budget_pp;
     };
+
+    // Prototype checkout: no payment is taken. A booking is the strongest signal we get, so it updates the profile
+    // like a like or save does, at double weight, and is logged with a reference the confirmation screen shows.
+    if (body.action === "book") {
+      const ref = "TG-" + id.replace(/^pl_/, "").slice(-6).toUpperCase();
+      const upd = engagementUpdate(profile, { need: p.need, attrs: p.attrs }, 2);
+      await updateProfile(uid, { dims: upd.dims, need_affinity: upd.need_affinity, intents: upd.intents });
+      await logSignal(uid, sid, "plan_booked", "revealed", { planId: id, destId: p.destId, ref, total: p.cost.total, travellers: body.travellers ?? null });
+      return { ok: true, ref };
+    }
 
     if (body.action === "choose") {
       const set = await one<{ plan_ids: string[] }>("select plan_ids from plan_sets where id = $1", [row.set_id]);

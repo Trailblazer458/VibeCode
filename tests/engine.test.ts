@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { computeReviewPipeline } from "../lib/seed";
 import { ScoreStore } from "../lib/engine/store";
-import { buildPlans, rankElement, type EngineContext } from "../lib/engine/plan";
+import { buildPlans, DEFAULT_PAX, rankElement, type EngineContext } from "../lib/engine/plan";
+import { unsuitable } from "../lib/engine/suitability";
+import { ACTIVITIES, FOOD, STAYS } from "../lib/data/catalog";
+import type { Item, Need, Party } from "../lib/types";
 
 const { scores, extractions } = computeReviewPipeline();
 const store = new ScoreStore(scores, extractions as never);
@@ -16,9 +19,9 @@ describe("intent-conditioned ranking", () => {
     const fam = rankElement("stay", "goa", "celebrate", "family_kids", ctx());
     console.log("friends", friends.map((s) => `${s.name}:${s.fit}`));
     console.log("family", fam.map((s) => `${s.name}:${s.fit}`), fam.find((s) => s.id === "ga-partylane")?.flag);
-    const pf = friends.findIndex((s) => s.id === "ga-partylane");
-    const pk = fam.findIndex((s) => s.id === "ga-partylane");
-    expect(pf).toBeLessThan(pk);
+    // The party hotel ranks for friends and is not offered to a family with kids at all.
+    expect(friends.findIndex((s) => s.id === "ga-partylane")).toBeGreaterThanOrEqual(0);
+    expect(fam.findIndex((s) => s.id === "ga-partylane")).toBe(-1);
     expect(fam[0].id).toBe("ga-garden");
   });
 
@@ -106,5 +109,45 @@ describe("intent-conditioned ranking", () => {
     const r = buildPlans({ need: "explore", party: "friends", window, budgetPP: 25000, destId: "jaipur" }, ctx());
     console.log(r.plans.map((p) => `${p.stay.name} ${p.transport.name} pace ${p.attrs.pace} ₹${p.cost.perHead}`));
     expect(r.plans.length).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("never suggests things that don't suit the group", () => {
+  const byId = new Map<string, Item>([...STAYS, ...FOOD, ...ACTIVITIES].map((i) => [i.id, i]));
+  const needs: Need[] = ["rest", "thrill", "celebrate", "reflect", "learn", "explore", "indulge", "escape", "reconnect"];
+  const parties: Party[] = ["solo", "couple", "friends", "family_kids", "family_elders"];
+
+  it("keeps couples-only, adventure, nightlife and hostel picks away from the wrong group, in plans and swap lists", () => {
+    const bad: string[] = [];
+    for (const party of parties) {
+      for (const need of needs) {
+        for (const p of buildPlans({ need, party, window, budgetPP: null }, ctx()).plans) {
+          for (const id of [p.stay.id, ...p.food.map((x) => x.id), ...p.activities.map((x) => x.id)]) {
+            const why = unsuitable(byId.get(id)!, party, p.pax);
+            if (why) bad.push(`${party}/${need} ${p.destName}: ${byId.get(id)!.name} (${why})`);
+          }
+        }
+      }
+      for (const kind of ["stay", "food", "activity"] as const) {
+        for (const dest of ["udaipur", "rishikesh", "goa", "manali", "kasol"]) {
+          for (const a of rankElement(kind, dest, "thrill", party, ctx())) {
+            const why = unsuitable(byId.get(a.id)!, party, DEFAULT_PAX[party]);
+            if (why) bad.push(`swap ${party} ${dest}: ${a.name} (${why})`);
+          }
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("flags the obvious cases", () => {
+    const spa = byId.get("ud-a3")!; // Couples' spa afternoon
+    expect(unsuitable(spa, "solo", DEFAULT_PAX.solo)).toBeTruthy();
+    expect(unsuitable(spa, "couple", DEFAULT_PAX.couple)).toBeNull();
+    const bungee = byId.get("rk-a4")!;
+    expect(unsuitable(bungee, "family_kids", DEFAULT_PAX.family_kids)).toBeTruthy();
+    expect(unsuitable(bungee, "family_elders", DEFAULT_PAX.family_elders)).toBeTruthy();
+    expect(unsuitable(bungee, "friends", DEFAULT_PAX.friends)).toBeNull();
+    expect(unsuitable(byId.get("mn-a6")!, "family_kids", DEFAULT_PAX.family_kids)).toBeNull(); // snow play is fine for kids
   });
 });
