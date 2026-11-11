@@ -45,3 +45,4 @@ Add `XAI_API_KEY` to `.env.local` to turn on Grok for chat slot-filling and the 
 | `app/api/*` | Route handlers |
 | `app/*` | Screens |
 | `public/items/`, `lib/item-photos.json` | Photos for destinations, stays and activities, from Wikimedia Commons under free licences. Each slide credits its photo; the full list is in [public/items/CREDITS.md](public/items/CREDITS.md). Stays are fictional, so their photos show the real setting (ghat, lake, village), not a specific property. |
+| `public/covers/`, `lib/cover-photos.json` | Four separate photos per destination for plan cards and plan headers, never the carousel's. The trip type picks which one, so the same place looks different across For You rows. Credits in [public/covers/CREDITS.md](public/covers/CREDITS.md). |

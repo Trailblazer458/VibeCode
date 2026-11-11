@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { inr } from "@/lib/client";
+import { destCover, type ItemPhoto } from "@/lib/images";
 
 export const NEED_META: Record<string, { label: string; emoji: string }> = {
   rest: { label: "Rest", emoji: "🌿" }, reconnect: { label: "Reconnect", emoji: "🤝" }, explore: { label: "Explore", emoji: "🧭" },
@@ -131,10 +132,23 @@ export function Section({ title, sub, children, action }: { title: ReactNode; su
   );
 }
 
-export function Cover({ hue, emoji, children, className = "" }: { hue: number; emoji: string; children?: ReactNode; className?: string }) {
+/** Colour cover with the destination emoji, or a photo darkened at the edges so white text on it stays readable. */
+export function Cover({ hue, emoji, photo, children, className = "" }: { hue: number; emoji: string; photo?: ItemPhoto | null; children?: ReactNode; className?: string }) {
+  const style: Record<string, string | number> = { ["--h"]: hue };
+  if (photo) {
+    style.backgroundImage = `linear-gradient(180deg, rgb(0 0 0 / 0.28) 0%, rgb(0 0 0 / 0.05) 38%, rgb(0 0 0 / 0.62) 100%), url("${photo.src}")`;
+    style.backgroundSize = "cover";
+    style.backgroundPosition = "center";
+  }
   return (
-    <div className={`cover relative overflow-hidden ${className}`} style={{ ["--h" as string]: hue }}>
-      <span className="pointer-events-none absolute -right-2 -bottom-4 text-[84px] opacity-30 select-none">{emoji}</span>
+    <div
+      className={`cover relative overflow-hidden ${className}`}
+      style={style}
+      role={photo ? "img" : undefined}
+      aria-label={photo ? `${photo.title}, photo by ${photo.artist} (${photo.license})` : undefined}
+      title={photo ? `Photo: ${photo.artist}, ${photo.license}, via Wikimedia Commons` : undefined}
+    >
+      {!photo && <span className="pointer-events-none absolute -right-2 -bottom-4 text-[84px] opacity-30 select-none">{emoji}</span>}
       {children}
     </div>
   );
@@ -160,7 +174,7 @@ export function ErrorNote({ error }: { error: string | null }) {
 }
 
 export interface PlanLite {
-  id: string; title: string; destName: string; emoji: string; hue: number; fit: number; need: string; party: string;
+  id: string; title: string; destId?: string; destName: string; emoji: string; hue: number; fit: number; need: string; party: string;
   window: { start: string; days: number; label?: string };
   cost: { perHead: number; total: number; transport: number; stay: number; food: number; activities: number; local: number };
   transport: { name: string; mode: string; hours: number }; stay: { name: string; type: string };
@@ -173,7 +187,7 @@ export function PlanCard({ p, wide, extra }: { p: PlanLite; wide?: boolean; extr
   const fail = p.readiness.some((r) => r.status === "fail");
   return (
     <Link href={`/p/${p.id}`} className={`rise block shrink-0 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm transition hover:shadow-md ${wide ? "w-full" : "w-[78%] sm:w-80 md:w-full"}`}>
-      <Cover hue={p.hue} emoji={p.emoji} className="h-28 p-3">
+      <Cover hue={p.hue} emoji={p.emoji} photo={destCover(p.destId, p.need)} className="h-28 p-3">
         <div className="flex items-start justify-between">
           <FitBadge fit={p.fit} />
           {p.exploration && <span className="glass-dark rounded-full px-2 py-0.5 text-[11px] font-semibold text-white">Something new for you</span>}

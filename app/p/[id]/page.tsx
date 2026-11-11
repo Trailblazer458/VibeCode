@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { api, fmtDate, inr } from "@/lib/client";
 import { Button, Card, Chip, Cover, ErrorNote, FitBadge, IntentPicker, NEED_META, PARTY_META, Section, Sheet, Shell, Spinner, type PlanLite } from "@/components/ui";
 import { Testimonials, WhyCarousel } from "@/components/why";
+import { destCover } from "@/lib/images";
 
 interface Alt { id: string; name: string; price: number; fit: number; tags: string[]; blocked: string[]; good: string[]; flag: { aspect: string; snippet: string | null; sameParty: boolean } | null; flags?: { aspect: string; snippet: string | null; sameParty: boolean }[]; evidence: { snippet: string; sameParty: boolean } | null; reviews: number }
 type Plan = PlanLite & {
@@ -55,6 +56,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
   if (err) return <Shell back="/feed" title="Plan"><ErrorNote error={err} /></Shell>;
   if (!d) return <Shell back="/feed" title="Plan"><Spinner /></Shell>;
   const p = d.plan;
+  const cover = destCover(p.destId, p.need);
 
   const doSwap = async (addId: string) => {
     if (!swap) return;
@@ -106,11 +108,16 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <Shell back="/feed" title={p.title} right={<FitBadge fit={p.fit} />}>
-      <Cover hue={p.hue} emoji={p.emoji} className="px-4 pt-5 pb-6 text-white md:mx-4 md:mt-4 md:rounded-3xl md:px-8 md:py-10">
+      <Cover hue={p.hue} emoji={p.emoji} photo={cover} className="px-4 pt-5 pb-6 text-white md:mx-4 md:mt-4 md:rounded-3xl md:px-8 md:py-10">
         <p className="text-xs opacity-90">{p.window.label ?? fmtDate(p.window.start)} · {p.window.days} days · {p.pax.adults + p.pax.kids + p.pax.seniors} travellers</p>
         <h1 className="font-display text-3xl font-semibold">{p.destName}</h1>
         <p className="text-sm opacity-95">{NEED_META[p.need].emoji} {NEED_META[p.need].label} · {PARTY_META[p.party].emoji} {PARTY_META[p.party].label}</p>
         <p className="glass-dark mt-4 inline-block rounded-2xl px-4 py-2 text-2xl font-semibold">{inr(p.cost.perHead)} <span className="text-sm font-normal opacity-90">per person, all-in</span></p>
+        {cover && (
+          <a href={cover.source} target="_blank" rel="noreferrer" className="absolute right-3 bottom-2 max-w-[55%] truncate text-[10px] text-white/75 hover:text-white">
+            Photo: {cover.artist} · {cover.license}
+          </a>
+        )}
       </Cover>
       {p.templateId && <p className="mx-4 mt-3 rounded-xl bg-saffron-soft px-3 py-2 text-xs text-warn">Remixed from {p.templateAuthor}&apos;s template. Every swap you make is recorded as a preference signal.</p>}
       {toast && <p className="rise fixed top-16 left-1/2 z-40 w-[90%] max-w-[440px] -translate-x-1/2 rounded-2xl border border-white/15 bg-ink/75 px-4 py-3 text-sm text-white shadow-lg backdrop-blur-xl">{toast}</p>}
